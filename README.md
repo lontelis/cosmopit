@@ -1,10 +1,26 @@
 # cosmopit
 cosmological python initial tools
 
+# Prerequist
+python 2.7+ ()
+numpy
+pylab
+scipy 
+pyfits
+iminuit (https://pypi.python.org/pypi/iminuit)
+emcee   (http://dan.iel.fm/emcee/current/)
+
+CLASS (software for cosmology https://github.com/lesgourg/class_public/wiki/Installation )
+
+
+# INSTALLATION: 
 In order to use these libraries one need to
 download these files: 
-
-
+cosmology.py
+pk_Class.py
+SplineFitting.py
+fitting.py
+galtools.py
 
 on a directory:
 ~/my_dir
@@ -12,6 +28,7 @@ on a directory:
 create a file using:
 touch ~/my_dir/__init__.py
 
+# USE example:
 and import each file like:
 
 import cosmology.py
