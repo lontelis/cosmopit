@@ -1,4 +1,4 @@
-from Cosmology import cosmology,pk_Class
+import cosmology,pk_Class
 from pylab import *
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,9 +14,8 @@ from scipy import linalg
 import scipy
 import emcee
 import scipy.optimize as opt
-from Homogeneity import numMath,SplineFitting
-#from Homogeneity import fitting
-from Cosmology import pyxi ######
+import numMath,SplineFitting
+import fitting
 import healpy as hp
 from astropy import coordinates
 import astropy.io.fits as afits
