@@ -3,7 +3,7 @@ from numpy import *
 from scipy import linalg,sparse
 import matplotlib.pyplot as plt
 from matplotlib import cm
-#from Homogeneity import fitting
+
 # Hellpfull numerics by P.Ntelis June 2014
 
 def blockMat1row(matr):
