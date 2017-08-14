@@ -1,5 +1,5 @@
 # cosmopit
-cosmological python initial tools
+cosmological python initial toolkit
 
 # Prerequist
 python 2.7+ <br />
