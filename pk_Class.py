@@ -5,7 +5,7 @@ from scipy import integrate
 from scipy import special
 import numpy
 from classy import Class
-from Cosmology import cosmology
+import cosmology
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
 
 class theory:
