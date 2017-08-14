@@ -26,7 +26,8 @@ on your directory: <br />
 cd ~/my_dir 
 ```
 <br />
-create a file using: <br />
+create an additional file using: 
+
 ```
 touch ~/my_dir/__init__.py 
 ```
