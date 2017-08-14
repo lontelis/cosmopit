@@ -38,7 +38,7 @@ import each file like: <br />
 import cosmology.py 
 ```
 <br />
-and then use the function to calculate the Comoving Volume distance as: <br />
+and then use one library to calculate the Comoving Volume distance as: <br />
 
 ``` 
 distComVol = cosmology.D_V(z=0.5) 
