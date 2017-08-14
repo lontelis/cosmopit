@@ -30,14 +30,17 @@ create a file using: <br />
 ```
 touch ~/my_dir/__init__.py 
 ```
-<br />
+
 # USE example:  
-and import each file like: <br />
-<br />
-``` import cosmology.py ```
+import each file like: <br />
+``` 
+import cosmology.py 
+```
 <br />
 and then use the function to calculate the Comoving Volume distance as: <br />
-<br />
-``` distComVol = cosmology.D_V(z=0.5) ```
+
+``` 
+distComVol = cosmology.D_V(z=0.5) 
+```
 
 
