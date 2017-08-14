@@ -44,4 +44,6 @@ and then use one library to calculate the Comoving Volume distance as: <br />
 distComVol = cosmology.D_V(z=0.5) 
 ```
 
-
+# QUERIES:
+please feel free to contact for any queries or bags at: <br />
+pntelis -at- apc -point- in2p3 -point- fr
