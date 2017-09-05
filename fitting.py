@@ -18,7 +18,7 @@ def dothefit(x,y,covarin,guess,functname=thepolynomial,parbounds=None,nmock_prec
         print('Fitting with MCMC')
         return(do_emcee(x,y,covarin,guess,functname,nmock_prec=nmock_prec))
     else:
-        print('method must be among: minuit, mpfit, mcmc')
+        print('method must be among: minuit, mcmc')
         return(0,0,0,0)
 
 ################### Fitting with Minuit #######################
