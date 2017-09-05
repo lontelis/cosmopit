@@ -133,14 +133,6 @@ def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None):
 def EE(z,omegam,omegax):
     return np.sqrt((1.-omegam-omegax)*(1+z)**2+omegax+omegam*(1+z)**3)
 
-def D_V_simple(z,omegam=0.3,omegax=0.7,h=0.7):
-    '''Delete me'''
-    H0 = H0_def(h)
-    zvalues = np.linspace(0.,z,1000.)
-    integral = integrate.trapz(1./EE(zvalues,omegam,omegax),x=zvalues)  
-    result = (c/H0)*(  ( (1+z)**2 ) *(z/EE(z,omegam,omegax) ) * integral**2.   )**(1./3.)
-    return result
-
 def r_s_approximation():
     raise NotImplementedError('Need to implement') 
     res=1
