@@ -35,7 +35,7 @@ touch ~/my_dir/__init__.py
 # USE example:  
 import each file like: <br />
 ``` 
-import cosmology.py 
+import cosmology 
 ```
 <br />
 and then use one library to calculate the Comoving Volume distance as: <br />
