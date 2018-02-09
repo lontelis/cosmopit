@@ -26,11 +26,6 @@ on your directory: <br />
 cd ~/my_dir 
 ```
 <br />
-create an additional file using: 
-
-```
-touch ~/my_dir/__init__.py 
-```
 
 # USE example:  
 import each file like: <br />
