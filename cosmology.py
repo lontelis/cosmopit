@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import *
 from pylab import *
 import warnings
 from scipy import integrate
@@ -20,7 +21,7 @@ def H0_def(h):
     """ return H0 in m/s/Mpc"""
     return H0_over_h*h
 
-def properdistance(z,omegaRad=0.00,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None):
+def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00):
     """
         Gives the proper distance in the defined cosmology
         The c/Ho factor is ommited
@@ -42,7 +43,7 @@ def properdistance(z,omegaRad=0.00,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None):
     kk=abs(1.-omega)
     #print omegam,kk
     # calculation of E(z)=H(z)/H_0
-    Ez=sqrt((1.-omega)*(1+z)**2+omegaxz+omegam*(1+z)**3 + omegaRad*(1+z)**4)
+    Ez=sqrt( (1.-omega)*(1+z)**2+omegaxz+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
 
     # calculate chi
     chi=zeros(z.size)
@@ -81,7 +82,7 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
 
     zvalues=linspace(0.,zmax*1.5,1e5)
 
-    dist,wz,omegaxz,Ez,curv=properdistance(zvalues,omegaRad,omegam,omegax,w0=w0,w1=w1,wz=wz)
+    dist,wz,omegaxz,Ez,curv=properdistance(zvalues,omegam=omegam,omegax=omegax,w0=w0,w1=w1,wz=wz,omegaRad=omegaRad)
 
     if type=='proper':
         res=dist*dHubble
@@ -106,7 +107,6 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
     else:
         print "This type does not exist:",type
         res=-1
-    
     if z2radial: 
         f=interpolate.interp1d(res,zvalues)
     else: 
@@ -122,20 +122,20 @@ def VolCalcSurvey(zCentral,DeltaZrange,OmegaSky=1e4,type='vco',params=[0.3,0.7,-
     Volume= Vcomo*DeltaZrange*OmegaSky*(pi/180.)**2
     return Volume # in (Mpc/h)**3
 
-def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None):
+def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,NNz=1000):
+    ''' D_V analytical in Mpc '''
     if isinstance(z, np.ndarray): zmax = z.max()
     else:                         zmax = z
-    zvalues=linspace(0.,zmax*1.0,1000)
-    dist,wz,omegaxz,Ez,curv=properdistance(zvalues,omegam,omegax,w0=w0,w1=w1,wz=wz)
+    zvalues=linspace(0.,zmax*1.0,NNz)
+    dist,wz,omegaxz,Ez,curv=properdistance(zvalues,omegam=omegam,omegax=omegax,w0=w0,w1=w1,wz=wz)
     result = (dHubble/h) * ( (z/Ez ) * dist**2. )**(1./3.)
     return result[-1:]
 
 def EE(z,omegam,omegax):
-    return np.sqrt((1.-omegam-omegax)*(1+z)**2+omegax+omegam*(1+z)**3)
-
-def r_s_approximation():
-    raise NotImplementedError('Need to implement') 
-    res=1
+    #      
+    omegaRad=0.0
+    omega = omegax+omegam
+    res   = sqrt( (1.-omega)*(1+z)**2+omegax+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
     return res
 
 def integrant(z,omegam,omegax):
@@ -218,4 +218,39 @@ def dclock_old(z,AA=0.3,tF=0.03):
 
 """
 
+
+def omega_nuf(sum_mass_nu=0.06,Neff=3.046):
+    result = 0.0107*sum_mass_nu/1.0
+    return result
+
+def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,Neff=3.046):
+    """
+        https://arxiv.org/pdf/1411.1074.pdf
+        p5, eq 16
+        Calibrated drag epoch 
+        numerical formula
+    """
+    omega_cb=omega_cdm+omega_b
+    omega_nu = omega_nuf(sum_mass_nu=sum_mass_nu,Neff=Neff)
+    if nonRelativistic:
+        result = 55.154 * exp( -72.3*(omega_nu+0.0006)**2. )  /( (omega_cb**0.25351)*(omega_b**0.128070) )
+    else:
+        result = 56.067 * exp( -49.7*(omega_nu+0.0020)**2  )  /( (omega_cb**0.24360)*(omega_b**0.128876) ) / ( 1+(Neff-3.046)/30.60 )
+    return result 
+
+def D_C_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_C approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return get_dist(z,type='proper',params=params,wz=wz)
+
+def D_M_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_M approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return D_C_approx(z,params=params,wz=wz)*( 1+ (1/6.)*(1-params[1]-params[0])* (D_C_approx(z,params=params,wz=wz)/c*H0_over_h)**2 )
+
+def D_H_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_H approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return c/get_dist(z,type='hz',params=params,wz=wz)
+
+def D_V_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_V approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return ( z*D_H_approx(z,params=params,wz=wz) * D_M_approx(z,params=params,wz=wz)**2 )**(1./3.)
 
