@@ -1,5 +1,6 @@
 from pylab import *
 import numpy as np
+from numpy import *
 from scipy import interpolate
 from scipy import integrate
 from scipy import special
@@ -13,17 +14,19 @@ class theory:
     A software to compute the theoretical Power Spectrum from CLASS Software and each Derivatives, 
     2-Point Correlation function, Fractal Correlation Dimension, Homogeneity Scale
     P(k), xi(r), D2(r), N(r), Rh(r)
-    Observables are reviewed by arXiv:1702.02159
+    Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
     '''
-    def __init__(self,cosmopars,z=None,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False): # kmax=20.
+    def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
         cosmo_CLASS = Class()
         extra_CLASS_pars={
             'non linear': '',
             'output': 'mPk', 
-            'z_max_pk': 10.,
-            'P_k_max_h/Mpc': 100.}
-        
+            'z_max_pk': z_max_pk, #10.
+            'P_k_max_h/Mpc': P_k_max_h} #100.
+        if 'Omega_k' in cosmopars.keys(): pass
+        else: cosmopars.update({'Omega_k':0.0})
+
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
         cosmopars['Omega_k'] = -cosmopars['Omega_k'] 
@@ -31,10 +34,11 @@ class theory:
         cosmo_CLASS.set(cosmopars)
         cosmo_CLASS.compute()
         
+        self.h_fiducial_xith_norm=h_fiducial_xith_norm
         self.r_s = cosmo_CLASS.rs_drag()
         self.h=cosmopars['h']
         self.Omega_m=(cosmo_CLASS.pars['omega_b']+cosmo_CLASS.pars['omega_cdm'])/(cosmo_CLASS.pars['h']**2) 
-
+        
         if ExtraPars: self.w0,self.wa=cosmo_CLASS.pars['w0_fld'],cosmo_CLASS.pars['wa_fld']
         else:         self.w0,self.wa=-1.,0.
         
@@ -62,24 +66,27 @@ class theory:
         #cosmo_CLASS.struct_cleanup()
         #cosmo_CLASS.empty()
 
-    def __call__(self,x,*args, **kw):
-        return(self.pk_interpol(x))
+    def __call__(self,k,*args, **kw):
+        ''' 
+            argument k: array of the wavenumbers
+            returns an array of the 1D the matter power spectrum P(k) 
+        '''
+        return(self.pk_interpol(k))
 
     def calc_pk_CMMpk_interp_sig8(self,z):
         ''' calculating the pk from z and pk '''
         for i in np.arange(self.k.size):
             self.pk[i] = self.cosmo_CLASS.pk(self.k[i],z=z)
 
-        self.pk[0]=self.pk[1]
+        #self.pk[0]=self.pk[1]
 
         if  self.sig8_Ext!=None:
             self.pk=self.pk * (  self.sig8_Ext / self.sig8_CLASS )**2 #//kaiser of using A_s
             self.sig8 = sig8_Ext
-                
+        
         pk_CMM=self.pk
         pk_interp=interpolate.interp1d(self.k,pk_CMM)#,bounds_error=False)
         return pk_CMM,pk_interp 
-
 
     def get_rs(self):
         """ returns the scale to the sound horizon on drag epoch"""
@@ -136,45 +143,48 @@ class theory:
     def fctShape(self,x,pars):
         return pars[0] + pars[1]/x**2 + pars[2]/(x**2) 
 
-    def pk2correlation(self,h=0.7,nk=5000,k=None,pk_in=None):
+    def pk2correlation(self,h=0.7,nk=5000,k=None,pk_in=None,use_h_norm=True):
         pkk=k*pk_in
         r=2.*pi/np.max(k)*np.arange(nk)
-        cric=-np.imag(fft(pkk)/nk)/r/2/pi**2*np.max(k)
+        cric=-np.imag(fft.fft(pkk)/nk)/r/2/pi**2*np.max(k)
         cric[0]=cric[1]
-        twoPCF=interpolate.interp1d(r*h,cric) #,bounds_error=False)
+        h_fiducial_xith_norm=self.h_fiducial_xith_norm
+        if use_h_norm:
+            twoPCF=interpolate.interp1d(r*self.h_fiducial_xith_norm,cric) #,bounds_error=False)
+        else:
+            twoPCF=interpolate.interp1d(r,cric) #,bounds_error=False)
         return(twoPCF)
 
-    def xi(self,x,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None):
+    def xi(self,x,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,use_h_norm=True):
         pk_in = self.pk_NL(self.k,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy)
         
         if (type(vShape)==tuple) or (type(vShape)==np.ndarray): AShape = self.fctShape(x,vShape)
         else: AShape = 0.0
 
-        xi_in = self.pk2correlation(h=self.h,nk=self.nk,k=self.k,pk_in=pk_in) 
-
+        xi_in = self.pk2correlation(h=self.h,nk=self.nk,k=self.k,pk_in=pk_in,use_h_norm=use_h_norm) 
         return ( xi_in(x) + AShape )
 
     def params_plus_wavenumber(self):
         return self.h,self.Omega_m,self.redshift,self.nk,self.k
 
-    def nr(self,xin,addx=100.,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,returnInterpol=False):
+    def nr(self,xin,addx=100.,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,returnInterpol=False,use_h_norm=True):
         #x=linspace(0,max(xin),1000)
         x = 10**np.linspace(np.log10(0.1),np.log10(np.max(xin+addx)),1000) #!#!#!#
-        y=self.xi(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape)*x**2
+        y=self.xi(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape,use_h_norm=use_h_norm)*x**2
         theint=zeros(x.size)
         theint[1:]=1+3*integrate.cumtrapz(y,x=x)/x[1:]**3 
         ff=interpolate.interp1d(x,theint,bounds_error=False)
         if returnInterpol==True: return(ff)
         else:                    return(ff(xin))
 
-    def rh_nr(self,threshold=1.01,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None):
+    def rh_nr(self,threshold=1.01,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,use_h_norm=True):
         x=np.linspace(10,1000,100)
-        ff=interpolate.interp1d(self.nr(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape)[::-1],x[::-1],bounds_error=False)
+        ff=interpolate.interp1d(self.nr(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape,use_h_norm=use_h_norm)[::-1],x[::-1],bounds_error=False)
         return(ff(threshold))
 
-    def d2(self,xin,min=0.1,addx=100.,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,returnInterpol=False):
+    def d2(self,xin,min=0.1,addx=100.,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,returnInterpol=False,use_h_norm=True):
         x=10**np.linspace(np.log10(min),np.log10(np.max(xin+addx)),1000)
-        lognr=np.log10(self.nr(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape))
+        lognr=np.log10(self.nr(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape,use_h_norm=use_h_norm))
         #dlogx=logx[1]-logx[0]
         dlogx = np.gradient(np.log10(x))
         thed2=np.gradient(lognr)/dlogx+3
@@ -182,9 +192,9 @@ class theory:
         if returnInterpol==True: return(ff)
         else:                    return(ff(xin))
         
-    def rh_d2(self,threshold=2.97,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None):
-        x=np.linspace(10,1000,100)
-        ff=interpolate.interp1d(self.d2(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape),x,bounds_error=False)
+    def rh_d2(self,threshold=2.97,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,use_h_norm=True):
+        x=np.linspace(10,1000,1000)
+        ff=interpolate.interp1d(self.d2(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape,use_h_norm=use_h_norm),x,bounds_error=False)
         return(ff(threshold))
 
     # Modelling Non-Linearities #############################
@@ -378,9 +388,26 @@ class theory:
 def Kaiser_TERM(fgrowth,bias):
     return 1.+ ((2./3.)*fgrowth/bias) + ((1./5.)*(fgrowth/bias)**2)
 
-def fgrowth(Om,z):
+def fgrowth(Om,z,gammaexp=0.55):
     ###return (Om*(1+z)**3.)**0.55
-    return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1- Om ) )**0.55
+    return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1- Om ) )**gammaexp
+
+
+def cosmo_flagship(giveErrs=False):
+    ''' Define parameters for CLASS soft '''
+    ## Model Class: 
+    # planck 2015, does not give sigma8
+    params = {
+        'h': 0.67,
+        'omega_b': 0.049*0.67**2,
+        'omega_cdm': (0.319-0.049)*0.67**2,
+        'n_s': 0.96,
+        'ln10^{10}A_s': 3.0494251, #np.log(2.125e-9*1e10), 
+        #'A_s': np.exp(3.094)*1e-10,
+        'Omega_k': 0.0,
+        }
+    sigma_8   = 0.83
+    return params
 
 def cosmo_Planck(giveErrs=False):
     ''' Define parameters for CLASS soft '''
@@ -436,16 +463,19 @@ def cosmo_PlanckAll(giveErrs=False,giveExtra=False):
     cosmo = cosmo_Planck(giveErrs=giveErrs)
     
     params_extra = {
+    'Omega_k':-0.004,
     'Omega_Lambda': 0.658,
     'w0_fld':-1.006,
     'wa_fld':1e-4,
     }
 
     dparams_extra={
+        'Omega_k':-0.012,
         'Omega_Lambda':0.013,
         'w0_fld': 0.045,
         'wa_fld':0.0054,
         }
+
     if giveExtra:
         if giveErrs: 
             cosmo[0].update(params_extra)
@@ -552,10 +582,10 @@ def cosmo_WZ():
 
 def Conv2labels(stringi):
     
-    if stringi=='n_s': return '$%s$'%stringi
-    elif stringi=='w0_fld': return '$w_0$'
-    elif stringi=='wa_fld': return '$w_a$'
-    elif stringi=='h': return '$h$'
+    if   stringi=='n_s':          return '$%s$'%stringi
+    elif stringi=='w0_fld':       return '$w_0$'
+    elif stringi=='wa_fld':       return '$w_a$'
+    elif stringi=='h':            return '$h$'
     elif stringi=='Omega_Lambda': return '$\Omega_{\Lambda}$'
-    elif stringi=='omega_cdm': return '$\omega_{cdm}$'
-    else: return '$\%s$'%stringi
+    elif stringi=='omega_cdm':    return '$\omega_{cdm}$'
+    else:                         return '$\%s$'%stringi
