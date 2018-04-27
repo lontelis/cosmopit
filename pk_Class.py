@@ -16,6 +16,8 @@ class theory:
     P(k), xi(r), D2(r), N(r), Rh(r)
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
+    # Line 34 and 50 are used since CLASS uses the alternative definition of $\Omega_k$ = 1 - $\Omega_m$ - $\Omega_{\Lambda}$
+    # In this analysis we use: $\Omega_k$ + $\Omega_m$ + $\Omega_{\Lambda}$ = 1
     '''
     def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
         cosmo_CLASS = Class()
@@ -24,12 +26,12 @@ class theory:
             'output': 'mPk', 
             'z_max_pk': z_max_pk, #10.
             'P_k_max_h/Mpc': P_k_max_h} #100.
-        if 'Omega_k' in cosmopars.keys(): pass
+        if 'Omega_k' in cosmopars.keys(): pass 
         else: cosmopars.update({'Omega_k':0.0})
 
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
-        cosmopars['Omega_k'] = -cosmopars['Omega_k'] 
+        cosmopars['Omega_k'] = -cosmopars['Omega_k']  ## Comment to reproduce the paper FISHER 18 April 2018
         
         cosmo_CLASS.set(cosmopars)
         cosmo_CLASS.compute()
@@ -45,6 +47,7 @@ class theory:
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1 - self.Omega_m - self.Omega_k
 
+        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## Comment out to reproduce the paper FISHER 18 April 2018 (if both kept np problem)
         #if not np.isclose(self.Omega_k+self.Omega_L + self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Om+Ol+Ok=1 not fullfilled')
         #    print 'Sum Omega = %0.1f'%(self.Omega_k+self.Omega_L+self.Omega_m)
@@ -470,7 +473,7 @@ def cosmo_PlanckAll(giveErrs=False,giveExtra=False):
     }
 
     dparams_extra={
-        'Omega_k':-0.012,
+        'Omega_k':0.012,
         'Omega_Lambda':0.013,
         'w0_fld': 0.045,
         'wa_fld':0.0054,
