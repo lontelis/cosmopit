@@ -45,6 +45,42 @@ def burnChains(chains,kmin=0):
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
+def chainsTo2Darray(chain_in):
+    ''' convert chain format to 2Darray '''
+    chains = []
+    for i in chain_in['chains'].item().keys(): chains.append(chain_in['chains'].item()[i])
+    chains=array(chains)
+    return chains
+
+def average_realisations(datasim):
+    ''' 
+        general stat of a chain array: 
+        out: means 
+             stds
+             covariance matrix
+             correlation matrix
+    '''
+    dims=np.shape(datasim)
+    nsim=dims[0]
+    nbins=dims[1]
+    meansim=np.zeros(nbins)
+    sigsim=np.zeros(nbins)
+    for i in np.arange(nbins):
+        meansim[i]=np.mean(datasim[:,i])
+        sigsim[i]=np.std(datasim[:,i])
+    
+    covmat=np.zeros((nbins,nbins))
+    for i in np.arange(nbins):
+        for j in np.arange(nbins):
+            covmat[i,j]=(1./(nsim))*np.sum((datasim[:,i]-meansim[i])*(datasim[:,j]-meansim[j]))
+
+    cormat=np.zeros((nbins,nbins))
+    for i in np.arange(nbins):
+        for j in np.arange(nbins):
+            cormat[i,j]=covmat[i,j]/np.sqrt(covmat[i,i]*covmat[j,j])
+
+    return(meansim,sigsim,covmat,cormat)
+
 def insertP(arrmat):
     ''' inserts an additional column, and row with zeros on a metrix'''
     a_zero_c = np.zeros(len(arrmat))
@@ -521,7 +557,7 @@ def logBinning(r_max=1500.,nb_r=50,n_logint=10,a=1.):
     radiusL=10**powerL * r_max
     return radiusL
 
-'''
+
 def stat_realisations(datasim1,datasim2):
     """
     computes cross-covmat cross-corrmat
@@ -579,9 +615,6 @@ def plotCorrMat(x,y,datasim1,datasim2,savename='corrplot',save=False):
     if save == True:
         print 'Saving ...'
         plt.savefig(savename+'.png',dpi=100)
-'''
-
-
 
 # rounding indices inside a dictionary
 class LessPrecise(float):
