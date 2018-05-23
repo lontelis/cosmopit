@@ -50,10 +50,10 @@ def chainsTo2Darray(chain_in,PermMatlist=None):
     chains = []
     for i in chain_in['chains'].item().keys(): chains.append(chain_in['chains'].item()[i])
     chains=array(chains)
-    if PermMatlist==None:
-        return chains
-    else:
+    if type(PermMatlist)==list:
         return PermMat(chains,PermMatlist)
+    else:
+        return chains
 
 def average_realisations(datasim):
     ''' 
