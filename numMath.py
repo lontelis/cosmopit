@@ -45,12 +45,15 @@ def burnChains(chains,kmin=0):
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
-def chainsTo2Darray(chain_in):
+def chainsTo2Darray(chain_in,PermMatlist=None):
     ''' convert chain format to 2Darray '''
     chains = []
     for i in chain_in['chains'].item().keys(): chains.append(chain_in['chains'].item()[i])
     chains=array(chains)
-    return chains
+    if PermMatlist==None:
+        return chains
+    else:
+        return PermMat(chains,PermMatlist)
 
 def average_realisations(datasim):
     ''' 
