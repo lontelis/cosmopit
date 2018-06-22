@@ -13,7 +13,10 @@ class theory:
     '''
     A software to compute the theoretical Power Spectrum from CLASS Software and each Derivatives, 
     2-Point Correlation function, Fractal Correlation Dimension, Homogeneity Scale
-    P(k), xi(r), D2(r), N(r), Rh(r)
+    P(k,z), xi(r,z), D2(r,z), N(r,z), Rh(z)
+    k  in Mpc^{-1}
+    r  in h^{-1} Mpc
+    Rh in h^{-1} Mpc
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
     # Line 34 and 50 are used since CLASS uses the alternative definition of $\Omega_k$ = 1 - $\Omega_m$ - $\Omega_{\Lambda}$
