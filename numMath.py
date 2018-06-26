@@ -3,8 +3,20 @@ from numpy import *
 from scipy import linalg,sparse
 import matplotlib.pyplot as plt
 from matplotlib import cm
-
 # Hellpfull numerics by P.Ntelis June 2014
+
+def array2txt(filename='',input_array=np.array([ [1.,1.,1.],[2.,2.,2.]  ]),Comment_text="# Comments \n"):
+    ''' 
+        IO function that can be used as a template 
+        Writes an array into a txt format
+    '''
+    file=open(filename,'w')
+    file.write(Comment_text)
+    for i in range(shape(input_array)[0]):
+        for j in range(shape(input_array)[1]):
+            file.write("%0.4f "%(input_array[i,j]) )
+        file.write("\n")
+    file.close()
 
 def blockMat1row(matr):
     temp = []
