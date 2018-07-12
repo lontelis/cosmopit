@@ -3,9 +3,10 @@ from numpy import *
 from scipy import linalg,sparse
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import fitting
 # Hellpfull numerics by P.Ntelis June 2014
 
-def array2txt(filename='',input_array=np.array([ [1.,1.,1.],[2.,2.,2.]  ]),Comment_text="# Comments \n"):
+def array2txt(filename='',input_array=np.array([ [1.,1.,1.],[2.,2.,2.]]),Comment_text="# Comments \n"):
     ''' 
         IO function that can be used as a template 
         Writes an array into a txt format
@@ -18,11 +19,90 @@ def array2txt(filename='',input_array=np.array([ [1.,1.,1.],[2.,2.,2.]  ]),Comme
         file.write("\n")
     file.close()
 
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
+def randomarrayindices_production(nblines=50,randsize=10):
+    print 'start of producing rand indices'
+    randindices = np.random.rand(nblines)
+    xx = np.argsort(randindices)
+    randarrayindices= np.sort(xx[:int(randsize)])
+    print(randarrayindices)
+    return randarrayindices
+
+def loadRand(fin,randarrayindices,qsize=4,randsize=10):
+    ''' 
+        takes a string name of a file with data fin
+        (qsize x nblines) = ( number of columns ) x ( number of lines )     
+        returns an array with randomly  
+        sampling this file, with randsize-size
+
+    '''
+    res = np.zeros([np.shape(randarrayindices)[0],qsize])
+    #print 'start loading file'
+    i=0
+    with open(fin) as fd:
+        #print 'files is open!'
+        for n, line in enumerate(fd):
+            if n == randarrayindices[i]:
+                res[i] = np.fromstring(line.strip(),sep=' ')
+                print i,n,res[i]
+                i = i + 1
+                if i==randsize:
+                    break
+    return res
+
+
+def covmat(x,y):
+    """ return the covariane matrix of parameter x and y """
+    dim    = len(x)
+    z      = np.array([x,y])
+    covmat = np.zeros((len(z),len(z)))
+    for i in range(len(z)):
+        for j in range(len(z)):
+            covmat[i,j] =  sum( (z[i]-np.mean(x) )*(z[j]-np.mean(y)) ) / (dim-1.)
+    return covmat
+
 def blockMat1row(matr):
     temp = []
     for i in range(len(matr)):
         temp.append(matr[i])
     return sparse.block_diag(temp).toarray()
+
+def rebinning(x):
+    x_new = 0.5*(x[:-1]+x[1:])
+    return x_new
+
+def rebin_counts(x):
+    x_new=zeros(len(x)-1)
+    for i in range(len(x_new)): x_new[i] = x[i] + x[i+1]
+    return x_new
+
+def repeated(f, n):
+    """ 
+        Use: numMath.repeated( function , number_times)( arg )
+    """
+    def rfun(p):
+        return reduce(lambda x, _: f(x), xrange(n), p)
+    return rfun
+
+def rebin_x(x,n):
+    return x[0:len(x):n]
+
+def rebin_dd3(dd):
+    return dd[0:len(dd):3] + dd[1:len(dd):3] + dd[2:len(dd):3]
+
+def rebinning_all(r,xi0,dd,rr,dr,n=1):
+    r_new  =rebin_x(r,n+1)
+    xi0_new=rebin_x(xi0,n+1)
+    dd_new =rebin_x(dd,n+1) # rebin_dd3(dd) #
+    dr_new =rebin_x(dr,n+1) # rebin_dd3(dr) #
+    rr_new =rebin_x(rr,n+1) # rebin_dd3(rr) #
+
+    return r_new,xi0_new,dd_new,rr_new,dr_new
 
 def testArrBurn(arr,doplot=False,fmt='.',color='r',figN=3):
     kkk=0
@@ -50,6 +130,135 @@ def testArrBurn(arr,doplot=False,fmt='.',color='r',figN=3):
 
     return temp_m,temp_s
 
+def testMCMC_autocorrelation(theta,N_lag=20000,N_lag_start=500):
+    ''' returns: 
+        \rho_lag = \frac{  \sum^{N-lag}_i (\theta_i - mean(theta) )*(\theta_{i+lag} - \bar(\theta))  }{sum^{N}_i (\theta_i - \bar{\theta})^2}
+    '''
+    lag=arange(0,N_lag,N_lag_start)
+    rho=zeros(( len(lag) ))
+    mean_theta=mean(theta)
+    rho_lag_denominator=sum( ( theta-mean_theta )**2 )
+    for lag_i in range(len(lag)):
+        for i in range(len(theta)-1-lag[lag_i]):
+            rho[lag_i] += ( theta[i] - mean_theta )*(theta[i+lag[lag_i]] -mean_theta ) 
+    return rho/rho_lag_denominator
+
+
+def testMCMC_autocorrelationAll(toto):
+    """ for all parameters """
+    vars = toto['vars']
+    chains = toto['chains'].item()
+    autocorrelations=[]
+    for variable in vars:
+        autocorrelations.append(testMCMC_autocorrelation( chains[variable] )[0] )
+    autocorrelations=array(autocorrelations)
+    return autocorrelations
+
+def compute_Rubyn(totos,nlag=0):
+    """
+        Rubyn Test                                                                                                                                                                                                                      
+        input :   totos = array([CMBBAO0,CMBBAO1])                                                                                                                                                                                      
+        outout:   Rubyn_test         : All computed rubin statistic for each parameter                                                                                                                                                  
+                  vars               : the name of the parameter correposnding to each test                                                                                                                                             
+                  means_means_thetas : the mean of the means of the parameters                                                                                                                                                          
+                  arange(nlag)       :                                                                                                                                                                                                  
+        To see convergence check the condition                                                                                                                                                                                          
+        Rubyn_test - 1 < 0.03 or 0.01                                                                                                                                                                                                   
+                                                                                                                                                                                                                                        
+        use: testR = compute_Rubyn(totos)                                                                                                                                                                                               
+        Check convergence:                                                                                                                                                                                                              
+        testR -1. < 0.03 #loose                                                                                                                                                                                                         
+        testR -1. < 0.01 #tight  
+    """
+
+    vars=totos[0]['vars']
+    chains=[]
+    for variable in vars:
+        for i in range(len(totos)): 
+            chains.append( totos[i]['chains'].item()[variable] )
+    chains = array(chains)
+    thetas=[]
+    for i in range(len(vars)):
+        thetas.append( chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:] )
+    print shape(chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:])
+    thetas=array(thetas)
+
+    dimParams=shape(thetas)[0]
+    dimChains=shape(thetas)[1]
+
+    mean_thetas = []
+    sigma_thetas= []
+    for i in range(dimParams):
+        for j in range(dimChains):
+            mean_thetas.append( mean(thetas[i][j] ) )
+            sigma_thetas.append( std(thetas[i][j]*dimParams/(dimParams-1.) ) )
+    mean_thetas=array(mean_thetas)
+    sigma_thetas=array(sigma_thetas)
+
+
+    W = []
+    for j in range(dimParams):
+        W.append(  sum(sigma_thetas[len(totos)*j:len(totos)*(j+1)]**2)/dimChains  )
+    W = array(W)
+
+    means_means_thetas = []
+    for j in range(dimParams):
+        means_means_thetas.append( sum(mean_thetas[len(totos)*j:len(totos)*(j+1)])/dimChains )
+    means_means_thetas = array(means_means_thetas)
+    Beta = []
+    for j in range(dimParams):
+        Beta.append( sum( (mean_thetas[len(totos)*j:len(totos)*(j+1)] -  means_means_thetas[j])**2 ) )
+    Beta = array(Beta)*dimParams/(dimChains-1.)
+
+    VarTheta = (1-1/dimParams)*W + Beta/dimParams
+
+    Rubyn_test = sqrt(VarTheta/W)
+
+    return Rubyn_test,vars,means_means_thetas,arange(nlag)
+
+def Test_Rubyn(totos,nlag=0):
+    """                                                                                                                                                                                                                                 
+        convergence check condition                                                                                                                                                                                                     
+        Rubyn_test - 1 < 0.03 or 0.01                                                                                                                                                                                                   
+                                                                                                                                                                                                                                       
+        use: testR = compute_Rubyn(totos)                                                                                                                                                                                               
+        Check convergence:                                                                                                                                                                                                              
+        testR -1. < 0.03 #loose                                                                                                                                                                                                         
+        testR -1. < 0.01 #tight                                                                                                                                                                                                         
+    """
+    Rubyn_test,variables,means_means_thetas,it_lag = compute_Rubyn(totos,nlag=nlag)
+    print 'The RG-test '
+    print variables,'loose: RG-1. < 0.03'
+    print Rubyn_test-1. < 0.03
+    print variables,'tight: RG-1. < 0.01'
+    print Rubyn_test-1. < 0.01
+    print Rubyn_test-1.
+
+def merge_chains(totos,nlag=0,KMIN=0):
+    ''' Merge Chains '''
+    print """ 
+    when used with totoPlot reinitiallise it as 
+    Merged_chains = numMath.merge_chains(array)
+    totoPlot(Merged_chains)
+    """
+    vars=totos[0]['vars']
+    new_toto={}
+    for ki in totos[0].keys():          
+        if ki=='data': 
+            pass
+        elif ki=='chains':
+            new_toto.update( { str(ki): totos[0][str(ki)]  } )
+            for parami in vars: new_toto[str(ki)].item()[parami] = zeros(( len(totos)*len(new_toto[str(ki)].item()[parami]) ))
+        else: 
+            new_toto.update( { str(ki): totos[0][str(ki)]  } )
+        
+    for param in totos[0]['chains'].item().keys():
+        chain_list = []
+        for i in range(len(totos)):
+            chain_list.append(  totos[i]['chains'].item()[param][KMIN:] )
+        new_toto['chains'].item()[param] = np.concatenate(chain_list)
+    return new_toto
+
 def burnChains(chains,kmin=0):
     ''' Try to find the bug '''
     newChains=dict(chains) # dict(chains)
@@ -58,7 +267,10 @@ def burnChains(chains,kmin=0):
     return newChains
 
 def chainsTo2Darray(chain_in,PermMatlist=None):
-    ''' convert chain format to 2Darray '''
+    ''' 
+        convert chain format to 2Darray 
+        use: chain_out = numMath.chainsTo2Darray(chain_in,PermMatlist=None)
+    '''
     chains = []
     for i in chain_in['chains'].item().keys(): chains.append(chain_in['chains'].item()[i])
     chains=array(chains)
@@ -71,6 +283,10 @@ def average_realisations(datasim):
              stds
              covariance matrix
              correlation matrix
+        use: means,stds,covMat,corMat=numMath.average_realisations(datasim)
+        combine use:  (with the previous module: chainsTo2Darray)
+chains_out = numMath.chainsTo2Darray(chain_in,PermMatlist=None)
+means,stds,covMat,corMat=numMath.average_realisations(chains_out.T)
     '''
     dims=np.shape(datasim)
     nsim=dims[0]
@@ -94,7 +310,7 @@ def average_realisations(datasim):
     return(meansim,sigsim,covmat,cormat)
 
 def insertP(arrmat):
-    ''' inserts an additional column, and row with zeros on a metrix'''
+    ''' inserts an additional column, and row with zeros on a matrix'''
     a_zero_c = np.zeros(len(arrmat))
     a_zero_r = np.zeros(len(arrmat)+1)
     arrmat_insert_c = np.insert(arrmat,len(arrmat),a_zero_c,axis=1)
@@ -114,11 +330,21 @@ def addRCVal(arrmat,val=0.0):
     '''
     new_mat = insertP(arrmat)
     return addVal_Mat(new_mat,val=val)
-    
 
 def PermMat(mat,permut):
-    ''' Permut and Extract Raws and Columns of a Matrix '''
+    ''' Permut and/or Removes Rows and Columns of a Matrix '''
     return (mat[permut,:])[:,permut]
+
+def test_PermMat():
+    testarr = array([['00','01','02','03','04'],['10','11','12','13','14'],['20','21','22','23','24'],['30','31','32','33','34'],['40','41','42','43','44']])
+    print 'testarr'
+    print testarr
+    print 'remove column and row 1 1'
+    print 'numMath.PermMat(testarr,[0,2,3,4])'
+    print PermMat(testarr,[0,2,3,4])
+    print 'permute column and row from 1 -> 3 and 3 -> 1'
+    print 'numMath.PermMat(testarr,[0,3,2,1,4])'
+    print PermMat(testarr,[0,3,2,1,4])
 
 def AddColMat(mat,zeros=True):
     if zeros:
@@ -338,7 +564,13 @@ def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',save=False
         print 'Saving ...'
         plt.savefig(savename+'.png',dpi=100)
 
-def loadRand(fin,qsize=4,rbins=50,randsize=10):
+def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',**kwargs):
+    cm = plt.cm.get_cmap('rainbow')
+    sc = plt.scatter(x,y, c=f_xy, s=35, cmap=cm)
+    plt.ylabel(yylabel,size=25),plt.xlabel(xxlabel,size=25)
+    plt.colorbar(sc).set_label(zzlabel,size=25)
+
+def loadRand_old(fin,qsize=4,rbins=50,randsize=10):
     ''' 
     takes a string name of a file with data
     (col x rows) = (qsize x rbins) 
@@ -432,7 +664,6 @@ def Pierros_histogram(data_array,Normalization=True,numberBins=100):
 
 def theoryChi2(x,pars):
     return( (1/(2**(pars[0]/2.)  * np.math.gamma(pars[0]/2.)) ) * x**(pars[0]/2. - 1) * np.exp( -x/2. ) )
-
 
 def chi2_bias_test(chi2_mock,ndf=15,nbHistBins=4,method='minuit'):
     wok = np.where((chi2_mock<1600)&(chi2_mock>0))
@@ -536,20 +767,6 @@ def rebin(a, shape):
     sh = shape[0],a.shape[0]//shape[0],shape[1],a.shape[1]//shape[1]
     return a.reshape(sh).mean(-1).mean(1)
 
-def covsAvarage(x,cov):
-    """
-    Gives the mean and std 
-    accounting 
-    for covariance matrix
-    """
-    Nx = np.size(x)
-    W = np.ones(Nx)    
-    invcov = linalg.inv(cov)
-    var_x = 1./np.dot(W.T, np.dot(invcov,W))
-    mean_x = var_x*np.dot(W.T, np.dot(invcov,x))
-    std_x = np.sqrt(var_x)
-    return(mean_x, std_x)
-
 def heaviside(x,x0=0,inverse=False):
     if inverse:
         delta = x0-x
@@ -627,6 +844,7 @@ def plotCorrMat(x,y,datasim1,datasim2,savename='corrplot',save=False):
     if save == True:
         print 'Saving ...'
         plt.savefig(savename+'.png',dpi=100)
+
 
 # rounding indices inside a dictionary
 class LessPrecise(float):
