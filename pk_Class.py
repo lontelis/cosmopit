@@ -19,18 +19,20 @@ class theory:
     Rh in h^{-1} Mpc
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
-    # Line 34 and 50 are used since CLASS uses the alternative definition of $\Omega_k$ = 1 - $\Omega_m$ - $\Omega_{\Lambda}$
+    # Line 34 and 50 are used since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
     # In this analysis we use: $\Omega_k$ + $\Omega_m$ + $\Omega_{\Lambda}$ = 1
     '''
     def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
         cosmo_CLASS = Class()
         extra_CLASS_pars={
             'non linear': '',
-            'output': 'mPk', 
+            'output': 'mPk mTk', # Add the request for total matter transfer function in fourier space
             'z_max_pk': z_max_pk, #10.
             'P_k_max_h/Mpc': P_k_max_h} #100.
         if 'Omega_k' in cosmopars.keys(): pass 
         else: cosmopars.update({'Omega_k':0.0})
+        if cosmopars['Omega_k'] < 1e-10:  cosmopars['Omega_k']=0.0
+        #if 'Omega_Lambda' in cosmopars.keys(): print cosmopars['Omega_Lambda']
 
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
@@ -50,7 +52,7 @@ class theory:
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1 - self.Omega_m - self.Omega_k
 
-        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## Comment out to reproduce the paper FISHER 18 April 2018 (if both kept np problem)
+        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## Comment out to reproduce the paper FISHER 18 April 2018 (if both kept no problem)
         #if not np.isclose(self.Omega_k+self.Omega_L + self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Om+Ol+Ok=1 not fullfilled')
         #    print 'Sum Omega = %0.1f'%(self.Omega_k+self.Omega_L+self.Omega_m)
@@ -69,6 +71,9 @@ class theory:
 
         self.pk_class_MM,self.pk_interpol=self.calc_pk_CMMpk_interp_sig8(self.redshift)
 
+        # compute Tk from class
+        self.d_Transfer_tot,self.k_h_Mpc_for_transfer = cosmo_CLASS.get_transfer()['d_tot'],cosmo_CLASS.get_transfer()['k (h/Mpc)']
+        
         #cosmo_CLASS.struct_cleanup()
         #cosmo_CLASS.empty()
 
@@ -93,6 +98,14 @@ class theory:
         pk_CMM=self.pk
         pk_interp=interpolate.interp1d(self.k,pk_CMM)#,bounds_error=False)
         return pk_CMM,pk_interp 
+
+    def get_Tk(self,kin):
+        '''  calculating the Tk according to your k from the one obtained from CLASS software '''
+        #Tkout = zeros(kin)
+        Tk_interp = interpolate.interp1d(self.k_h_Mpc_for_transfer,self.d_Transfer_tot)
+        Tkout = Tk_interp(kin)
+        print 'warning! Verify that this is the Tk not the density of Tk as CLASS software writes'
+        return Tkout 
 
     def get_rs(self):
         """ returns the scale to the sound horizon on drag epoch"""
