@@ -15,6 +15,8 @@ CLASS (software for cosmology https://github.com/lesgourg/class_public/wiki/Inst
 
 # INSTALLATION: 
 In order to use these libraries one need to download these files: <br />
+filename.py <br />
+such as: <br />
 cosmology.py <br />
 pk_Class.py <br />
 SplineFitting.py <br />
@@ -26,6 +28,8 @@ on your directory: <br />
 cd ~/my_dir 
 ```
 <br />
+and create the magic filename: <br />
+__init__.py <br />
 
 # USE example:  
 import each file like: <br />
