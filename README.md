@@ -22,9 +22,10 @@ Rename the package cosmopit <br />
 import each file like: <br />
 ``` 
 from cosmopit import cosmology 
+from cosmopit import numMath
 ```
 <br />
-and then use one library to calculate the Comoving Volume distance as: <br />
+and then use each library to calculate the Comoving Volume distance as: <br />
 
 ``` 
 distComVol = cosmology.D_V(z=0.5) 
