@@ -9,6 +9,7 @@ scipy <br />
 pyfits <br />
 iminuit (https://pypi.python.org/pypi/iminuit) <br />
 emcee   (http://dan.iel.fm/emcee/current/) <br />
+pymc    (https://pymc-devs.github.io/pymc/) <br />   
 <br />
 CLASS (software for cosmology https://github.com/lesgourg/class_public/wiki/Installation )  <br />
 
