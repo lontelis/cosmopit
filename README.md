@@ -32,7 +32,7 @@ distComVol = cosmology.D_V(z=0.5)
 ```
 
 # Citation
-If you use this code please cite at least the following papers: <br />
+If you use this code please cite at least the following paper: <br />
 P.Ntelis et al 2018 https://arxiv.org/abs/1810.09362 <br />
 <br />
 
