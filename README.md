@@ -25,7 +25,7 @@ from cosmopit import cosmology
 from cosmopit import numMath
 ```
 <br />
-and then use each library to calculate the Comoving Volume distance as: <br />
+and then use each library as following. As an example from the cosmology.py library you can calculate the Comoving Volume distance as: <br />
 
 ``` 
 distComVol = cosmology.D_V(z=0.5) 
