@@ -16,7 +16,6 @@ CLASS (software for cosmology https://github.com/lesgourg/class_public/wiki/Inst
 
 # INSTALLATION: 
 In order to use these libraries one need to download these files in their directory: <br />
-Rename the package cosmopit <br />
 
 # USE example:  
 import each file like: <br />
