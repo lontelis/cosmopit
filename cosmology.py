@@ -7,7 +7,7 @@ from scipy import interpolate
 """
 This software contains essential tools to calculate standard quantities on the standard cosmological models
 such as the LCDM framework. This tools are restricted to distances within this framework as long as small deviations 
-from the standard paradigm, such as the Quantitis of Dark Energy, Dark Matter, equation of state etc.
+from the standard paradigm, such as the Quintessence of Dark Energy, Dark Matter, equation of state etc.
 """
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
 c=3e8       #m.s-1
