@@ -62,6 +62,7 @@ def p_value_python(chi2_in=3.4,ndf_in=1):
         ndf_in  : number degrees of freedom input
     """
     return 1.-stats.chi2.cdf(chi2_in, ndf_in)
+
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
     dim    = len(x)
