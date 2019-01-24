@@ -55,8 +55,13 @@ def loadRand(fin,randarrayindices,qsize=4,randsize=10):
                     break
     return res
 
-def p_value_python(chi2_in=3.4,ndf_in=1): return 1.-stats.chi2.cdf(chi2_in, ndf_in)
-
+def p_value_python(chi2_in=3.4,ndf_in=1): 
+    """
+        Calculates the p-value from inputs 
+        chi2_in : chi2 input
+        ndf_in  : number degrees of freedom input
+    """
+    return 1.-stats.chi2.cdf(chi2_in, ndf_in)
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
     dim    = len(x)
