@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import *
-from scipy import linalg,sparse
+from scipy import linalg,sparse,stats
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import fitting
@@ -55,6 +55,7 @@ def loadRand(fin,randarrayindices,qsize=4,randsize=10):
                     break
     return res
 
+def p_value_python(chi2_in=3.4,ndf_in=1): return 1.-stats.chi2.cdf(chi2_in, ndf_in)
 
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
@@ -387,11 +388,8 @@ def delta_kron(i,j):
     return delta
     
 def open_cov(covmat,vector,kronecker=True):
-
     dims = np.shape(covmat)
-
     covmat_opened = covmat*0.0
-
     for i in np.arange(dims[0]):
         for j in np.arange(dims[1]):
             
