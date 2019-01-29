@@ -1380,7 +1380,7 @@ def NameZ2(minz,maxz,nbins):
     znames = np.array(np.zeros(nbins), dtype='|S20')
     
     for i in np.arange(nbins):
-        znames[i]='z_'+str(zedge[i])+'_'+str(zedge[i+1])
+        znames[i]='z_'+str(round(zedge[i],3))+'_'+str(round(zedge[i+1],3))
     
     dz=np.zeros(nbins)+(zedge[1]-zedge[0])/2
     zmid=(zedge[np.arange(nbins)]+zedge[np.arange(nbins)+1])/2
