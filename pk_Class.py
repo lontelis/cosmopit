@@ -31,7 +31,7 @@ class theory:
             'P_k_max_h/Mpc': P_k_max_h} #100.
         if 'Omega_k' in cosmopars.keys(): pass 
         else: cosmopars.update({'Omega_k':0.0})
-        if cosmopars['Omega_k'] < 1e-10:  cosmopars['Omega_k']=0.0
+        if (cosmopars['Omega_k'] < 1e-10 and cosmopars['Omega_k'] > -1e-10) :  cosmopars['Omega_k']=0.0
         #if 'Omega_Lambda' in cosmopars.keys(): print cosmopars['Omega_Lambda']
 
         cosmopars.update(extra_CLASS_pars)
