@@ -127,6 +127,17 @@ def VolCalcSurvey(zCentral,DeltaZrange,OmegaSky=1e4,type='vco',params=[0.3,0.7,-
     Volume= Vcomo*DeltaZrange*OmegaSky*(pi/180.)**2
     return Volume # in (Mpc/h)**3
 
+def VolSurvey(zCentral,DeltaZrange,OmegaSky=1e4,params=[0.3,0.7,-1,0],wz=None):
+    ''' 
+        Moreaccurate for flat LCDM cosmologies
+        Returns Comoving Volume in (Mpc/h)**3 of a survey with input:
+        OmegaSky # Angular surface in deg**2
+        zcentral # central redshift
+        DeltaZrange # half the redshift bin
+    '''
+    Volume = OmegaSky*(pi/180.)**2.*( cosmology.get_dist(zbin+Dzbin/2.,params=params,wz=wz)**3. - cosmology.get_dist(zbin-Dzbin/2.,params=params,wz=wz)**3.)/3.
+    return Volume # in (Mpc/h)**3
+
 def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,NNz=1000):
     ''' D_V analytical in Mpc '''
     if isinstance(z, np.ndarray): zmax = z.max()
