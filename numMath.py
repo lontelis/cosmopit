@@ -111,6 +111,9 @@ def rebinning_all(r,xi0,dd,rr,dr,n=1):
 
     return r_new,xi0_new,dd_new,rr_new,dr_new
 
+def plot_chains_steps(chains,variables): 
+    for vars_i in variables: figure(),plot(chains.item()[vars_i],label=vars_i),legend()
+
 def testArrBurn(arr,doplot=False,fmt='.',color='r',figN=3):
     kkk=0
     temp_m = zeros(arr.size-kkk)
