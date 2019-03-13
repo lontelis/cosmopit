@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import *
+from pylab import *
 from scipy import linalg,sparse,stats
 import matplotlib.pyplot as plt
 from matplotlib import cm
