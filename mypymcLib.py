@@ -1450,6 +1450,12 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
         feedPars      = Sfid_params_ABOmOl
 """
 
+def burnChains(chains,kmin=0):
+    newChains=dict(chains) # dict(chains)
+    kmax = newChains[newChains.keys()[0]].size
+    for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
+    return newChains
+
 #### PLOTTING
 def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labels=None,Blabel=None,Blabelsize=20,plotCorrCoef=True,plotScatter=False,NsigLim=3,ChangeLabel=False,Bpercentile=False,kk=0,plotNumberContours='12',paper2=True):
     '''
