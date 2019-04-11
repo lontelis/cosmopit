@@ -27,7 +27,7 @@ def file_len(fname):
     return i + 1
 
 def randomarrayindices_production(nblines=50,randsize=10):
-    print 'start of producing rand indices'
+    print('start of producing rand indices')
     randindices = np.random.rand(nblines)
     xx = np.argsort(randindices)
     randarrayindices= np.sort(xx[:int(randsize)])
@@ -50,7 +50,7 @@ def loadRand(fin,randarrayindices,qsize=4,randsize=10):
         for n, line in enumerate(fd):
             if n == randarrayindices[i]:
                 res[i] = np.fromstring(line.strip(),sep=' ')
-                print i,n,res[i]
+                print(i,n,res[i])
                 i = i + 1
                 if i==randsize:
                     break
@@ -112,8 +112,9 @@ def rebinning_all(r,xi0,dd,rr,dr,n=1):
 
     return r_new,xi0_new,dd_new,rr_new,dr_new
 
+
 def plot_chains_steps(chains,variables): 
-    for vars_i in variables: figure(),plot(chains.item()[vars_i],label=vars_i),legend()
+    for vars_i in variables: figure(),plot(chains[vars_i],label=vars_i),legend()
 
 def testArrBurn(arr,doplot=False,fmt='.',color='r',figN=3):
     kkk=0
@@ -137,7 +138,7 @@ def testArrBurn(arr,doplot=False,fmt='.',color='r',figN=3):
         plt.subplot(313)
         plt.plot(temp_s/totalm,color+'--',label='std/totalm')
         plt.legend(numpoints=1,frameon=False,loc=4)
-        print totalm
+        print(totalm)
 
     return temp_m,temp_s
 
@@ -191,7 +192,7 @@ def compute_Rubyn(totos,nlag=0):
     thetas=[]
     for i in range(len(vars)):
         thetas.append( chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:] )
-    print shape(chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:])
+    print( shape(chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:]) )
     thetas=array(thetas)
 
     dimParams=shape(thetas)[0]
@@ -238,20 +239,20 @@ def Test_Rubyn(totos,nlag=0):
         testR -1. < 0.01 #tight                                                                                                                                                                                                         
     """
     Rubyn_test,variables,means_means_thetas,it_lag = compute_Rubyn(totos,nlag=nlag)
-    print 'The RG-test '
-    print variables,'loose: RG-1. < 0.03'
-    print Rubyn_test-1. < 0.03
-    print variables,'tight: RG-1. < 0.01'
-    print Rubyn_test-1. < 0.01
-    print Rubyn_test-1.
+    print( 'The RG-test ' )
+    print( variables,'loose: RG-1. < 0.03' )
+    print( Rubyn_test-1. < 0.03 )
+    print( variables,'tight: RG-1. < 0.01' )
+    print( Rubyn_test-1. < 0.01 )
+    print( Rubyn_test-1. )
 
 def merge_chains(totos,nlag=0,KMIN=0):
     ''' Merge Chains '''
-    print """ 
+    print( """ 
     when used with totoPlot reinitiallise it as 
     Merged_chains = numMath.merge_chains(array)
     totoPlot(Merged_chains)
-    """
+    """)
     vars=totos[0]['vars']
     new_toto={}
     for ki in totos[0].keys():          
@@ -271,7 +272,6 @@ def merge_chains(totos,nlag=0,KMIN=0):
     return new_toto
 
 def burnChains(chains,kmin=0):
-    ''' Try to find the bug '''
     newChains=dict(chains) # dict(chains)
     kmax = newChains[newChains.keys()[0]].size
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
@@ -305,13 +305,13 @@ means,stds,covMat,corMat=numMath.average_realisations(chains_out.T)
     meansim=np.zeros(nbins)
     sigsim=np.zeros(nbins)
     for i in np.arange(nbins):
-        meansim[i]=np.mean(datasim[:,i])
-        sigsim[i]=np.std(datasim[:,i])
+        meansim[i]=np.nanmean(datasim[:,i])
+        sigsim[i]=np.nanstd(datasim[:,i])
     
     covmat=np.zeros((nbins,nbins))
     for i in np.arange(nbins):
         for j in np.arange(nbins):
-            covmat[i,j]=(1./(nsim))*np.sum((datasim[:,i]-meansim[i])*(datasim[:,j]-meansim[j]))
+            covmat[i,j]=(1./(nsim))*np.nansum((datasim[:,i]-meansim[i])*(datasim[:,j]-meansim[j]))
 
     cormat=np.zeros((nbins,nbins))
     for i in np.arange(nbins):
@@ -348,14 +348,14 @@ def PermMat(mat,permut):
 
 def test_PermMat():
     testarr = array([['00','01','02','03','04'],['10','11','12','13','14'],['20','21','22','23','24'],['30','31','32','33','34'],['40','41','42','43','44']])
-    print 'testarr'
-    print testarr
-    print 'remove column and row 1 1'
-    print 'numMath.PermMat(testarr,[0,2,3,4])'
-    print PermMat(testarr,[0,2,3,4])
-    print 'permute column and row from 1 -> 3 and 3 -> 1'
-    print 'numMath.PermMat(testarr,[0,3,2,1,4])'
-    print PermMat(testarr,[0,3,2,1,4])
+    print( 'testarr' )
+    print( testarr ) 
+    print( 'remove column and row 1 1' )
+    print( 'numMath.PermMat(testarr,[0,2,3,4])' )
+    print( PermMat(testarr,[0,2,3,4]) )
+    print( 'permute column and row from 1 -> 3 and 3 -> 1' )
+    print( 'numMath.PermMat(testarr,[0,3,2,1,4])' )
+    print( PermMat(testarr,[0,3,2,1,4]) )
 
 def AddColMat(mat,zeros=True):
     if zeros:
@@ -452,9 +452,7 @@ def cov_smooth(covmat):
     return covmat_new
 
 def give_msc(x,y,decimals=2):
-
     meanx,meany,stdx,stdy = np.around( np.mean(x), decimals=decimals) ,np.around( np.mean(y), decimals=decimals) ,np.around( np.std(x), decimals=decimals) ,np.around( np.std(y), decimals=decimals)
-
     covXY = np.around( covariance(x,y) , decimals=decimals )
     return meanx,meany,stdx,stdy,covXY
 
@@ -546,17 +544,17 @@ def covAverage(x,cov):
     std_x = np.sqrt(var_x)
     return(mean_x, std_x)
 
-def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',save=False):
+def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',xLabel='$bias$',yLabel='$\sigma_p\ [km\ s^{-1}]$',ColorLabel='$\mathcal{R}^{(RSD)}_H/\mathcal{R}^{(linear)}_H$ in $\%$',save=False):
 
     #X,Y = meshgrid(rS,rS)
     X,Y = x,y
     Z = f_xy
-    print X , Y
-    print Z
-    print X.shape , Y.shape , Z.shape
+    print( X , Y )
+    print( Z )
+    print( X.shape , Y.shape , Z.shape )
     fig, ax = plt.subplots()
-    plt.xlabel('$bias$',size=20)
-    plt.ylabel('$\sigma_p\ [km\ s^{-1}]$',size=20)
+    plt.xlabel(xLabel,size=20)
+    plt.ylabel(yLabel,size=20)
     plt.suptitle(zname)
     #plt.zlabel('$Ratio(bias,\sigma_p) = R^{Distorted}_H(b,\sigma_p) / R_H$')
     #plt.yscale('log')
@@ -566,10 +564,10 @@ def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',save=False
     #plt.plot(x,y)
     p = ax.pcolor(X, Y, Z, cmap=cm.jet, vmin=np.min(Z), vmax=np.max(Z) )#, label='$R^{(r)}_H/R^{(s)}_H$')
     #p = ax.pcolor(X, Y, Z, cmap=cm.jet, vmin=np.min(Z), vmax=np.max(Z),label='$\frac{R^{(r)}_H}{R^{(s)}_H}$')
-    cb = fig.colorbar(p, ax=ax,label='$\mathcal{R}^{(RSD)}_H/\mathcal{R}^{(linear)}_H$ in $\%$')
+    cb = fig.colorbar(p, ax=ax,label=ColorLabel)
 
     if save == True:
-        print 'Saving ...'
+        print( 'Saving ...')
         plt.savefig(savename+'.png',dpi=100)
 
 def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',**kwargs):
@@ -646,13 +644,13 @@ def mySVD(matrix,doCheck=0,kk=False):
         return(invSVD,U,Ut,V,Vh,Sig,invSig)
     elif(doCheck==2):
         if(kk==True):  
-            print 'V.dot(Vh)= \n',V.dot(Vh)
-            print 'U.dot(Ut)= \n',U.dot(Ut)  
-            print 'Sig.dot(invSig)= \n',Sig.dot(invSig)
+            print( 'V.dot(Vh)= \n',V.dot(Vh) )
+            print( 'U.dot(Ut)= \n',U.dot(Ut) )
+            print( 'Sig.dot(invSig)= \n',Sig.dot(invSig) )
         return(invSVD,U,Ut,V,Vh,Sig,invSig,checkMatrix)
 
     else:
-        print'Read the description of numMath.mySVD'
+        print('Read the description of numMath.mySVD' )
 
 ################### Chi2 Robustness TEST for mocks ########################################### 
 def Pierros_histogram(data_array,Normalization=True,numberBins=100):
@@ -675,7 +673,7 @@ def theoryChi2(x,pars):
 
 def chi2_bias_test(chi2_mock,ndf=15,nbHistBins=4,method='minuit'):
     wok = np.where((chi2_mock<1600)&(chi2_mock>0))
-    print np.max(chi2_mock)
+    print( np.max(chi2_mock) )
     data = chi2_mock[wok]
 
     x_hist,y_hist,yerr_hist = Pierros_histogram(data,numberBins=nbHistBins) # 10
@@ -815,13 +813,13 @@ def stat_realisations(datasim1,datasim2):
         meansim2[i]=np.mean(datasim2[i,:])
         sigsim2[i]=np.std(datasim2[i,:])
 
-    print '   stat:do covmat'
+    print( '   stat:do covmat' )
     covmat=np.zeros((nbins,nbins))
     for i in np.arange(nbins):
         for j in np.arange(nbins):
             covmat[i,j]=np.mean((datasim1[i,:]-meansim1[i])*(datasim2[j,:]-meansim2[j]))
 
-    print '   stat:do cormat'
+    print( '   stat:do cormat' )
     cormat=np.zeros((nbins,nbins))
     for i in np.arange(nbins):
         for j in np.arange(nbins):
@@ -830,15 +828,15 @@ def stat_realisations(datasim1,datasim2):
     return(meansim1,sigsim1,meansim2,sigsim2,covmat,cormat)
 
 def plotCorrMat(x,y,datasim1,datasim2,savename='corrplot',save=False):
-    print '  do stat'
+    print( '  do stat' )
     meansim1,sigsim1,meansim2,sigsim2,covmat,cormat = stat_realisations(datasim1,datasim2)
     
     #X,Y = meshgrid(rS,rS)
     X,Y = np.sort(x),np.sort(y)
     Z = cormat
-    print X , Y
-    print Z
-    print X.shape , Y.shape , Z.shape
+    print( X , Y )
+    print( Z )
+    print( X.shape , Y.shape , Z.shape )
     fig, ax = plt.subplots()
     plt.ylabel('$bias$')
     plt.xlabel('$\mathcal{R}_H$ ($h^{-1}\ Mpc$)')
@@ -850,7 +848,7 @@ def plotCorrMat(x,y,datasim1,datasim2,savename='corrplot',save=False):
     p = ax.pcolor(X, Y, Z, cmap=cm.RdBu, vmin=Z.min(), vmax=Z.max())
     cb = fig.colorbar(p, ax=ax)
     if save == True:
-        print 'Saving ...'
+        print( 'Saving ...' )
         plt.savefig(savename+'.png',dpi=100)
 
 
