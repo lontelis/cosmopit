@@ -4,16 +4,10 @@ from pylab import *
 import warnings
 from scipy import integrate
 from scipy import interpolate
-"""
-This software contains essential tools to calculate standard quantities on the standard cosmological models
-such as the LCDM framework. This tools are restricted to distances within this framework as long as small deviations 
-from the standard paradigm, such as the Quintessence of Dark Energy, Dark Matter, equation of state etc.
-"""
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
 c=3e8       #m.s-1
 H0_over_h= 1000*100 #H0_def(h)  #m.s-1.Mpc-1 ###### CORRECTION for TIME default: 1000*h*100
-dHubble = c/H0_over_h
-
+dHubble = c/H0_over_h # Mpc/h
 
 def dclock(z,AA=0.58,BB=.64):
     ''' the estimation of distance-redshift clock relation'''
@@ -26,7 +20,7 @@ def H0_def(h):
     """ return H0 in m/s/Mpc"""
     return H0_over_h*h
 
-def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00):
+def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00,compute_which_chi='comoving_distance'):
     """
         Gives the proper distance in the defined cosmology
         The c/Ho factor is ommited
@@ -48,12 +42,16 @@ def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00):
     kk=abs(1.-omega)
     #print omegam,kk
     # calculation of E(z)=H(z)/H_0
+
     Ez=sqrt( (1.-omega)*(1+z)**2+omegaxz+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
 
     # calculate chi
     chi=zeros(z.size)
-    chi[1:z.size]=integrate.cumtrapz(1./Ez,x=z)
-    
+    if compute_which_chi=='comoving_distance':
+        chi[1:z.size]=integrate.cumtrapz(1./Ez,x=z)
+    elif compute_which_chi=='to_compute_the_age_of_the_universe':
+        chi[1:z.size]=integrate.cumtrapz(1./Ez/(1.+z),x=z)
+
     #calculate proper distance
     if curv==1:  dist=sin(sqrt(kk)*chi)/sqrt(kk)
     if curv==-1: dist=sinh(sqrt(kk)*chi)/sqrt(kk)
@@ -110,7 +108,7 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
     elif type=='rapp':
         res=dist*Ez*c #??
     else:
-        print "This type does not exist:",type
+        print("This type does not exist:",type)
         res=-1
     if z2radial: 
         f=interpolate.interp1d(res,zvalues)
@@ -147,10 +145,9 @@ def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,NNz=1000):
     result = (dHubble/h) * ( (z/Ez ) * dist**2. )**(1./3.)
     return result[-1:]
 
-def EE(z,omegam,omegax):
-    #      
-    omegaRad=0.0
-    omega = omegax+omegam
+def EE(z,omegam,omegax,omegaRad=0.0):
+    # gives the E(z)=H(z)/H0
+    omega = omegax+omegam+omegaRad
     res   = sqrt( (1.-omega)*(1+z)**2+omegax+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
     return res
 
@@ -181,6 +178,85 @@ def D1(z,params=[0.3,0.7,-1,0]):
     result = D1_z/Normalization
 
     return result
+
+def omega_nuf(sum_mass_nu=0.06,Neff=3.046):
+    result = 0.0107*sum_mass_nu/1.0
+    return result
+
+def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,Neff=3.046):
+    """
+        https://arxiv.org/pdf/1411.1074.pdf
+        p5, eq 16
+        Calibrated drag epoch 
+        numerical formula
+    """
+    omega_cb=omega_cdm+omega_b
+    omega_nu = omega_nuf(sum_mass_nu=sum_mass_nu,Neff=Neff)
+    if nonRelativistic:
+        result = 55.154 * exp( -72.3*(omega_nu+0.0006)**2. )  /( (omega_cb**0.25351)*(omega_b**0.128070) )
+    else:
+        result = 56.067 * exp( -49.7*(omega_nu+0.0020)**2  )  /( (omega_cb**0.24360)*(omega_b**0.128876) ) / ( 1+(Neff-3.046)/30.60 )
+    return result 
+
+def D_C_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_C approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return get_dist(z,type='proper',params=params,wz=wz)
+
+def D_M_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_M approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return D_C_approx(z,params=params,wz=wz)*( 1+ (1/6.)*(1-params[1]-params[0])* (D_C_approx(z,params=params,wz=wz)/c*H0_over_h)**2 )
+
+def D_H_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_H approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return c/get_dist(z,type='hz',params=params,wz=wz)
+
+def D_V_approx(z,params=[0.3,0.7,-1,0],wz=None):
+    ''' D_V approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
+    return ( z*D_H_approx(z,params=params,wz=wz) * D_M_approx(z,params=params,wz=wz)**2 )**(1./3.)
+
+def z2age_of_univ(z,H0=67.27,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00,in_timeunits='Gyr'):
+    dist,wz,omegaxz,Ez,curv=properdistance(z,omegam=omegam,omegax=omegax,w0=w0,w1=w1,wz=wz,omegaRad=omegaRad,compute_which_chi='to_compute_the_age_of_the_universe') #'comoving_distance')# 'to_compute_the_age_of_the_universe')
+    integral = dist
+    convert_H0_to_time_units = 3.08*1e19/H0 # in seconds
+    time_z   = integral*convert_H0_to_time_units
+    print(curv)
+    if in_timeunits=='sec':
+        return time_z   
+    elif in_timeunits=='yr':
+        return time_z/(365.*24.*3600.)     #31556926 simeq 365.*24*3600.
+    elif in_timeunits=='Gyr':
+        return time_z/(365.*24.*3600.)/1e9 #31556926 simeq 365.*24*3600.
+
+
+"""
+# test light-travel distance or look-back time 
+# with https://en.wikipedia.org/wiki/Distance_measures_(cosmology)
+figure(1),clf()
+z=10**(linspace(log10(1e-10),log10(10000.),100000))
+plot(z,cosmology.z2age_of_univ(z,H0=72.0,omegam=0.268,omegax=0.732,omegaRad=0.266/3454,in_timeunits='Gyr'))
+xlim(1e-4,1e4), ylim(1e-3,1e4),
+xscale('log'),yscale('log'),grid()
+xlabel('$z$',size=20),ylabel('$t(z)$ [Gyr]',size=20)
+draw(),show()
+
+figure(2),clf()
+z=10**(linspace(log10(1e-10),log10(10000.),100000))
+plot(z,cosmology.z2age_of_univ(z,H0=72.0,omegam=0.268,omegax=0.732,omegaRad=0.266/3454,in_timeunits='Gyr'))
+xlim(2.0,11.0), ylim(10.0,20.0),
+xscale('log'),yscale('linear'),grid()
+xlabel('$z$',size=20),ylabel('$t(z)$ [Gyr]',size=20)
+draw(),show()
+
+# test different epochs with different redshifts
+H0 = 67.27 #km/s/Mpc
+omegam=0.3
+omegax=0.7
+z=10**(linspace(log10(1e-10),log10(10000.),100000))
+#epoch from the initial fluctuations
+age_of_the_universe=cosmology.z2age_of_univ(z,H0=H0,omegam=omegam,omegax=omegax,in_timeunits='Gyr')[100000-1]
+time_from_the_initial_fluctuations=age_of_the_universe-cosmology.z2age_of_univ(z,H0=H0,omegam=omegam,omegax=omegax,in_timeunits='Gyr')
+
+"""
 
 # Test Hubble Enough
 """
@@ -233,40 +309,4 @@ def dclock_old(z,AA=0.3,tF=0.03):
     return c*m2Mpc*z*(z+2.)/2.*AA/timeFactor # dist in Mpc
 
 """
-
-
-def omega_nuf(sum_mass_nu=0.06,Neff=3.046):
-    result = 0.0107*sum_mass_nu/1.0
-    return result
-
-def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,Neff=3.046):
-    """
-        https://arxiv.org/pdf/1411.1074.pdf
-        p5, eq 16
-        Calibrated drag epoch 
-        numerical formula
-    """
-    omega_cb=omega_cdm+omega_b
-    omega_nu = omega_nuf(sum_mass_nu=sum_mass_nu,Neff=Neff)
-    if nonRelativistic:
-        result = 55.154 * exp( -72.3*(omega_nu+0.0006)**2. )  /( (omega_cb**0.25351)*(omega_b**0.128070) )
-    else:
-        result = 56.067 * exp( -49.7*(omega_nu+0.0020)**2  )  /( (omega_cb**0.24360)*(omega_b**0.128876) ) / ( 1+(Neff-3.046)/30.60 )
-    return result 
-
-def D_C_approx(z,params=[0.3,0.7,-1,0],wz=None):
-    ''' D_C approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
-    return get_dist(z,type='proper',params=params,wz=wz)
-
-def D_M_approx(z,params=[0.3,0.7,-1,0],wz=None):
-    ''' D_M approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
-    return D_C_approx(z,params=params,wz=wz)*( 1+ (1/6.)*(1-params[1]-params[0])* (D_C_approx(z,params=params,wz=wz)/c*H0_over_h)**2 )
-
-def D_H_approx(z,params=[0.3,0.7,-1,0],wz=None):
-    ''' D_H approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
-    return c/get_dist(z,type='hz',params=params,wz=wz)
-
-def D_V_approx(z,params=[0.3,0.7,-1,0],wz=None):
-    ''' D_V approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
-    return ( z*D_H_approx(z,params=params,wz=wz) * D_M_approx(z,params=params,wz=wz)**2 )**(1./3.)
 
