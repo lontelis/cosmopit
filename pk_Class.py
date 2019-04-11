@@ -30,7 +30,7 @@ class theory:
             'z_max_pk': z_max_pk, #10.
             'P_k_max_h/Mpc': P_k_max_h} #100.
         if 'Omega_k' in cosmopars.keys(): pass 
-        else: cosmopars.update({'Omega_k':0.0})        
+        else: cosmopars.update({'Omega_k':0.0})
         if ( (cosmopars['Omega_k'] < 1e-10) and (cosmopars['Omega_k'] > -1e-10) ) :  cosmopars['Omega_k']=0.0
         #if 'Omega_Lambda' in cosmopars.keys(): print cosmopars['Omega_Lambda']
 
@@ -43,7 +43,7 @@ class theory:
         
         self.h_fiducial_xith_norm=h_fiducial_xith_norm
         self.r_s = cosmo_CLASS.rs_drag()
-        self.h=cosmopars['h']
+        self.h   = cosmopars['h']
         self.Omega_m=(cosmo_CLASS.pars['omega_b']+cosmo_CLASS.pars['omega_cdm'])/(cosmo_CLASS.pars['h']**2) 
         
         if ExtraPars: self.w0,self.wa=cosmo_CLASS.pars['w0_fld'],cosmo_CLASS.pars['wa_fld']
@@ -51,11 +51,16 @@ class theory:
         
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1 - self.Omega_m - self.Omega_k
-
+        
         cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## Comment out to reproduce the paper FISHER 18 April 2018 (if both kept no problem)
         #if not np.isclose(self.Omega_k+self.Omega_L + self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Om+Ol+Ok=1 not fullfilled')
-        #    print 'Sum Omega = %0.1f'%(self.Omega_k+self.Omega_L+self.Omega_m)
+        #print 'Omegak Omega_L Omega_m |self'
+        #print self.Omega_k,self.Omega_L,self.Omega_m
+        #print 'Omegak Omega_L Omega_m |cosmopars'
+        #print cosmopars['Omega_k'],cosmopars['Omega_Lambda'],self.Omega_m
+        #print 'Sum Omega = %0.1f'%(self.Omega_k+self.Omega_L+self.Omega_m)
+
 
         sig8_CLASS = cosmo_CLASS.sigma8()
         self.sig8 = sig8_CLASS
@@ -73,7 +78,7 @@ class theory:
 
         # compute Tk from class
         self.d_Transfer_tot,self.k_h_Mpc_for_transfer = cosmo_CLASS.get_transfer()['d_tot'],cosmo_CLASS.get_transfer()['k (h/Mpc)']
-        
+
         #cosmo_CLASS.struct_cleanup()
         #cosmo_CLASS.empty()
 
@@ -88,12 +93,10 @@ class theory:
         ''' calculating the pk from z and pk '''
         for i in np.arange(self.k.size):
             self.pk[i] = self.cosmo_CLASS.pk(self.k[i],z=z)
-
         #self.pk[0]=self.pk[1]
-
         if  self.sig8_Ext!=None:
             self.pk=self.pk * (  self.sig8_Ext / self.sig8_CLASS )**2 #//kaiser of using A_s
-            self.sig8 = sig8_Ext
+            self.sig8 = self.sig8_Ext
         
         pk_CMM=self.pk
         pk_interp=interpolate.interp1d(self.k,pk_CMM)#,bounds_error=False)
@@ -104,8 +107,11 @@ class theory:
         #Tkout = zeros(kin)
         Tk_interp = interpolate.interp1d(self.k_h_Mpc_for_transfer,self.d_Transfer_tot)
         Tkout = Tk_interp(kin)
-        print 'warning! Verify that this is the Tk not the density of Tk as CLASS software writes'
+        print('warning! Verify that this is the Tk not the density of Tk as CLASS software writes')
         return Tkout 
+
+    def get_P_at_k(self,k_specific):
+        return self.cosmo_CLASS.pk(k_specific,z=self.redshift)
 
     def get_rs(self):
         """ returns the scale to the sound horizon on drag epoch"""
@@ -174,9 +180,17 @@ class theory:
             twoPCF=interpolate.interp1d(r,cric) #,bounds_error=False)
         return(twoPCF)
 
-    def xi(self,x,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,use_h_norm=True):
+    def xi(self,x,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False,vShape=None,use_h_norm=True,
+                                                if_Pk_VOIDS=False,D=35.,number_of_voids=122907.,volume_in_Mpc_h_power_3=2000**3.,if_Gaussian_Damping=False,sig_G=None,kstar=0.2):
         pk_in = self.pk_NL(self.k,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy)
-        
+        if if_Pk_VOIDS=='pk_exclusion':
+            P_exclusion_input = P_exclusion_fnt(self.k,D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3,if_Gaussian_Damping=if_Gaussian_Damping,sig_G=sig_G,kstar=kstar)
+            pk_in = P_exclusion_input 
+        elif if_Pk_VOIDS=='pk_exclusion + pk': 
+            P_exclusion_input = P_exclusion_fnt(self.k,D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3,if_Gaussian_Damping=if_Gaussian_Damping,sig_G=sig_G,kstar=kstar)
+            pk_in = P_exclusion_input + pk_in
+        else: pass
+
         if (type(vShape)==tuple) or (type(vShape)==np.ndarray): AShape = self.fctShape(x,vShape)
         else: AShape = 0.0
 
@@ -350,13 +364,13 @@ class theory:
         if kaiser or damping:
             if damping:
                 result = np.exp(- .5*( k_theory*sigp*mu/HH )**2.)
-                print 'only damping' 
+                print('only damping' )
             if kaiser:
-                print 'only kaiser'
+                print('only kaiser')
                 if(damping):
                     if type(sigp)==np.ndarray :  dambing_factor = np.exp(- .5*( k_theory/HH )**2.*( (sigp[1]*mu)**2 - (1.-mu**2)*sigp[0]**2) )
                     else: dambing_factor = np.exp(- .5*( k_theory*sigp*mu/HH )**2.) 
-                    print '+ damping'
+                    print('+ damping')
                 result = ( ( 1. + beta*mu**2. )**2. ) * dambing_factor
 
         return result
@@ -367,8 +381,8 @@ class theory:
         mu = np.linspace(muMin,muMax,1000)
         for k_index in np.arange(k_theory.size):
             Factor[k_index] = integrate.trapz(self.test_NL_factor(mu,k_theory[k_index],bias,sigp,fgrowth,h,kaiser=kaiser,damping=damping),x=mu)
-        print 'sth'
-        if damping==False: print Factor
+        print('sth')
+        if damping==False: print(Factor)
         
         return Factor
     ############# END: TEST FUNCTION for integral over mu ########
@@ -409,8 +423,10 @@ def Kaiser_TERM(fgrowth,bias):
 
 def fgrowth(Om,z,gammaexp=0.55):
     ###return (Om*(1+z)**3.)**0.55
+    # Parameterized Beyond-Einstein Growth
+    # https://arxiv.org/pdf/astro-ph/0701317.pdf
+    # after equation 3 second to last setence of the paragraph
     return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1- Om ) )**gammaexp
-
 
 def cosmo_flagship(giveErrs=False):
     ''' Define parameters for CLASS soft '''
@@ -566,8 +582,8 @@ def cosmo_PL2013():
     return params_PL2013_out
 
 def QPM2PL_a():
-    ''' ratios of DV(O_PL) / DV(O_QPM) for 5 zbins'''
-    print 'Not automatic: QPM2PL_a need to compute correctely'
+    ''' ratios of DV(O_PL) / DV(O_QPM) for 5 zbins '''
+    #print 'Not automatic: QPM2PL_a need to compute correctely'
     return np.array([ 1.02284334,  1.02106576,  1.01937222,  1.01776272,  1.01623618])
 
 def cosmo_WZ_Big():
@@ -599,6 +615,45 @@ def cosmo_WZ():
     return pars_CWZ
 
 
+################### VOIDING ###########################
+
+def eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+    mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
+    return pi*mean_number_density*D/6.
+
+def alpha_1_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+    eta_input = eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.)
+    return (1.+2.*eta_input)**2./(1.-eta_input)**4.
+
+def alpha_2_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+    eta_input = eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.)
+    return -(1.+eta_input/2.)**2./(1.-eta_input)**4.
+
+def q_fnt(k,D=35.): return k*D
+
+def c_fnct(k,D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+    q_in       = q_fnt(k,D=D)
+    eta_in     = eta_fnct(    D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    alpha_2_in = alpha_2_fnct(D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    alpha_1_in = alpha_1_fnct(D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    Factor_1   = -D**3./(2.*pi**2. *q_in**3. )
+    Term_1 = alpha_1_in*( sin(q_in) - q_in*cos(q_in) ) 
+    Term_2 = (6.*eta_in*alpha_2_in/q_in)*( 2*q_in*sin(q_in) + (2. - q_in**2.)*cos(q_in) - 2.  )
+    Term_3 = (eta_in*alpha_1_in/2./q_in**3.)*( 4.*q_in*(q_in**2.-6.)*sin(q_in) - (24.-12.*q_in**2. + q_in**4. )*cos(q_in) + 24. )
+    c_out = Factor_1*( Term_1 + Term_2 + Term_3 )
+    return c_out
+
+def P_exclusion_fnt(k,D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.,if_Gaussian_Damping=False,sig_G=10.,kstar=0.2):
+    mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
+    c_in = c_fnct(k,D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    result = c_in / (1.-(2.*pi)**3.*mean_number_density*c_in )
+    if if_Gaussian_Damping:
+        result=result*exp(-0.5*(sig_G*(k-kstar) )**2.)         
+    return result
+
+################### End: VOIDING ###########################
+
+
 def Conv2labels(stringi):
     
     if   stringi=='n_s':          return '$%s$'%stringi
@@ -607,4 +662,23 @@ def Conv2labels(stringi):
     elif stringi=='h':            return '$h$'
     elif stringi=='Omega_Lambda': return '$\Omega_{\Lambda}$'
     elif stringi=='omega_cdm':    return '$\omega_{cdm}$'
+    elif stringi=='Omega_m':      return '$\Omega_{m}$'
+    elif stringi=='b0':           return '$b_{0}$'
     else:                         return '$\%s$'%stringi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
