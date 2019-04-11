@@ -243,3 +243,7 @@ def do_emcee(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None,nburn=100
 
 
 
+
+
+
+
