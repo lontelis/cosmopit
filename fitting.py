@@ -1,7 +1,9 @@
 import numpy as np
 from pylab import *
+from numpy import *
+#import mpfit
 import iminuit
-import emcee
+#import emcee
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
 
 ####### Generic polynomial function ##########
@@ -14,12 +16,58 @@ def dothefit(x,y,covarin,guess,functname=thepolynomial,parbounds=None,nmock_prec
     if method == 'minuit':
         print('Fitting with Minuit')
         return(do_minuit(x,y,covarin,guess,functname=functname,parbounds=parbounds,nmock_prec=nmock_prec))
+    elif method == 'mpfit':
+        print('Fitting with MPFit')
+        return(do_mpfit(x,y,covarin,guess,functname=functname,nmock_prec=nmock_prec))
     elif method == 'mcmc':
         print('Fitting with MCMC')
         return(do_emcee(x,y,covarin,guess,functname,nmock_prec=nmock_prec))
     else:
-        print('method must be among: minuit, mcmc')
+        print('method must be among: minuit, mpfit, mcmc')
         return(0,0,0,0)
+
+################### Fitting with MPFIT #######################
+# Function to be minimized returning the right stuff
+def chi2svd(pars, fjac=None, x=None, y=None, svdvals=None, v=None, functname=thepolynomial):
+    model=functname(x,pars)
+    status = 1
+    resid=dot(v, y-model)/sqrt(svdvals)
+    return([status,resid])
+
+def fdeviates(pars,fjac=None,x=None,y=None,err=None, functname=thepolynomial):
+    model=functname(x,pars)
+    status=1
+    return([status, (y-model)/err])
+
+def do_mpfit(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None):
+    # check if covariance or error bars were given
+    #covar=covarin
+    if nmock_prec!=None: covarin = covarin * (nmock_prec-1.)/(nmock_prec-len(x)-2.)
+    if np.size(np.shape(covarin)) == 1:
+        err=covarin
+        print('err')
+        #Prepare arguments for mpfit
+        fa={'x':double(x),'y':double(y),'err':double(err),'functname':functname}
+        costfct=fdeviates
+    else:
+        print('covar')
+        #First do a SVD decomposition
+        u,s,v=np.linalg.svd(covarin)
+        #Prepare arguments for mpfit
+        fa={'x':double(x),'y':double(y),'svdvals':double(s),'v':double(v),'functname':functname}
+        costfct=chi2svd
+
+    #Run MPFIT
+    mpf = mpfit.mpfit(costfct, guess, functkw=fa)
+
+    print('Status of the Fit',mpf.status)
+    print('Chi2=',mpf.fnorm)
+    print('ndf=',mpf.dof)
+    print('Fitted params:',mpf.params)
+
+    return(mpf,mpf.params,mpf.perror,mpf.covar, mpf.fnorm, mpf.dof )
+
+################################################################
 
 ################### Fitting with Minuit #######################
 # Class defining the minimizer and the data
@@ -76,7 +124,7 @@ def do_minuit(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None,parbound
     print('Fitting with Minuit')
     m = iminuit.Minuit(chi2,forced_parameters=parnames,errordef=1.0,**theguess)
     m.migrad()
-    m.migrad()
+    #m.migrad()
     #m.hesse()
     # build np.array output
     parfit=[]
@@ -89,8 +137,8 @@ def do_minuit(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None,parbound
             for j in np.arange(ndim):
                 covariance[i,j]=m.covariance[(parnames[i],parnames[j])]
     except TypeError:
-        print "No accurate covmat was built for params"
-        print " put cov=matrix(0)"
+        print( "No accurate covmat was built for params")
+        print(" put cov=matrix(0)")
         pass
 
     print('Chi2=',chi2(*parfit))
