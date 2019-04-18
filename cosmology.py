@@ -131,7 +131,7 @@ def VolSurvey(zCentral,DeltaZrange,OmegaSky=1e4,params=[0.3,0.7,-1,0],wz=None):
         Returns Comoving Volume in (Mpc/h)**3 of a survey with input:
         OmegaSky # Angular surface in deg**2
         zcentral # central redshift
-        DeltaZrange # half the redshift bin
+        DeltaZrange # total redshift bin
     '''
     Volume = OmegaSky*(pi/180.)**2.*( get_dist(zCentral+DeltaZrange/2.,params=params,wz=wz)**3. - get_dist(zCentral-DeltaZrange/2.,params=params,wz=wz)**3.)/3.
     return Volume # in (Mpc/h)**3
