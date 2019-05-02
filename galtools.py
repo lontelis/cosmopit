@@ -2,7 +2,7 @@ import cosmology,pk_Class
 from pylab import *
 import matplotlib.pyplot as plt
 import numpy as np
-import pyfits
+#import pyfits
 import string
 import random
 import subprocess
@@ -12,11 +12,11 @@ from scipy import integrate
 from scipy import interpolate
 from scipy import linalg
 import scipy
-import emcee
+#import emcee
 import scipy.optimize as opt
 import numMath,SplineFitting
 import fitting
-import healpy as hp
+#import healpy as hp
 from astropy import coordinates
 import astropy.io.fits as afits
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
