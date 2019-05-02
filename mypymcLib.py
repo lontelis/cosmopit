@@ -575,7 +575,7 @@ def run_pymc(xvals,yvals,covin,model,nmock_prec=1000, addPrior=False,gauss_prior
     return chains,nchains,FitedPars,chi2,y_model
 
 
-"""
+'''
 # OLD MCMC scenarios to search if you miss someone! :)
 fid_params = {'h':0.67 , 'ob':0.022,'ocdm':0.118 ,'ns':0.96, 'ln1e10As':3.094 , 'Omega_Lambda':0.658 ,'Omega_k':0.0004 , 'w0':-1.004, 'wa':1e-4,'bias':1.95, 'sigp':350.}
 def ll_model(datasets, variables = ['h', 'ns', 'ln1e10As', 'ob', 'ocdm', 'Omega_k' ,'w0','wa'], fidvalues = fid_params):
@@ -2098,4 +2098,4 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
             ll=ll+ds(pars)
         return(ll)
     return(locals())
-"""
+'''
