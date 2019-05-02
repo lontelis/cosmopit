@@ -208,6 +208,136 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     if w_ll_model=='LCDM':
         feed_ll_model= ll_model
         feedPars     = fid_params
+    elif w_ll_model=='LCDMsimple': # simple LCDM
+        feed_ll_model= Sll_model
+        feedPars     = Sfid_params
+    elif w_ll_model=='LCDMsimple_ebSimplify':
+        feed_ll_model= Sll_model_ebSimplify
+        feedPars     = Sfid_params_ebSimplify
+    elif w_ll_model=='LCDMsimple_ebSimplify_h':
+        feed_ll_model= Sll_model_ebSimplify_h
+        feedPars     = Sfid_params_ebSimplify_h
+    elif w_ll_model=='LCDMsimple_5bhocdm':
+        feed_ll_model= Sll_model_5bhocdm
+        feedPars     = Sfid_params_5bhocdm
+    elif w_ll_model=='LCDMsimple_bhocdm':
+        feed_ll_model= Sll_model_bhocdm
+        feedPars     = Sfid_params_bhocdm
+    elif w_ll_model=='LCDMsimple_5bocdm':
+        feed_ll_model= Sll_model_5bocdm
+        feedPars     = Sfid_params_5bocdm
+    elif w_ll_model=='LCDMsimple_bocdm':
+        feed_ll_model= Sll_model_bocdm
+        feedPars     = Sfid_params_bocdm
+    elif w_ll_model=='LCDMsimple_bocdmw0': #b ocdm w0
+        feed_ll_model= Sll_model_bocdmw0
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_bocdmOk': #b ocdm Ok
+        feed_ll_model= Sll_model_bocdmOk
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_5bocdmw0': #5b ocdm w0                                                                                                                                         
+        feed_ll_model= Sll_model_5bocdmw0
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_5bocdmOk': #5b ocdm Ok                                                                                                                                         
+        feed_ll_model= Sll_model_5bocdmOk
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_eb': # simple LCDM 5b h  ocdm                  
+        feed_ll_model= Sll_model_eb
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_ebk': # simple LCDM 5b h ocdm Ok                          
+        feed_ll_model= Sll_model_ebk
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='LCDMsimple_ebw': # simple LCDM 5b                           
+        feed_ll_model= Sll_model_ebw
+        feedPars     = Sfid_params_eb
+    elif w_ll_model=='sBAO':
+        feed_ll_model = ll_modelBAO
+        feedPars      = fidParsBAO 
+    elif w_ll_model=='sBAOLCDM':
+        feed_ll_model = ll_modelBAOLCDM
+        feedPars      = fidParsBAOLCDM  
+    elif w_ll_model=='lowxi_rh':
+        print 'lowxi_rh'
+        feed_ll_model = ll_model_lowxi_rh
+        feedPars      = fidPars_lowxi_rh
+    elif w_ll_model=='LCDMsimple_5bomolhrd':
+        feed_ll_model = Sll_model_5bomol_hrd
+        feedPars      = Sfid_params_5bomol_hrd
+    elif w_ll_model=='LCDMsimple_5bomokhrd':
+        feed_ll_model = Sll_model_5bomok_hrd
+        feedPars      = Sfid_params_5bomok_hrd
+    elif w_ll_model=='LCDMsimple_5b5aiso':
+        feed_ll_model = Sll_model_5b5aiso
+        feedPars      = Sfid_params_5b5aiso
+    elif w_ll_model=='LCDMsimple_5broadband5Gaussian':
+        feed_ll_model = Sll_model_5broadband5Gaussian
+        feedPars      = Sfid_params_5broadband5Gaussian
+    elif w_ll_model=='LCDMsimple_broadbandGaussian':
+        feed_ll_model = Sll_model_broadbandGaussian
+        feedPars      = Sfid_params_broadbandGaussian
+    elif w_ll_model=='LCDMsimple_5bomol':
+        feed_ll_model = Sll_model_5bomol
+        feedPars      = Sfid_params_5bomol
+    elif w_ll_model=='LCDMsimple_omol':
+        feed_ll_model = Sll_model_omol
+        feedPars      = Sfid_params_omol
+    elif w_ll_model=='LCDMsimple_omolhrd':
+        feed_ll_model = Sll_model_omolhrd
+        feedPars      = Sfid_params_omolhrd
+    elif w_ll_model=='LCDMsimple_omolhrh':
+        feed_ll_model = Sll_model_omolhrh
+        feedPars      = Sfid_params_omolhrh
+    elif w_ll_model=='LCDMsimple_omolh':
+        feed_ll_model = Sll_model_omolh
+        feedPars      = Sfid_params_omolh
+    elif w_ll_model=='bias_aiso':
+        feed_ll_model = Sll_model_baiso
+        feedPars      = Sfid_params_baiso
+    elif w_ll_model=='LCDMsimple_omol_hrd_AB':
+        feed_ll_model = Sll_model_omol_hrd_AB
+        feedPars      = Sfid_params_omol_hrd_AB
+    elif w_ll_model=='LCDMsimple_ABomolhrh':
+        feed_ll_model = Sll_model_ABomolhrh
+        feedPars      = Sfid_params_ABomolhrh
+    elif w_ll_model=='LCDMsimple_ABomol':
+        feed_ll_model = Sll_model_ABomol
+        feedPars      = Sfid_params_ABomol
+    elif w_ll_model=='LCDMsimple_Aomol':
+        feed_ll_model = Sll_model_Aomol
+        feedPars      = Sfid_params_Aomol
+    elif w_ll_model=='LCDMsimple_b0omgammamg':
+        feed_ll_model = Sll_model_b0omgammamg
+        feedPars      = Sfid_params_b0omgammamg
+    elif w_ll_model=='LCDMsimple_AB':
+        feed_ll_model = Sll_model_AB
+        feedPars      = Sfid_params_AB
+    elif w_ll_model=='LCDMsimple_A':
+        feed_ll_model = Sll_model_A
+        feedPars      = Sfid_params_A
+    elif w_ll_model=='LCDMsimple_omolAB':
+        feed_ll_model = Sll_model_omolAB
+        feedPars      = Sfid_params_omolAB
+    elif w_ll_model=='LCDMsimple_Aom':
+        feed_ll_model = Sll_model_Aom
+        feedPars      = Sfid_params_Aom
+    elif w_ll_model=='LCDMsimple_okom':
+        feed_ll_model = Sll_model_okom
+        feedPars      = Sfid_params_okom
+    elif w_ll_model=='LCDMsimple_omolb0b1b2':
+        feed_ll_model = Sll_model_omolb0b1b2
+        feedPars      = Sfid_params_omolb0b1b2
+    elif w_ll_model =='LCDMsimple_omolwb0':
+        feed_ll_model = Sll_model_omolwb0
+        feedPars      = Sfid_params_omolwb0
+    elif w_ll_model=='BR_model':
+        feed_ll_model = ll_BR
+        feedPars      = fid_BR
+    elif w_ll_model=='BR_nOm':
+        feed_ll_model = ll_BR_nOm
+        feedPars      = fid_BR_nOm
+    elif w_ll_model=='BR_nOmOX':
+        feed_ll_model = ll_BR_nOmOX
+        feedPars      = fid_BR_nOmOX
 
     elif w_ll_model=='test_linear':
       feed_ll_model  = ll_test_linear
@@ -215,6 +345,16 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='test_linear_fixed_b':
       feed_ll_model  = ll_test_linear_fixed_b
       feedPars       = fid_test_linear_fixed_b 
+
+    elif w_ll_model=='LCDM_b0OmfNL':
+      feed_ll_model  = Sll_model_b0OmfNL
+      feedPars       = Sfid_params_b0OmfNL
+    elif w_ll_model=='LCDM_b0fNL':
+      feed_ll_model  = Sll_model_b0fNL
+      feedPars       = Sfid_params_b0fNL
+    elif w_ll_model=='dcabrsrVom':
+      feed_ll_model = Sll_model_dcabrsrVom
+      feedPars       = Sfid_params_dcabrsrVom
 
     chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay)
