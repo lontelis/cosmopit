@@ -202,6 +202,31 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
         return(ll)
     return(locals())
 
+Sfid_params_Aomol = {
+               'A': 1.2, # 1.2
+               #'B': 0.57, # 0.55
+               'om': 0.31,
+               'ol': 0.69,
+                }
+
+def Sll_model_Aomol(datasets, variables = ['A','om','ol'], fidvalues = Sfid_params_Aomol):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    A_min,A_max=0.5,4.0 # optimum! #2.15,2.25 still shit # 1.0,3.0
+    om_min,om_max = 0.2,0.90 #0.0,1.0 but for interpolated Rh we need 0.2,1.0
+    ol_min,ol_max = 0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_Aomol['A'], observed = 'A' not in variables)
+    om     = pymc.Uniform('om', om_min,om_max, value = Sfid_params_Aomol['om'], observed = 'om' not in variables)
+    ol     = pymc.Uniform('ol', ol_min,ol_max, value = Sfid_params_Aomol['ol'], observed = 'ol' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, A=A,om=om,ol=ol):
+        ll=0.
+        pars = np.array([A,om,ol])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
 #### END: MODELS and Bounds #####
 
 def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000):
