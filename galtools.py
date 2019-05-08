@@ -1,4 +1,4 @@
-import cosmology,pk_Class
+from cosmopit import cosmology,pk_Class
 from pylab import *
 import matplotlib.pyplot as plt
 import numpy as np
