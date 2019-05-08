@@ -202,30 +202,30 @@ def zdecra2xyz(redshift,dec,ra,params=[0.3,0.7,-1.0,0.0],dist_type='proper'):
 def test_xyz2zdecra_zdecra2xyz(x=0, y=0, z=1, rtol=1e-5):
     red, dec, ra = xyz2zdecra(x, y, z)
     x_, y_, z_ = zdecra2xyz(red, dec, ra)
-    print x_, y_, z_
-    print np.allclose( x , x_, rtol=rtol) , np.allclose(y , y_,rtol=rtol) , np.allclose( z , z_,rtol=rtol)
+    print(x_, y_, z_)
+    print(np.allclose( x , x_, rtol=rtol) , np.allclose(y , y_,rtol=rtol) , np.allclose( z , z_,rtol=rtol) )
     return np.allclose( x , x_, rtol=rtol) , np.allclose(y , y_,rtol=rtol) , np.allclose( z , z_,rtol=rtol)
 
 def test_zdecra2rthph_rthph2zdecra(z=0.5,dec=20.,ra=150.,rtol=1e-4):
     r,th,ph = zdecra2rthph(z,dec,ra)
     z_,dec_,ra_ = rthph2zdecra(r,th,ph)
-    print z_,dec_,ra_
-    print np.allclose(z,z_ , rtol=rtol), np.allclose(dec,dec_, rtol=rtol) , np.allclose(ra,ra_, rtol=rtol)
-    print 'interpolation z=z(r) effect'
+    print(z_,dec_,ra_)
+    print(np.allclose(z,z_ , rtol=rtol), np.allclose(dec,dec_, rtol=rtol) , np.allclose(ra,ra_, rtol=rtol) )
+    print('interpolation z=z(r) effect' )
     return np.allclose(z,z_) and np.allclose(dec,dec_) and np.allclose(ra,ra_)
 
 def test_xyz2rthph_rthph2xyz(x=0.,y=0.,z=1.,rtol=1e-4):
     r,th,ph  = xyz2rthph(x,y,z)
     x_,y_,z_ = rthph2xyz(r,th,ph)
-    print x_,y_,z_
-    print np.allclose( x,x_ ,rtol=rtol) , np.allclose( y,y_ ,rtol=rtol) , np.allclose( z,z_ ,rtol=rtol)
+    print( x_,y_,z_ )
+    print( np.allclose( x,x_ ,rtol=rtol) , np.allclose( y,y_ ,rtol=rtol) , np.allclose( z,z_ ,rtol=rtol) )
     return np.allclose( x,x_ ,rtol=rtol) , np.allclose( y,y_ ,rtol=rtol) , np.allclose( z,z_ ,rtol=rtol)
 
 def test_rthph2xyz_xyz2rthph(r=1.,th=0.,ph=0.):
     x,y,z = rthph2xyz(r,th,ph)
     r_,th_,ph_ = xyz2rthph(x,y,z)
-    print r_,th_,ph_
-    print r==r_,th==th_,ph==ph_
+    print(r_,th_,ph_ )
+    print(r==r_,th==th_,ph==ph_ )
     return r==r_ and th==th_ and ph==ph_
 
 ### Transformations
@@ -255,7 +255,7 @@ def rthphw2fits(fitsname,r,th,ph,w=None):
 
 
 def run_kdtree(datafile1,datafile2,binsfile,resfile,counter="euclidean",nproc=None):
-    print "  entered galtools.run_kdtree"
+    print("  entered galtools.run_kdtree" )
     if nproc is None:
         subprocess.call(["python",
                          docfmpi,
@@ -351,7 +351,7 @@ def get_pairs(rdata,thdata,phdata,rrandom,thrandom,phrandom,rmin,rmax,nbins,wdat
     r,dd,rr,dr=get_pairs(rdata,thdata,phidata,rrandom,thrandom,phirandom,rmin,rmax,nbins,wdata=None,wrandom=None,nproc=None,log=None)
     """
     # Need a random string for temporary files
-    print "   entered galtools.get_pairs"
+    print("   entered galtools.get_pairs" )
     rndstr=random_string(10)
 
     # Prepare filenames
@@ -372,8 +372,8 @@ def get_pairs(rdata,thdata,phdata,rrandom,thrandom,phrandom,rmin,rmax,nbins,wdat
         edges1=np.linspace(0.,rmin,1)
         edges2=10.**(np.linspace(np.log10(rmin),np.log10(rmax),nbins+1))
         edges = np.concatenate((edges1,edges2))
-        print edges1
-    print np.min(edges),np.max(edges)
+        print(edges1 )
+    print(np.min(edges),np.max(edges) )
 
     outfile=open(binsfile,'w')
     for x in edges:
@@ -413,7 +413,7 @@ def paircount_data_random(datara,datadec,dataz,randomra,randomdec,randomz,cosmo_
     """
 
     # calculate proper distance for each object (data and random)
-    print "   entered galtools.paircount_data_random"
+    print("   entered galtools.paircount_data_random")
     pi=np.pi
     params=cosmo_model[0:4]
     #h=cosmo_model[4]
@@ -435,8 +435,8 @@ def paircount_data_random(datara,datadec,dataz,randomra,randomdec,randomz,cosmo_
             Norm_rand = np.sum(wrandom)
 
         outfile.write("Ng=%s Nr=%s \n" % (Norm_gala, Norm_rand))
-        print 'Norm_gala        Norm_rand'
-        print np.sum(wdata),np.sum(wrandom)
+        print('Norm_gala        Norm_rand')
+        print(np.sum(wdata),np.sum(wrandom))
         for xr,xdd,xrr,xdr in zip(r,dd,rr,dr):
             outfile.write("%s %s %s %s\n" % (xr,xdd,xrr,xdr))
 
@@ -702,7 +702,7 @@ def homogeneity_many_pairs(files,
 ##### just to learn how to see the double loop
 def homogeneity_many_pairs_combine(filesN,filesS,bias,who_xi='ls',who_Nest='JC'):
     '''need update '''
-    print 'need update'
+    print('need update')
     r,dd,rr,dr,ng,nr=read_pairs(filesN[0],normalize=True)
     nsim=np.size(filesN)
     nbins=np.size(r)
@@ -929,10 +929,10 @@ def get_rh_mcmc(x,y,cov,j_mock,zmid,poldeg=5,xstart=50,xstop=500,nburn=1000,nbmc
 
             wok=where(vals != 0)
             nok=np.size(wok)
-            print '(j_mock,zmid) = '+str(j_mock)+','+str(zmid)
+            print('(j_mock,zmid) = '+str(j_mock)+','+str(zmid) )
         if nok < nbmc/2:
             print('       -> chain was not good (nok='+np.str(nok)+')... retrying...')
-            print '(j_mock,zmid) = '+str(j_mock)+','+str(zmid)
+            print('(j_mock,zmid) = '+str(j_mock)+','+str(zmid) )
 
     meanrh=np.mean(vals[wok])
     sigrh=np.std(vals[wok])
@@ -1172,7 +1172,7 @@ def get_chi2_LCDM(x,y,covarin,QPM2PL_a=1.0,functmodel=polymodel,xstart=40.,xstop
 
     if nmock_prec!=None: 
         precision_fctor_for_cov = (nmock_prec-1.)/(nmock_prec-len(newx)-2.)
-        print precision_factor_for_cov
+        print(precision_factor_for_cov)
         newcov=newcov * precision_factor_for_cov
 
     aas = np.linspace(0.80,1.0,1e2)
@@ -1275,7 +1275,7 @@ def read_mocks(mockdir, cosmoFID={},cosmoGAU={},zmid=0.5,
             mockfiles0=glob.glob(mockdir[0]+pairfiles)
             mockfiles1=glob.glob(mockdir[1]+pairfiles)
             nbcommon=min([size(mockfiles0),size(mockfiles1)])
-            print 'wont work need update' 
+            print('wont work need update' )
             #r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,rhxi,rhnr,rhd2,sigrhxi,sigrhnr,sigrhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs_combine(mockfiles0[:nbcommon],mockfiles1[:nbcommon],bias,who_Nest=who_Nest,precision=precision)
             r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs_combine(mockfiles0[:nbcommon],mockfiles1[:nbcommon],bias,who_Nest=who_Nest,precision=precision)
         elif combine is 'cute':
@@ -1314,7 +1314,7 @@ def read_datamocks(datafile,mockdir,who_give='d2',who_xi='ls',who_Nest='JC',bias
     r,d2,nr,xi=read_data(datafile,who_xi=who_xi,combine=combine)
     covmatObs,mean_Obs,all_rhObs,all_obs,rrr=read_mocks(mockdir,bias,who_give=who_give,who_Nest=who_Nest,combine=combine)
     '''need update'''
-    print 'need update'
+    print('need update' )
     stop
     if who_give=='xi': obs=xi
     elif who_give=='nr': obs=nr
@@ -1347,7 +1347,7 @@ def getd2_datamocks(datafile,covmat_y,
 
     if who_give=='xi':
         data_y = xi_gal
-        print 'getd2_datamocks gives xi_gal'
+        print('getd2_datamocks gives xi_gal')
         stop_and_debug
     elif who_give=='nr':
         data_y = nr_MM
@@ -1363,7 +1363,7 @@ def getd2_datamocks(datafile,covmat_y,
         rh,drh,result=get_rh_spline(data_x,data_y,covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,doNrTrick=doNrTrick,ZOOM1=ZOOM1,ZOOM=ZOOM, #!# Change
             QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames
             )
-    print 'res from get_rh_spline',result
+    print('res from get_rh_spline',result)
     
     return(rh,drh,result,data_x,data_y)
 
@@ -1380,7 +1380,7 @@ def getd2_datamocks_model(datafile,covmat_y,cosmo,zmid,who_give='d2',who_Nest='J
         data_y = d2
 
     rh,drh,result=get_rh_model(data_x,data_y,covmat_y,cosmo,zmid,nbspl=nbspl,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot)
-    print 'res from get_rh_model',result
+    print('res from get_rh_model',result )
     
     return(rh,drh,result,data_x,data_y)
 
@@ -1476,8 +1476,8 @@ def corrCoeffd2(covmatd2,r,mu=None,corrfactor=1.,nbspl=9,name='',save=False,Zmin
     Z = cc  
 
     #Z1=cc1
-    print r.shape
-    print cc.shape
+    print(r.shape)
+    print(cc.shape)
     fig, ax = plt.subplots(figsize=(10,7))
     if mu==None: plt.ylabel('$r_i\ [h^{-1}\ \mathrm{Mpc}]$',fontsize=20)
     else:  plt.ylabel('$\mu$ ')
@@ -1485,7 +1485,7 @@ def corrCoeffd2(covmatd2,r,mu=None,corrfactor=1.,nbspl=9,name='',save=False,Zmin
     if mu==None: 
         plt.yscale('linear')
     else: pass
-    print Y,X
+    print(Y,X)
     plt.xscale('linear')
 
     if mu==None: 
@@ -1520,7 +1520,7 @@ def corrCoeffd2(covmatd2,r,mu=None,corrfactor=1.,nbspl=9,name='',save=False,Zmin
     #plt.suptitle(name+' at $0.646<$ z $<0.7$')
     plt.suptitle(name,fontsize=20)
     if save == True:
-        print 'Saving ...'
+        print('Saving ...')
         plt.savefig('images/corr_z_0.646_0.7_'+name+'_nbspl_'+str(nbspl)+'.png',dpi=100)
 
     return None
@@ -1645,7 +1645,7 @@ def x2y(x,y):
     xmid = ( x.max() + x.min() )*0.5
     ymid = ( y.max() + y.min() )*0.5
     delta = (xmid-ymid)
-    print delta , xmid, ymid
+    print(delta , xmid, ymid)
     return x-delta
 
 def get_condition_mask(my_Data,mngMask):
@@ -1675,7 +1675,7 @@ def test_nr_sample(dd):
     
     ddsum = np.cumsum(dd)
     
-    print ddsum == ddint
+    print(ddsum == ddint)
     return ddint,ddsum
 
 
@@ -1806,7 +1806,7 @@ def read_cute_many_backup(files,who_Nest='JC',who_xi='ls',calc_xi=False):
 
         counter += 1
         #if counter==98: stop
-    print nsim
+    print(nsim)
     mean_xi,sig_xi,covmat_xi,cormat_xi=average_realisations(all_xi)
     mean_nr,sig_nr,covmat_nr,cormat_nr=average_realisations(all_nr)
     mean_d2,sig_d2,covmat_d2,cormat_d2=average_realisations(all_d2)
@@ -1869,7 +1869,7 @@ def read_cute_many(files,
     mean_nr,sig_nr,covmat_nr,cormat_nr=average_realisations(all_nr)
     mean_d2,sig_d2,covmat_d2,cormat_d2=average_realisations(all_d2)
     
-    print calc_xi
+    print(calc_xi)
     return (r,mean_xi,sig_xi,
               mean_nr,sig_nr,
               mean_d2,sig_d2,
@@ -2123,12 +2123,12 @@ def read_cute_many_rm(files,
             all_rhd2[i][0]=rhomo_d2(r[:n_r],thed2[:n_r])  #        all_rhd2[i]=rhomo_d2(r[1:],thed2)
             all_rhd2[i][1]=rhomo_d2(r[:n_r],thed2[-n_r:])
 
-    #print nsim
+    #print(nsim)
     mean_xi,sig_xi,covmat_xi,cormat_xi=average_realisations(all_xi)
     mean_nr,sig_nr,covmat_nr,cormat_nr=average_realisations(all_nr)
     mean_d2,sig_d2,covmat_d2,cormat_d2=average_realisations(all_d2)
     
-    #print calc_xi
+    #print(calc_xi)
     return (r,mean_xi,sig_xi,
               mean_nr,sig_nr,
               mean_d2,sig_d2,
@@ -2179,12 +2179,12 @@ def read_cute_many_combine(filesN,filesS,
         all_d2[i,:]=thed2
         all_rhd2[i]=rhomo_d2(r,thed2)  #        all_rhd2[i]=rhomo_d2(r[1:],thed2)
 
-    #print nsim
+    #print(nsim)
     mean_xi,sig_xi,covmat_xi,cormat_xi=average_realisations(all_xi)
     mean_nr,sig_nr,covmat_nr,cormat_nr=average_realisations(all_nr)
     mean_d2,sig_d2,covmat_d2,cormat_d2=average_realisations(all_d2)
     
-    print calc_xi
+    print(calc_xi)
 
     return (r,mean_xi,sig_xi,
               mean_nr,sig_nr,
@@ -2227,10 +2227,10 @@ def compute_mean_fractal(nFractal=np.array([2.950,2.970,2.990,2.995,2.999,3.000]
         for i in xrange(len(nFractal)) :            
             dim_fractal[i],errdim_fractal[i] = mean_all_scale(nFractal[i],rmin=rmin,who_Nest=who_Nest)
         
-        print nFractal
-        print dim_fractal
-        print errdim_fractal
-        print errdim_fractal/dim_fractal
+        print(nFractal)
+        print(dim_fractal)
+        print(errdim_fractal)
+        print(errdim_fractal/dim_fractal)
         #Dmove += 0.0003
         if doFit:
             def straight(x,pars):
@@ -2296,7 +2296,7 @@ def fitParsLoad(zi=0,QPM2PL_a=1.0,randVal=0.0,xstart=40.,xstop=1300.,effnum=10.0
 
     res = fitting.dothefit(thex,they,thecov,[0.3175,1-0.3175,0.6727],parbounds=[(0.25,0.35),(0.65,0.75),(0.6,0.7),],functname=functname,method='minuit',nmock_prec=1000)
 
-    for i in np.arange(len(res[1])): print res[1][i].round(3) , res[2][i].round(3) , (res[2][i]/res[1][i]).round(3)
+    for i in np.arange(len(res[1])): print(res[1][i].round(3) , res[2][i].round(3) , (res[2][i]/res[1][i]).round(3) )
 
     if doplot:
         
@@ -2379,7 +2379,7 @@ def produceNPZ(whichAreSaved,savefile,who_give,who_Nest,xgc,nmock=1000,change_ga
         mockdir = mockdirNorth
         datafile= datafileNorth
     else:
-        print 'put correct galactic cap'
+        print('put correct galactic cap')
 
     dimData=51
     Obs=zeros((zbins,dimData))
