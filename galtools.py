@@ -2403,3 +2403,50 @@ def produceNPZ(whichAreSaved,savefile,who_give,who_Nest,xgc,nmock=1000,change_ga
     file=open(whichAreSaved,'rw')
     file.write(savefile+" \n")
     file.close()
+
+    
+ 
+################### Chi2 Robustness TEST for mocks ########################################### 
+def Pierros_histogram(data_array,Normalization=True,numberBins=100):
+    histo = np.histogram(data_array,bins=numberBins)
+    x_center_hist = (histo[1][:-1]+histo[1][1:])/2
+    y_hist = histo[0]
+    yerror_hist = np.sqrt(y_hist)
+
+    if Normalization==True:
+        dx = histo[1][1] - histo[1][0]
+        I_norm = np.sum(y_hist*dx)
+        y_hist_normed = y_hist/I_norm
+        error_hist_normed = yerror_hist/I_norm
+        y_hist = y_hist_normed
+        yerror_hist = error_hist_normed 
+    return(x_center_hist,y_hist,yerror_hist)
+
+def theoryChi2(x,pars):
+    return( (1/(2**(pars[0]/2.)  * np.math.gamma(pars[0]/2.)) ) * x**(pars[0]/2. - 1) * np.exp( -x/2. ) )
+
+def chi2_bias_test(chi2_mock,ndf=15,nbHistBins=4,method='minuit'):
+    wok = np.where((chi2_mock<1600)&(chi2_mock>0))
+    print( np.max(chi2_mock) )
+    data = chi2_mock[wok]
+
+    x_hist,y_hist,yerr_hist = Pierros_histogram(data,numberBins=nbHistBins) # 10
+
+    guess = [np.float64(ndf)]
+    res = fitting.dothefit(x_hist,y_hist,yerr_hist,guess,functname=theoryChi2,method=method)
+
+    decimals = 2
+    NDF_measured = np.around(res[1][0],decimals=decimals)
+    dNDF_measured = np.around(res[2][0],decimals=decimals)
+    chi2_measured = np.around(res[4],decimals=decimals)
+    ndf_measured = np.around(res[5],decimals=decimals)
+
+    # For plotting the theoretical chi2
+    xmin,xmax = np.min(data),np.max(data) 
+    xxx = np.linspace(xmin,xmax,1000)
+
+    label_hist = "$ndf_{m} =$ "+str(NDF_measured)+"$\pm$"+str(dNDF_measured)+" at $\chi^2=$"+str(chi2_measured)+"/"+str(ndf_measured)
+    plt.errorbar(x_hist,y_hist,yerr=yerr_hist,fmt='o',color='b',label=label_hist)
+    plt.plot(xxx,theoryChi2(xxx,np.array([ndf])),'r-',label='ndf = '+str(ndf))
+    plt.legend(loc=1)
+################### END: Chi2 Robustness TEST for mocks ###########################################
