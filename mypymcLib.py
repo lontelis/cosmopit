@@ -226,6 +226,26 @@ def Sll_model_Aomol(datasets, variables = ['A','om','ol'], fidvalues = Sfid_para
         return(ll)
     return(locals())
 
+Sfid_params_baiso = {
+               'bias':2.0,
+                'a':1.0
+                }
+
+def Sll_model_baiso(datasets, variables = ['bias','a'], fidvalues = Sfid_params_baiso):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    bias     = pymc.Uniform('bias', 1.5,2.5, value = Sfid_params_baiso['bias'], observed = 'bias' not in variables)
+    a        = pymc.Uniform('a', 0.7,1.3 ,   value = Sfid_params_baiso['a'],  observed = 'a'    not in variables)
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, bias=bias,a=a):
+        ll=0.
+        pars = np.array([bias,a])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
 
 #### END: MODELS and Bounds #####
 
