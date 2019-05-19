@@ -36,7 +36,7 @@ class theory:
 
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
-        cosmopars['Omega_k'] = -cosmopars['Omega_k']  ## Comment to reproduce the paper FISHER 18 April 2018
+        cosmopars['Omega_k'] = -cosmopars['Omega_k']  ## need for alternative definition of Ok in CLASS
         
         cosmo_CLASS.set(cosmopars)
         cosmo_CLASS.compute()
@@ -52,7 +52,7 @@ class theory:
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1 - self.Omega_m - self.Omega_k
         
-        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## Comment out to reproduce the paper FISHER 18 April 2018 (if both kept no problem)
+        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## need for alternative definition of Ok in CLASS
         #if not np.isclose(self.Omega_k+self.Omega_L + self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Om+Ol+Ok=1 not fullfilled')
         #print 'Omegak Omega_L Omega_m |self'
