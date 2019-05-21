@@ -117,7 +117,7 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
     return f(z)
 
 def VolCalcSurvey(zCentral,DeltaZrange,OmegaSky=1e4,type='vco',params=[0.3,0.7,-1,0],wz=None):
-    ''' Returns Comoving Volume in (Mpc/h)**3 of a survey with:
+    ''' Returns Comoving Volume in (Mpc/h)**3 of a survey for any cosmology with:
         OmegaSky # in deg**2
         zcentral 
         DeltaZrange '''
