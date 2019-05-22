@@ -3,11 +3,6 @@ from numpy import *
 import pymc
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import *
-from scipy.ndimage import import numpy as np
-from numpy import *
-import pymc
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import *
 from scipy.ndimage import gaussian_filter1d
 import scipy
 from scipy import integrate
