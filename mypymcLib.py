@@ -11,7 +11,7 @@ from scipy import ndimage
 #import numMath,cosmology
 # Taken from J.C.Hamilton and remodified by P.Ntelis October 2016
 
-print('This mypymclib')
+print('This mypymclib new')
 ###############################################################################
 ########################## Monte-Carlo Markov-Chains Functions ################
 ###############################################################################
