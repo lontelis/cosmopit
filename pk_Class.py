@@ -36,31 +36,31 @@ class theory:
 
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
-        cosmopars['Omega_k'] = -cosmopars['Omega_k']  ## need for alternative definition of Ok in CLASS
+
         
         cosmo_CLASS.set(cosmopars)
+        cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k']  ## need for alternative definition of Ok in CLASS
         cosmo_CLASS.compute()
+        cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k'] ## need for alternative definition of Ok in CLASS
         
         self.h_fiducial_xith_norm=h_fiducial_xith_norm
         self.r_s = cosmo_CLASS.rs_drag()
         self.h   = cosmopars['h']
         self.Omega_m=(cosmo_CLASS.pars['omega_b']+cosmo_CLASS.pars['omega_cdm'])/(cosmo_CLASS.pars['h']**2) 
-        
+
         if ExtraPars: self.w0,self.wa=cosmo_CLASS.pars['w0_fld'],cosmo_CLASS.pars['wa_fld']
         else:         self.w0,self.wa=-1.,0.
-        
+
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
-        self.Omega_L = 1 - self.Omega_m - self.Omega_k
-        
-        cosmopars['Omega_k'] = -cosmopars['Omega_k'] ## need for alternative definition of Ok in CLASS
-        #if not np.isclose(self.Omega_k+self.Omega_L + self.Omega_m , 1.0,atol=1e-05) : 
-        #    raise NameError('Om+Ol+Ok=1 not fullfilled')
+        self.Omega_L = 1. - self.Omega_m - self.Omega_k
+
+        #if not np.isclose(self.Omega_k+self.Omega_L+self.Omega_m , 1.0,atol=1e-05) : 
+        #    raise NameError('Ok+OL+Om==1 not fullfilled')
         #print 'Omegak Omega_L Omega_m |self'
         #print self.Omega_k,self.Omega_L,self.Omega_m
         #print 'Omegak Omega_L Omega_m |cosmopars'
         #print cosmopars['Omega_k'],cosmopars['Omega_Lambda'],self.Omega_m
         #print 'Sum Omega = %0.1f'%(self.Omega_k+self.Omega_L+self.Omega_m)
-
 
         sig8_CLASS = cosmo_CLASS.sigma8()
         self.sig8 = sig8_CLASS
@@ -161,8 +161,9 @@ class theory:
             self.Factor_non_linearities = Factor_NL
             if damping: pass
             pk_input = self.pk_interpol(x) * self.Factor_non_linearities
+            print('Factor Kaiser=%0.3f'%(self.Factor_non_linearities))
         else: pass           #!# SOS
-        if galaxy: pk_input = pk_input*bias**2
+        if galaxy: pk_input = pk_input*self.bias**2
         return pk_input
         
     def fctShape(self,x,pars):
@@ -415,18 +416,26 @@ class theory:
         return Factor
 
     def fgrowthFUNC(self,Omega0_m,z):
-        return fgrowth(Omega0_m,z) #/( Omega0_m*(1.+z)**3. + 1- Omega0_m )
+        return self.fgrowth(Omega0_m,z) #/( Omega0_m*(1.+z)**3. + 1- Omega0_m )
     # Non-Linearities #############################
+
+    def fgrowth(self,Om,z,gammaexp=0.55):
+        ###return (Om*(1+z)**3.)**0.55
+        # Parameterized Beyond-Einstein Growth
+        # https://arxiv.org/pdf/astro-ph/0701317.pdf
+        # after equation 3 second to last setence of the paragraph
+        # return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1. - Om ) )**gammaexp
+        print('Omega_k,Omega_m,Omega_L')
+        print(self.Omega_k,self.Omega_L,self.Omega_m)
+        print(1-(self.Omega_m+self.Omega_L)) 
+        res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
+        print('fgrowth=%0.3f'%(res))
+        return res
+
 
 def Kaiser_TERM(fgrowth,bias):
     return 1.+ ((2./3.)*fgrowth/bias) + ((1./5.)*(fgrowth/bias)**2)
 
-def fgrowth(Om,z,gammaexp=0.55):
-    ###return (Om*(1+z)**3.)**0.55
-    # Parameterized Beyond-Einstein Growth
-    # https://arxiv.org/pdf/astro-ph/0701317.pdf
-    # after equation 3 second to last setence of the paragraph
-    return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1- Om ) )**gammaexp
 
 def cosmo_flagship(giveErrs=False):
     ''' Define parameters for CLASS soft '''

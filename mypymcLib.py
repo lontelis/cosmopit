@@ -533,7 +533,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
 
                       if vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
                       if vars[j]=='ol': xlim([0.5,0.8]) #0.4,1.0
-                      if vars[j]=='A' : xlim([1.2,2.5])
+                      if vars[j]=='A' : xlim([0.5,2.0])
                     else:
                       ylim([0.,3.0])
                     if plotLegendLikelihood: legend(frameon=False,fontsize=12) #8 15
@@ -550,10 +550,10 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                 elif paper2=='2019':
                   if   vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
                   elif vars[j]=='ol': xlim([0.5,0.8]) #0.4,1.0
-                  elif vars[j]=='A':  xlim([1.2,2.5])
+                  elif vars[j]=='A':  xlim([0.5,2.0]) #1.2,2.5
                   if   vars[i]=='om': ylim([0.2,0.6]) #0.0,0.6
                   elif vars[i]=='ol': ylim([0.5,0.8]) #0.4,1.0
-                  elif vars[i]=='A':  ylim([1.2,2.5])
+                  elif vars[i]=='A':  ylim([0.5,2.0]) #1.2,2.5
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
                   else:               xlim(limits[j])
@@ -2654,7 +2654,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
 
                       if vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
                       if vars[j]=='ol': xlim([0.4,0.8]) #0.4,1.0
-                      if vars[j]=='A' : xlim([1.2,2.5])
+                      if vars[j]=='A' : xlim([1.0,2.0]) #1.2,2.5
                     else:
                       ylim([0.,3.0])
                     if plotLegendLikelihood: legend(frameon=False,fontsize=12) #8 15
@@ -2671,10 +2671,10 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                 elif paper2=='2019':
                   if   vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
                   elif vars[j]=='ol': xlim([0.4,0.8]) #0.4,1.0
-                  elif vars[j]=='A':  xlim([1.2,2.5])
+                  elif vars[j]=='A':  xlim([1.0,2.0]) #1.2,2.5
                   if   vars[i]=='om': ylim([0.2,0.6]) #0.0,0.6
                   elif vars[i]=='ol': ylim([0.4,0.8]) #0.4,1.0
-                  elif vars[i]=='A':  ylim([1.2,2.5])
+                  elif vars[i]=='A':  ylim([1.0,2.0]) #1.2,2.5
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
                   else:               xlim(limits[j])
