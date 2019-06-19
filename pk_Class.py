@@ -150,10 +150,10 @@ class theory:
         self.cosmo_CLASS.empty()
 
     def pk_NL(self,x,bias=np.nan,sigp=None,kaiser=False,damping=False,galaxy=False):
-        pk_input = self.pk_interpol(x) 
-        self.bias=bias
-        self.sigp=sigp
-        self.kaiser=kaiser
+        pk_input    = self.pk_interpol(x) 
+        self.bias   =bias
+        self.sigp   =sigp
+        self.kaiser =kaiser
         self.damping=damping
         if kaiser:           #!# SOS
             #print 'did kaiser'
@@ -196,6 +196,10 @@ class theory:
         else: AShape = 0.0
 
         xi_in = self.pk2correlation(h=self.h,nk=self.nk,k=self.k,pk_in=pk_in,use_h_norm=use_h_norm) 
+        #figure(10,)
+        #plot(x,xi_in(x)*x*x)
+        #ylabel('$r^2\\xi(r) [h^{-2}\mathrm{Mpc}^2]$')
+        #xlabel('$r [h^{-1}\mathrm{Mpc}]$')
         return ( xi_in(x) + AShape )
 
     def params_plus_wavenumber(self):
@@ -221,8 +225,12 @@ class theory:
         lognr=np.log10(self.nr(x,bias=bias,sigp=sigp,kaiser=kaiser,damping=damping,galaxy=galaxy,vShape=vShape,use_h_norm=use_h_norm))
         #dlogx=logx[1]-logx[0]
         dlogx = np.gradient(np.log10(x))
-        thed2=np.gradient(lognr)/dlogx+3
+        thed2=np.gradient(lognr)/dlogx+3.
         ff=interpolate.interp1d(x,thed2,bounds_error=False)
+        #figure(11,)
+        #plot(x,ff(x))
+        #ylabel('$\mathcal{D}_2(r)$')
+        #xlabel('$r [h^{-1}\mathrm{Mpc}]$')
         if returnInterpol==True: return(ff)
         else:                    return(ff(xin))
         
@@ -390,7 +398,7 @@ class theory:
 
     def NL_factor(self,h=0.7,Omega0_m=0.3,z=0.,bias=2.,sigp=300.,nk=5000,k_theory=None,kaiser=True,damping=False):
         #if(dambing): print 'kaiser with dambing'
-        fgrowth = self.fgrowthFUNC(Omega0_m,z)
+        fgrowth = self.fgrowthFUNC(z)
         #print fgrowth/bias
         HH = 100*h**2
 
@@ -415,27 +423,26 @@ class theory:
 
         return Factor
 
-    def fgrowthFUNC(self,Omega0_m,z):
-        return self.fgrowth(Omega0_m,z) #/( Omega0_m*(1.+z)**3. + 1- Omega0_m )
+    def fgrowthFUNC(self,z):
+        return self.fgrowth(z) 
+
     # Non-Linearities #############################
 
-    def fgrowth(self,Om,z,gammaexp=0.55):
+    def fgrowth(self,z,gammaexp=0.55):
         ###return (Om*(1+z)**3.)**0.55
         # Parameterized Beyond-Einstein Growth
         # https://arxiv.org/pdf/astro-ph/0701317.pdf
-        # after equation 3 second to last setence of the paragraph
+        # after equation 3 second to last sentence of the paragraph
         # return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1. - Om ) )**gammaexp
         print('Omega_k,Omega_m,Omega_L')
-        print(self.Omega_k,self.Omega_L,self.Omega_m)
+        print(self.Omega_k,self.Omega_m,self.Omega_L)
         print(1-(self.Omega_m+self.Omega_L)) 
         res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
         print('fgrowth=%0.3f'%(res))
         return res
 
-
 def Kaiser_TERM(fgrowth,bias):
     return 1.+ ((2./3.)*fgrowth/bias) + ((1./5.)*(fgrowth/bias)**2)
-
 
 def cosmo_flagship(giveErrs=False):
     ''' Define parameters for CLASS soft '''
