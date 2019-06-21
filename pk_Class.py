@@ -19,7 +19,7 @@ class theory:
     Rh in h^{-1} Mpc
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
-    # Line 34 and 50 are used since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
+    # Line 42 and 44 are used since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
     # In this analysis we use: $\Omega_k$ + $\Omega_m$ + $\Omega_{\Lambda}$ = 1
     '''
     def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
@@ -36,12 +36,11 @@ class theory:
 
         cosmopars.update(extra_CLASS_pars)
         if halofit: cosmopars['non linear']='halofit'
-
         
         cosmo_CLASS.set(cosmopars)
-        cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k']  ## need for alternative definition of Ok in CLASS
+        #cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k']  ## #need for alternative definition of Ok in CLASS
         cosmo_CLASS.compute()
-        cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k'] ## need for alternative definition of Ok in CLASS
+        #cosmo_CLASS.pars['Omega_k'] = -cosmo_CLASS.pars['Omega_k'] ## #need for alternative definition of Ok in CLASS
         
         self.h_fiducial_xith_norm=h_fiducial_xith_norm
         self.r_s = cosmo_CLASS.rs_drag()
@@ -53,6 +52,9 @@ class theory:
 
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1. - self.Omega_m - self.Omega_k
+
+        print('self.Omega_L','cosmo_CLASS.Omega_Lambda()' )
+        print(self.Omega_L,cosmo_CLASS.Omega_Lambda() )
 
         #if not np.isclose(self.Omega_k+self.Omega_L+self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Ok+OL+Om==1 not fullfilled')
@@ -681,20 +683,3 @@ def Conv2labels(stringi):
     elif stringi=='Omega_m':      return '$\Omega_{m}$'
     elif stringi=='b0':           return '$b_{0}$'
     else:                         return '$\%s$'%stringi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
