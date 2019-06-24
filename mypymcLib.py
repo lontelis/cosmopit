@@ -652,8 +652,8 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
         rcorrcoeff = np.corrcoef(x,y)[0,1]
         #if abs(rcorrcoeff)>0.65:
         label_cont='$\\rho$=%0.2f'%(rcorrcoeff)
-        xarr = array([mmx-ssx,mmx+ssx])
-        yarr = array([mmy-ssy,mmy+ssy])
+        xarr = np.array([mmx-ssx,mmx+ssx])
+        yarr = np.array([mmy-ssy,mmy+ssy])
         plot(xarr,xarr*0.0+mmy,color,label=label_cont)
         plot(xarr*0.0+mmx,yarr,color) 
         legend(loc=2,frameon=False,numpoints=1,fontsize=12) #8 15 20
