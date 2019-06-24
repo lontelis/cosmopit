@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import *
+#from numpy import *
 import pymc
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import *
@@ -11,7 +11,7 @@ from scipy import ndimage
 #import numMath,cosmology
 # Taken from J.C.Hamilton and remodified by P.Ntelis October 2016
 
-print('This mypymclib')
+print('This mypymclib new')
 ###############################################################################
 ########################## Monte-Carlo Markov-Chains Functions ################
 ###############################################################################
@@ -2184,6 +2184,7 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
         return(ll)
     return(locals())
 '''
+<<<<<<< HEAD
 
 import scipy
 from scipy import integrate
@@ -4325,3 +4326,5 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
         return(ll)
     return(locals())
 '''
+=======
+>>>>>>> eb717d3ea7956503e965bab4b0572752e4b5b65c
