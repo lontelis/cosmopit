@@ -19,7 +19,7 @@ class theory:
     Rh in h^{-1} Mpc
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
-    # Line 42 and 44 are used since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
+    # Line 42 and 44 are ususfull because since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
     # In this analysis we use: $\Omega_k$ + $\Omega_m$ + $\Omega_{\Lambda}$ = 1
     '''
     def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
@@ -53,8 +53,12 @@ class theory:
         self.Omega_k = cosmo_CLASS.pars['Omega_k']
         self.Omega_L = 1. - self.Omega_m - self.Omega_k
 
-        print('self.Omega_L','cosmo_CLASS.Omega_Lambda()' )
-        print(self.Omega_L,cosmo_CLASS.Omega_Lambda() )
+        if np.isclose(self.Omega_L,cosmo_CLASS.Omega_Lambda(),rtol=3):
+            raise('Check the definition of Omega_k in CLASS')
+            raise('https://github.com/lesgourg/class_public/wiki/Installation')
+            raise('Omega_k + sum_i Omega_i = 1')
+            raise('self.Omega_L','cosmo_CLASS.Omega_Lambda()' )
+            raise(self.Omega_L,cosmo_CLASS.Omega_Lambda() )
 
         #if not np.isclose(self.Omega_k+self.Omega_L+self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Ok+OL+Om==1 not fullfilled')
