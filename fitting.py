@@ -125,7 +125,7 @@ def do_minuit(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None,parbound
     m = iminuit.Minuit(chi2,forced_parameters=parnames,errordef=1.0,**theguess)
     m.migrad()
     #m.migrad()
-    #m.hesse()
+    m.hesse()
     # build np.array output
     parfit=[]
     for i in parnames: parfit.append(m.values[i])
