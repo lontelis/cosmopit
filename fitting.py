@@ -1,6 +1,8 @@
 import numpy as np
 from pylab import *
 from numpy import *
+import numpy as np
+import matplotlib.pyplot as plt
 #import mpfit
 import iminuit
 #import emcee
