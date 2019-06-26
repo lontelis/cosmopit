@@ -356,7 +356,7 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
         feed_ll_model = ll_modelBAOLCDM
         feedPars      = fidParsBAOLCDM  
     elif w_ll_model=='lowxi_rh':
-        print 'lowxi_rh'
+        print('lowxi_rh')
         feed_ll_model = ll_model_lowxi_rh
         feedPars      = fidPars_lowxi_rh
     elif w_ll_model=='LCDMsimple_5bomolhrd':
