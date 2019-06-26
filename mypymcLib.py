@@ -205,15 +205,15 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
 Sfid_params_Aomol = {
                'A': 1.2, # 1.2
                #'B': 0.57, # 0.55
-               'om': 0.31,
-               'ol': 0.69,
+               'om': 0.31, #0.31,
+               'ol': 0.69, #0.69,
                 }
 
 def Sll_model_Aomol(datasets, variables = ['A','om','ol'], fidvalues = Sfid_params_Aomol):
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    A_min,A_max   = 1.4,2.20 #RH 1.0,2.50 #0.5,4.0  # optimum! #2.15,2.25 still shit # 1.0,3.0
-    om_min,om_max = 0.2,0.60 #RH 0.2,0.60 #0.2,0.90 #0.0,1.0 but for interpolated Rh we need 0.2,1.0
-    ol_min,ol_max = 0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    A_min,A_max   = 1.0,2.50 #RH 1.0,2.50 #0.5,4.0  # optimum! #2.15,2.25 still shit # 1.0,3.0
+    om_min,om_max = 0.1,1.0 #0.2,0.60 #RH 0.2,0.60 #0.2,0.90 #0.0,1.0 but for interpolated Rh we need 0.2,1.0
+    ol_min,ol_max = 0.1,1.0 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
     A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_Aomol['A'], observed = 'A' not in variables)
     om     = pymc.Uniform('om', om_min,om_max, value = Sfid_params_Aomol['om'], observed = 'om' not in variables)
     ol     = pymc.Uniform('ol', ol_min,ol_max, value = Sfid_params_Aomol['ol'], observed = 'ol' not in variables)

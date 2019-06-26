@@ -54,11 +54,11 @@ class theory:
         self.Omega_L = 1. - self.Omega_m - self.Omega_k
 
         if np.isclose(self.Omega_L,cosmo_CLASS.Omega_Lambda(),rtol=3):
-            raise('Check the definition of Omega_k in CLASS')
-            raise('https://github.com/lesgourg/class_public/wiki/Installation')
-            raise('Omega_k + sum_i Omega_i = 1')
-            raise('self.Omega_L','cosmo_CLASS.Omega_Lambda()' )
-            raise(self.Omega_L,cosmo_CLASS.Omega_Lambda() )
+            print('Check the definition of Omega_k in CLASS')
+            print('https://github.com/lesgourg/class_public/wiki/Installation')
+            print('Omega_k + sum_i Omega_i = 1')
+            print('self.Omega_L','cosmo_CLASS.Omega_Lambda()' )
+            print(self.Omega_L,cosmo_CLASS.Omega_Lambda() )
 
         #if not np.isclose(self.Omega_k+self.Omega_L+self.Omega_m , 1.0,atol=1e-05) : 
         #    raise NameError('Ok+OL+Om==1 not fullfilled')
