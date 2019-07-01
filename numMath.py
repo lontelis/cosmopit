@@ -543,6 +543,30 @@ def covAverage(x,cov):
     std_x = np.sqrt(var_x)
     return(mean_x, std_x)
 
+def covAverage_of_xi_with_cov_xi(x,cov_x):
+    """
+    x is an array of arrays:             \bar{x} = ( Sum_i Cov_i^{-1} )^{-1} dot ( Sum_i Cov_i^{-1} x_i )
+    cov_x is an array of matrices: Cov_{\bar{x}} = ( Sum_i Cov_i^{-1} )^{-1} 
+    Return the Mean array and the Covariance of two arrays with two covariances
+    https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
+
+    example: 
+    covAverage_of_xi_with_cov_xi(array([mean_rhDVz_N,mean_rhDVz_S]),array([covmat_rhDVz_N,covmat_rhDVz_S]))
+    """
+    cov_of_xi  = np.zeros((np.shape(cov_x[0])))
+    mean_of_xi = np.zeros((len(x[0])))
+
+    for i in range(len(cov_x)):
+        cov_of_xi += np.linalg.inv(cov_x[i])
+
+    for i in range(len(cov_x)):
+        mean_of_xi +=  np.dot( np.linalg.inv(cov_x[i]), x[i] )    
+
+    cov_of_xi_out  = np.linalg.inv(cov_of_xi)
+    mean_of_xi_out = np.dot(cov_of_xi_out,mean_of_xi)
+
+    return(mean_of_xi_out, cov_of_xi_out)
+
 def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',xLabel='$bias$',yLabel='$\sigma_p\ [km\ s^{-1}]$',ColorLabel='$\mathcal{R}^{(RSD)}_H/\mathcal{R}^{(linear)}_H$ in $\%$',save=False):
 
     #X,Y = meshgrid(rS,rS)
