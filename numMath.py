@@ -273,8 +273,8 @@ def merge_chains(totos,nlag=0,KMIN=0):
 def burnChains(chains,kmin=0):
     newChains=dict(chains) # dict(chains)
     # python 2:  kmax = newChains[newChains.keys()[0]].size
-    # python 3: kmax = size(list(newChains.keys()))
-    kmax = size(list(newChains.keys()))
+    # python 3:  kmax = size(newChains[next(iter(newChains))])
+    kmax = size(newChains[next(iter(newChains))])
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
