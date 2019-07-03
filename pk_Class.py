@@ -440,11 +440,11 @@ class theory:
         # https://arxiv.org/pdf/astro-ph/0701317.pdf
         # after equation 3 second to last sentence of the paragraph
         # return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1. - Om ) )**gammaexp
-        print('Omega_k,Omega_m,Omega_L')
-        print(self.Omega_k,self.Omega_m,self.Omega_L)
-        print(1-(self.Omega_m+self.Omega_L)) 
+        #print('Omega_k,Omega_m,Omega_L')
+        #print(self.Omega_k,self.Omega_m,self.Omega_L)
+        #print(1-(self.Omega_m+self.Omega_L)) 
         res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
-        print('fgrowth=%0.3f'%(res))
+        #print('fgrowth=%0.3f'%(res))
         return res
 
 def Kaiser_TERM(fgrowth,bias):
