@@ -19,7 +19,7 @@ class theory:
     Rh in h^{-1} Mpc
     Observables are reviewed on arXiv:1702.02159
     # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
-    # Line 42 and 44 are ususfull because since CLASS uses the alternative definition of (sum_i Omega_i) = 1 + Omega_k
+    # Line 42 and 44 are ususfull because since CLASS uses sometimes the alternative definition of (sum_i Omega_i) = 1 + Omega_k. Be carefull on the output before applying.
     # In this analysis we use: $\Omega_k$ + $\Omega_m$ + $\Omega_{\Lambda}$ = 1
     '''
     def __init__(self,cosmopars,z=None,h_fiducial_xith_norm=0.6727,sig8_Ext=None,kmax=20.,kmin=0.001,nk=50000,halofit=False,ExtraPars=False,P_k_max_h=100.,z_max_pk=5.): # kmax=20.
