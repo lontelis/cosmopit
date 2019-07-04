@@ -308,12 +308,12 @@ Sfid_params_w0OL = {
 
                 }
 
-def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_OmOL):
+def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_w0OL):
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
 
-    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_OmOL['w0'],   observed = 'w0'    not in variables)
-    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_w0OL['w0'],   observed = 'w0'    not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_w0OL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, w0=w0,OL=OL):
