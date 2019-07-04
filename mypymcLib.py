@@ -494,8 +494,8 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
 def burnChains(chains,kmin=0):
     newChains=dict(chains) # dict(chains)
     # python 2:  kmax = newChains[newChains.keys()[0]].size
-    # python 3:  kmax = size(newChains[next(iter(newChains))])
-    kmax = size(newChains[next(iter(newChains))])
+    # python 3:  kmax = np.size(newChains[next(iter(newChains))])
+    kmax = np.size(newChains[next(iter(newChains))])
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
