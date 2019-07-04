@@ -301,6 +301,29 @@ def Sll_model_OmOL(datasets, variables = ['Om','OL'], fidvalues = Sfid_params_Om
         return(ll)
     return(locals())
 
+Sfid_params_w0OL = {
+
+               'w0':-1.0,
+               'OL':0.69,
+
+                }
+
+def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_OmOL):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_OmOL['w0'],   observed = 'w0'    not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,OL=OL):
+        ll=0.
+        pars = np.array([w0,OL]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
 #### END: MODELS and Bounds #####
 
 def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000):
@@ -377,9 +400,6 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='LCDMsimple_5bomol':
         feed_ll_model = Sll_model_5bomol
         feedPars      = Sfid_params_5bomol
-    elif w_ll_model=='LCDMsimple_omol':
-        feed_ll_model = Sll_model_omol
-        feedPars      = Sfid_params_omol
     elif w_ll_model=='LCDMsimple_omolhrd':
         feed_ll_model = Sll_model_omolhrd
         feedPars      = Sfid_params_omolhrd
@@ -460,6 +480,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='OmOL':
       feed_ll_model = Sll_model_OmOL
       feedPars       = Sfid_params_OmOL
+    elif w_ll_model=='w0OL':
+      feed_ll_model = Sll_model_w0OL
+      feedPars       = Sfid_params_w0OL
 
     chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay)
@@ -533,8 +556,8 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                     if paper2=='2019':
                       ylim([0.,1.0])
 
-                      if vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
-                      if vars[j]=='ol': xlim([0.5,0.8]) #0.4,1.0
+                      if vars[j]=='om': xlim([0.1,1.0]) #xlim([0.2,0.6]) #0.0,0.6
+                      if vars[j]=='ol': xlim([0.1,1.0]) #xlim([0.5,0.8]) #0.4,1.0
                       if vars[j]=='A' : xlim([0.5,2.0])
                     else:
                       ylim([0.,3.0])
@@ -550,11 +573,11 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                   print(vars[j])
                   xlim([0.0,1.0])
                 elif paper2=='2019':
-                  if   vars[j]=='om': xlim([0.2,0.6]) #0.0,0.6
-                  elif vars[j]=='ol': xlim([0.5,0.8]) #0.4,1.0
+                  if   vars[j]=='om': xlim([0.1,1.0]) #xlim([0.2,0.6]) #0.0,0.6
+                  elif vars[j]=='ol': xlim([0.1,1.0]) #xlim([0.5,0.8]) #0.4,1.0
                   elif vars[j]=='A':  xlim([0.5,2.0]) #1.2,2.5
-                  if   vars[i]=='om': ylim([0.2,0.6]) #0.0,0.6
-                  elif vars[i]=='ol': ylim([0.5,0.8]) #0.4,1.0
+                  if   vars[i]=='om': ylim([0.1,1.0]) #ylim([0.2,0.6]) #0.0,0.6
+                  elif vars[i]=='ol': ylim([0.1,1.0]) #ylim([0.5,0.8]) #0.4,1.0
                   elif vars[i]=='A':  ylim([0.5,2.0]) #1.2,2.5
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
