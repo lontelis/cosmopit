@@ -289,7 +289,7 @@ def Sll_model_OmOL(datasets, variables = ['Om','OL'], fidvalues = Sfid_params_Om
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
 
-    Om   = pymc.Uniform('Om', -1.0,1.0 ,     value = Sfid_params_OmOL['Om'],   observed = 'Om'    not in variables)
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOL['Om'],observed = 'Om'    not in variables)
     OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
@@ -312,13 +312,69 @@ def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_w0
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
 
-    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_w0OL['w0'],   observed = 'w0'    not in variables)
+    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_w0OL['w0'],observed = 'w0' not in variables)
     OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_w0OL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, w0=w0,OL=OL):
         ll=0.
         pars = np.array([w0,OL]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_A = {
+               'A': 1.5, #1.5, #2.2,
+               #'om': 0.31,
+               #'ol': 0.69,
+                }
+
+def Sll_model_A(datasets, variables = ['A'], fidvalues = Sfid_params_A):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    
+    #A_min,A_max=1.5,2.8#2.19999,2.21111 # optimum! #2.15,2.25 still shit # 1.0,3.0
+    #B_min,B_max=-2,1.  #0.545,0.555     # optimum!   
+
+    #A_min,A_max=1.6,2.4 #1.0,2.0#2.19999,2.21111 # optimum! #2.15,2.25 still shit # 1.0,3.0
+    #B_min,B_max=0.0,2.0 #0.545,0.555     # optimum!   
+
+    A_min,A_max=0.5,2.0 
+    A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_A['A'], observed = 'A' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, A=A):
+        ll=0.
+        pars = np.array([A,])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_AB = {
+               'A': 2.0, #1.5, #2.2,
+               'B': 0.55,
+               #'om': 0.31,
+               #'ol': 0.69,
+                }
+
+def Sll_model_AB(datasets, variables = ['A','B'], fidvalues = Sfid_params_AB):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    
+    #A_min,A_max=1.5,2.8#2.19999,2.21111 # optimum! #2.15,2.25 still shit # 1.0,3.0
+    #B_min,B_max=-2,1.  #0.545,0.555     # optimum!   
+
+    #A_min,A_max=1.6,2.4 #1.0,2.0#2.19999,2.21111 # optimum! #2.15,2.25 still shit # 1.0,3.0
+    #B_min,B_max=0.0,2.0 #0.545,0.555     # optimum!   
+
+    A_min,A_max=0.0,3.0 
+    B_min,B_max=-1,3.0 
+
+    A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_AB['A'], observed = 'A' not in variables)
+    B     = pymc.Uniform('B', B_min,B_max, value = Sfid_params_AB['B'], observed = 'B' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, A=A,B=B):
+        ll=0.
+        pars = np.array([A,B,])
         for ds in datasets:
             ll=ll+ds(pars)
         return(ll)

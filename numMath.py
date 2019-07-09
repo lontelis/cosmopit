@@ -595,7 +595,21 @@ def plot3D_pierros(x,y,f_xy,zname='z=?',savename='plot3D_pierros.png',xLabel='$b
         print( 'Saving ...')
         plt.savefig(savename+'.png',dpi=100)
 
+def plot_colorplot(f_xy,x=None,y=None,labelx='$z_i$',labely='$z_j$',ColorbarLabel='$\\rho(z_i,z_j)$ - NGC',saveplot=False,savename='corrmat_rhz_N.pdf'):
+    """
+    f_xy 2D array
+    """
+    plt.imshow(f_xy,origin='lower',extent=[x.min(),x.max(),y.min(),y.max()])
+    plt.xlabel(labelx,size=20),plt.ylabel(labely,size=20)
+    cbar = plt.colorbar() 
+    cbar.set_label(ColorbarLabel,size=18)
+    plt.clim(np.nanmin(f_xy), np.nanmax(f_xy))
+    if saveplot: plt.savefig(savename)
+
 def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',**kwargs):
+    """
+    f_xy 1D array
+    """
     cm = plt.cm.get_cmap('rainbow')
     sc = plt.scatter(x,y, c=f_xy, s=35, cmap=cm)
     plt.ylabel(yylabel,size=25),plt.xlabel(xxlabel,size=25)
