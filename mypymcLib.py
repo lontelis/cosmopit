@@ -325,7 +325,7 @@ def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_w0
     return(locals())
 
 Sfid_params_A = {
-               'A': 1.5, #1.5, #2.2,
+               'A': 1.45, #1.5, #2.2,
                #'om': 0.31,
                #'ol': 0.69,
                 }
@@ -612,12 +612,12 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                     if paper2=='2019':
                       ylim([0.,1.0])
 
-                      if vars[j]=='om': xlim([0.1,1.0]) #xlim([0.2,0.6]) #0.0,0.6
+                      if vars[j]=='om': xlim([0.2,0.8]) #xlim([0.2,0.6]) #0.0,0.6
                       if vars[j]=='ol': xlim([0.1,1.0]) #xlim([0.5,0.8]) #0.4,1.0
-                      if vars[j]=='A' : xlim([0.5,2.0])
+                      if vars[j]=='A' : xlim([0.9,1.9])
                     else:
                       ylim([0.,3.0])
-                    if plotLegendLikelihood: legend(frameon=False,fontsize=12) #8 15
+                    if plotLegendLikelihood: legend(frameon=False,fontsize=8) # 12##8 12 15
 
             if (i>j):
                 a=subplot(nplots-kk,nplots-kk,num)
@@ -629,12 +629,12 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                   print(vars[j])
                   xlim([0.0,1.0])
                 elif paper2=='2019':
-                  if   vars[j]=='om': xlim([0.1,1.0]) #xlim([0.2,0.6]) #0.0,0.6
+                  if   vars[j]=='om': xlim([0.2,0.8]) #xlim([0.2,0.6]) #0.0,0.6
                   elif vars[j]=='ol': xlim([0.1,1.0]) #xlim([0.5,0.8]) #0.4,1.0
-                  elif vars[j]=='A':  xlim([0.5,2.0]) #1.2,2.5
-                  if   vars[i]=='om': ylim([0.1,1.0]) #ylim([0.2,0.6]) #0.0,0.6
-                  elif vars[i]=='ol': ylim([0.1,1.0]) #ylim([0.5,0.8]) #0.4,1.0
-                  elif vars[i]=='A':  ylim([0.5,2.0]) #1.2,2.5
+                  elif vars[j]=='A':  xlim([0.9,1.9]) #1.2,2.5
+                  if   vars[i]=='om': ylim([0.1,0.8]) #ylim([0.2,0.6]) #0.0,0.6
+                  elif vars[i]=='ol': ylim([0.2,1.0]) #ylim([0.5,0.8]) #0.4,1.0
+                  elif vars[i]=='A':  ylim([0.9,1.9]) #1.2,2.5
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
                   else:               xlim(limits[j])
