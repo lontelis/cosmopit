@@ -1358,10 +1358,10 @@ def getd2_datamocks(datafile,covmat_y,
         rh = np.zeros(np.shape(data_y)[0])
         drh= np.zeros(np.shape(data_y)[0])
         for bi in range(np.shape(data_y)[0]):
-            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum,threshold_dthreshold_d2)
+            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum,threshold_d2=threshold_d2)
     else:
         rh,drh,result=get_rh_spline(data_x,data_y,covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,doNrTrick=doNrTrick,ZOOM1=ZOOM1,ZOOM=ZOOM, #!# Change
-            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum,threshold_dthreshold_d2
+            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum,threshold_d2=threshold_d2
             )
     print('res from get_rh_spline',result)
     
