@@ -168,7 +168,7 @@ def testMCMC_autocorrelationAll(toto):
 def compute_Rubyn(totos,nlag=0):
     """
         Rubyn Test                                                                                                                                                                                                                      
-        input :   totos = array([CMBBAO0,CMBBAO1])                                                                                                                                                                                      
+        input :   totos = [CMBBAO0,CMBBAO1]                                                                                                                                                                                     
         outout:   Rubyn_test         : All computed rubin statistic for each parameter                                                                                                                                                  
                   vars               : the name of the parameter correposnding to each test                                                                                                                                             
                   means_means_thetas : the mean of the means of the parameters                                                                                                                                                          
@@ -181,49 +181,103 @@ def compute_Rubyn(totos,nlag=0):
         testR -1. < 0.03 #loose                                                                                                                                                                                                         
         testR -1. < 0.01 #tight  
     """
+    if len(totos)>1:
+        ''' when you have run multiple chains '''
+        vars=totos[0]['vars']
+        chains=[]
+        for variable in vars:
+            for i in range(len(totos)): 
+                chains.append( totos[i]['chains'].item()[variable] )
+        chains = array(chains)
+        thetas=[]
+        for i in range(len(vars)):
+            thetas.append( chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:] )
+        print( shape(chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:]) )
+        thetas=array(thetas)
 
-    vars=totos[0]['vars']
-    chains=[]
-    for variable in vars:
-        for i in range(len(totos)): 
-            chains.append( totos[i]['chains'].item()[variable] )
-    chains = array(chains)
-    thetas=[]
-    for i in range(len(vars)):
-        thetas.append( chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:] )
-    print( shape(chains[len(totos)*i:len(totos)*(i+1),:][:,-nlag:]) )
-    thetas=array(thetas)
+        dimParams=shape(thetas)[0]
+        dimChains=shape(thetas)[1]
 
-    dimParams=shape(thetas)[0]
-    dimChains=shape(thetas)[1]
-
-    mean_thetas = []
-    sigma_thetas= []
-    for i in range(dimParams):
-        for j in range(dimChains):
-            mean_thetas.append( mean(thetas[i][j] ) )
-            sigma_thetas.append( std(thetas[i][j]*dimParams/(dimParams-1.) ) )
-    mean_thetas=array(mean_thetas)
-    sigma_thetas=array(sigma_thetas)
+        mean_thetas = []
+        sigma_thetas= []
+        for i in range(dimParams):
+            for j in range(dimChains):
+                mean_thetas.append( mean(thetas[i][j] ) )
+                sigma_thetas.append( std(thetas[i][j]*dimParams/(dimParams-1.) ) )
+        mean_thetas=array(mean_thetas)
+        sigma_thetas=array(sigma_thetas)
 
 
-    W = []
-    for j in range(dimParams):
-        W.append(  sum(sigma_thetas[len(totos)*j:len(totos)*(j+1)]**2)/dimChains  )
-    W = array(W)
+        W = []
+        for j in range(dimParams):
+            W.append(  sum(sigma_thetas[len(totos)*j:len(totos)*(j+1)]**2)/dimChains  )
+        W = array(W)
 
-    means_means_thetas = []
-    for j in range(dimParams):
-        means_means_thetas.append( sum(mean_thetas[len(totos)*j:len(totos)*(j+1)])/dimChains )
-    means_means_thetas = array(means_means_thetas)
-    Beta = []
-    for j in range(dimParams):
-        Beta.append( sum( (mean_thetas[len(totos)*j:len(totos)*(j+1)] -  means_means_thetas[j])**2 ) )
-    Beta = array(Beta)*dimParams/(dimChains-1.)
+        means_means_thetas = []
+        for j in range(dimParams):
+            means_means_thetas.append( sum(mean_thetas[len(totos)*j:len(totos)*(j+1)])/dimChains )
+        means_means_thetas = array(means_means_thetas)
+        Beta = []
+        for j in range(dimParams):
+            Beta.append( sum( (mean_thetas[len(totos)*j:len(totos)*(j+1)] -  means_means_thetas[j])**2 ) )
+        Beta = array(Beta)*dimParams/(dimChains-1.)
 
-    VarTheta = (1-1/dimParams)*W + Beta/dimParams
+        print('compute outputs')
+        VarTheta = (1.-1./dimParams)*W + Beta/dimParams
 
-    Rubyn_test = sqrt(VarTheta/W)
+        Rubyn_test = sqrt(VarTheta/W)
+
+    else:
+        ''' when you have ran only one chain you divide by Nn and you take the last Mm pieces '''
+        Nn_chain_division = 5
+        Mm_number_of_pieces = 2
+        vars=totos[0]['vars']
+        chains=[]
+        for variable in vars:
+            for i in range(Mm_number_of_pieces): 
+                initial_step        = len(totos[0]['chains'].item()[variable])/Nn_chain_division*(i+(Nn_chain_division-2))
+                initial_plus_1_step = len(totos[0]['chains'].item()[variable])/Nn_chain_division*(i+(Nn_chain_division-1))
+                chains.append( totos[0]['chains'].item()[variable][initial_step:initial_plus_1_step])
+
+        chains = array(chains)
+        len_totos=Mm_number_of_pieces
+        thetas=[]
+        for i in range(len(vars)):
+            thetas.append( chains[len_totos*i:len_totos*(i+1),:][:,-nlag:] )
+        print( shape(chains[len_totos*i:len_totos*(i+1),:][:,-nlag:]) )
+        thetas=array(thetas)
+
+        dimParams=shape(thetas)[0]
+        dimChains=shape(thetas)[1]
+
+        mean_thetas = []
+        sigma_thetas= []
+        for i in range(dimParams):
+            for j in range(dimChains):
+                mean_thetas.append( mean(thetas[i][j] ) )
+                sigma_thetas.append( std(thetas[i][j]*dimParams/(dimParams-1.) ) )
+        mean_thetas=array(mean_thetas)
+        sigma_thetas=array(sigma_thetas)
+
+
+        W = []
+        for j in range(dimParams):
+            W.append(  sum(sigma_thetas[len_totos*j:len_totos*(j+1)]**2)/dimChains  )
+        W = array(W)
+
+        means_means_thetas = []
+        for j in range(dimParams):
+            means_means_thetas.append( sum(mean_thetas[len_totos*j:len_totos*(j+1)])/dimChains )
+        means_means_thetas = array(means_means_thetas)
+        Beta = []
+        for j in range(dimParams):
+            Beta.append( sum( (mean_thetas[len_totos*j:len_totos*(j+1)] -  means_means_thetas[j])**2 ) )
+        Beta = array(Beta)*dimParams/(dimChains-1.)
+
+        print('compute outputs')
+        VarTheta = (1.-1./dimParams)*W + Beta/dimParams
+
+        Rubyn_test = sqrt(VarTheta/W)
 
     return Rubyn_test,vars,means_means_thetas,arange(nlag)
 

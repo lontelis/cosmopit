@@ -818,7 +818,7 @@ def polymodel(x,*params):
     thep=np.poly1d(params)
     return(thep(x))
 
-def give_fitVariables(who_give='d2'):
+def give_fitVariables(who_give='d2',threshold_d2=2.97):
     if who_give=='xi':
         homogenValue,ylabel_val,legend_loc,ylims,threshold=0.,'$\\xi(r)$',1,[-.01,0.05],0.01 #[-0.01,0.05],   
     elif who_give=='nr':
@@ -827,7 +827,7 @@ def give_fitVariables(who_give='d2'):
         # [0.998,1.04],1.01
         # [0.999,1.01],1.001 
     elif who_give=='d2':
-        homogenValue,ylabel_val,legend_loc,ylims,threshold=3.,'$\mathcal{D}_2(r)$',4,[2.92,3.01],2.97#[2.990,3.003],2.997
+        homogenValue,ylabel_val,legend_loc,ylims,threshold=3.,'$\mathcal{D}_2(r)$',4,[2.92,3.01],threshold_d2#[2.990,3.003],2.997
         # 3.,'$\mathcal{D}_2(r)$',4,[2.92,3.01],2.97
         # 3.,'$\mathcal{D}_2(r)$',4,[2.99,3.002],2.997 
         # 3.,'$\mathcal{D}_2(r)$',3,[2.96,3.002],2.97
@@ -996,9 +996,9 @@ def get_rh_mcmc(x,y,cov,j_mock,zmid,poldeg=5,xstart=50,xstop=500,nburn=1000,nbmc
 
 def get_rh_spline(x,y,cov,nbspl=12,nmock_prec=None,xstart=30,xstop=1300,doplot=True,diagonly=False,logspace=True,who_give='d2',ZOOM='False',ZOOM1='False',cholesky=False,doNrTrick=False,
     QPM2PL_a=np.nan,allObsN=None,nmock=None,rth=None,obs_theory=None,rh_obs_theory=None,znames=None,
-    color='b',colordata='k',fignum=1):
+    color='b',colordata='k',fignum=1,threshold_d2=2.97):
 
-    homogenValue,ylabel_val,legend_loc,ylims,threshold = give_fitVariables(who_give=who_give)
+    homogenValue,ylabel_val,legend_loc,ylims,threshold = give_fitVariables(who_give=who_give,threshold_d2=threshold_d2)
 
     # get desired sub array
     w=np.where((x >= xstart) & (x <= xstop))
@@ -1324,7 +1324,7 @@ def read_datamocks(datafile,mockdir,who_give='d2',who_xi='ls',who_Nest='JC',bias
 def getd2_datamocks(datafile,covmat_y,
     cosmoFID={},cosmoGAU={},biasFID=2.0,sigpFID=350.,change_gauge=True,zmid=0.5,kaiserFID=False,dampingFID=False,galaxyFID=False,who_Nest='JC',
     who_give='d2',combine=False,doNrTrick=True,r0=30.,rstop=1300.,nbspl=12,nmock_prec=None,doplot=False,ZOOM=False,
-    ZOOM1=False,QPM2PL_a=np.nan,allObsN=None,nmock=None,rth=None,obs_theory=None,rh_obs_theory=None,znames=None,fignum=1
+    ZOOM1=False,QPM2PL_a=np.nan,allObsN=None,nmock=None,rth=None,obs_theory=None,rh_obs_theory=None,znames=None,fignum=1,threshold_d2=2.97
     ):
     '''NOT GOOD for datafile=mocks '''
     #read data and mocks 
@@ -1358,10 +1358,10 @@ def getd2_datamocks(datafile,covmat_y,
         rh = np.zeros(np.shape(data_y)[0])
         drh= np.zeros(np.shape(data_y)[0])
         for bi in range(np.shape(data_y)[0]):
-            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum)
+            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum,threshold_d2=threshold_d2)
     else:
         rh,drh,result=get_rh_spline(data_x,data_y,covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,doNrTrick=doNrTrick,ZOOM1=ZOOM1,ZOOM=ZOOM, #!# Change
-            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum
+            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum,threshold_d2=threshold_d2
             )
     print('res from get_rh_spline',result)
     
