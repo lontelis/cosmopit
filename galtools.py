@@ -637,13 +637,13 @@ def rhomo_nr(r,nrvec):
     f=interpolate.interp1d(thenrvec[::-1],ther[::-1],bounds_error=False)
     return(f(1.01))
 
-def rhomo_d2(r,d2):
+def rhomo_d2(r,d2,threshold_d2=2.97):
     w=np.where(r >= 10)
     f=interpolate.interp1d(d2[w],r[w],bounds_error=False)
-    return(f(2.97))
+    return(f(threshold_d2))
 
 def homogeneity_many_pairs(files,   
-    cosmoFID={},cosmoGAU={},biasFID=None,sigpFID=None,zmid=0.5,kaiserFID=False,dampingFID=False,galaxyFID=False,biasGAU=2.0,sigpGAU=350.,kaiserGAU=False,dampingGAU=False,galaxyGAU=False,change_gauge=True,who_xi='ls',who_Nest='JC'):
+    cosmoFID={},cosmoGAU={},biasFID=None,sigpFID=None,zmid=0.5,kaiserFID=False,dampingFID=False,galaxyFID=False,biasGAU=2.0,sigpGAU=350.,kaiserGAU=False,dampingGAU=False,galaxyGAU=False,change_gauge=True,who_xi='ls',who_Nest='JC',threshold_d2=2.97):
     r,dd,rr,dr,ng,nr       = read_pairs(files[0])
 
     nsim=np.size(files)
@@ -1257,7 +1257,7 @@ def read_data(datafile,who_xi='ls',who_Nest='JC',combine=False,corrSS = False,rM
 
 def read_mocks(mockdir, cosmoFID={},cosmoGAU={},zmid=0.5,
     change_gauge=True,biasFID=None,sigpFID=None,kaiserFID=False,dampingFID=False,galaxyFID=False,biasGAU=2.0,sigpGAU=350.,kaiserGAU=False,dampingGAU=False,galaxyGAU=False, 
-    who_xi='ls',who_Nest='JC',who_give='d2',pairfiles='pairs_*.txt',combine=False,calc_xi=True,xi0Bool=True,change_gauge_xi=False,correct_smallscales=True,rMin_fnct_nr_gal=5.0):
+    who_xi='ls',who_Nest='JC',who_give='d2',pairfiles='pairs_*.txt',combine=False,calc_xi=True,xi0Bool=True,change_gauge_xi=False,correct_smallscales=True,rMin_fnct_nr_gal=5.0,threshold_d2=2.97):
     # Read Mocks to get covariance matrix
     
     if mockdir is None:
@@ -1269,7 +1269,7 @@ def read_mocks(mockdir, cosmoFID={},cosmoGAU={},zmid=0.5,
             nmock = np.shape(mockfiles)[0]
             #mockfiles = mockfiles_[:100] # 990 pour debugging
             #r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,rhxi,rhnr,rhd2,sigrhxi,sigrhnr,sigrhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs(mockfiles,bias,who_Nest=who_Nest,precision=precision)
-            r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs(mockfiles,   cosmoFID=cosmoFID,cosmoGAU=cosmoGAU,biasFID=biasFID,sigpFID=sigpFID,zmid=zmid,kaiserFID=kaiserFID,dampingFID=dampingFID,galaxyFID=galaxyFID,biasGAU=biasGAU,sigpGAU=sigpGAU,kaiserGAU=kaiserGAU,dampingGAU=dampingGAU,galaxyGAU=galaxyGAU,change_gauge=change_gauge,who_xi=who_xi,who_Nest=who_Nest)
+            r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs(mockfiles,   cosmoFID=cosmoFID,cosmoGAU=cosmoGAU,biasFID=biasFID,sigpFID=sigpFID,zmid=zmid,kaiserFID=kaiserFID,dampingFID=dampingFID,galaxyFID=galaxyFID,biasGAU=biasGAU,sigpGAU=sigpGAU,kaiserGAU=kaiserGAU,dampingGAU=dampingGAU,galaxyGAU=galaxyGAU,change_gauge=change_gauge,who_xi=who_xi,who_Nest=who_Nest,threshold_d2=threhold_d2)
 
         elif combine is True:
             mockfiles0=glob.glob(mockdir[0]+pairfiles)
@@ -1277,19 +1277,19 @@ def read_mocks(mockdir, cosmoFID={},cosmoGAU={},zmid=0.5,
             nbcommon=min([size(mockfiles0),size(mockfiles1)])
             print('wont work need update' )
             #r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,rhxi,rhnr,rhd2,sigrhxi,sigrhnr,sigrhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs_combine(mockfiles0[:nbcommon],mockfiles1[:nbcommon],bias,who_Nest=who_Nest,precision=precision)
-            r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs_combine(mockfiles0[:nbcommon],mockfiles1[:nbcommon],bias,who_Nest=who_Nest,precision=precision)
+            r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs_combine(mockfiles0[:nbcommon],mockfiles1[:nbcommon],bias,who_Nest=who_Nest,precision=precision,threshold_d2=threhold_d2)
         elif combine is 'cute':
             mockfiles=glob.glob(mockdir+pairfiles) 
             nmock = np.shape(mockfiles)[0]
             r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=read_cute_many(mockfiles, 
                 cosmoFID=cosmoFID,cosmoGAU=cosmoGAU,biasFID=biasFID,sigpFID=sigpFID,zmid=zmid,kaiserFID=kaiserFID,dampingFID=dampingFID,galaxyFID=galaxyFID,biasGAU=biasGAU,sigpGAU=sigpGAU,kaiserGAU=kaiserGAU,dampingGAU=dampingGAU,galaxyGAU=galaxyGAU,change_gauge=change_gauge,
-                who_xi=who_xi,who_Nest=who_Nest,calc_xi=calc_xi,change_gauge_xi=change_gauge_xi,correct_smallscales=correct_smallscales,rMin_fnct_nr_gal=rMin_fnct_nr_gal)
+                who_xi=who_xi,who_Nest=who_Nest,calc_xi=calc_xi,change_gauge_xi=change_gauge_xi,correct_smallscales=correct_smallscales,rMin_fnct_nr_gal=rMin_fnct_nr_gal,threshold_d2=threhold_d2)
         elif combine is 'cute_rm':
             mockfiles=glob.glob(mockdir+pairfiles) 
             nmock = np.shape(mockfiles)[0]
             r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=read_cute_many_rm(mockfiles, 
                 cosmoFID=cosmoFID,cosmoGAU=cosmoGAU,biasFID=biasFID,sigpFID=sigpFID,zmid=zmid,kaiserFID=kaiserFID,dampingFID=dampingFID,galaxyFID=galaxyFID,biasGAU=biasGAU,sigpGAU=sigpGAU,kaiserGAU=kaiserGAU,dampingGAU=dampingGAU,galaxyGAU=galaxyGAU,change_gauge=change_gauge,
-                who_xi=who_xi,who_Nest=who_Nest,calc_xi=calc_xi,xi0Bool=xi0Bool,rMin_fnct_nr_gal=rMin_fnct_nr_gal)         
+                who_xi=who_xi,who_Nest=who_Nest,calc_xi=calc_xi,xi0Bool=xi0Bool,rMin_fnct_nr_gal=rMin_fnct_nr_gal,threshold_d2=threhold_d2)         
         elif combine is 'cute_se':
             mockfiles=glob.glob(mockdir+pairfiles) 
             nmock = np.shape(mockfiles)[0]
@@ -1310,9 +1310,9 @@ def read_mocks(mockdir, cosmoFID={},cosmoGAU={},zmid=0.5,
         return(covmat_ss,mean_ss,all_rhss,all_ss,r,nmock)
 
 
-def read_datamocks(datafile,mockdir,who_give='d2',who_xi='ls',who_Nest='JC',bias=2.,combine=False):
+def read_datamocks(datafile,mockdir,who_give='d2',who_xi='ls',who_Nest='JC',bias=2.,combine=False,threshold_d2=2.97):
     r,d2,nr,xi=read_data(datafile,who_xi=who_xi,combine=combine)
-    covmatObs,mean_Obs,all_rhObs,all_obs,rrr=read_mocks(mockdir,bias,who_give=who_give,who_Nest=who_Nest,combine=combine)
+    covmatObs,mean_Obs,all_rhObs,all_obs,rrr=read_mocks(mockdir,bias,who_give=who_give,who_Nest=who_Nest,combine=combine,threshold_d2=threhold_d2)
     '''need update'''
     print('need update' )
     stop
@@ -1401,7 +1401,7 @@ def getd2_datamocks_mcmc(datafile,covmat_y,j_mock,zmid,who_give='d2',who_Nest='J
     return(rh,drh,chi2,NDF,data_x,data_y)
 
 def give_obs_mocks(who_give='xi', who_xi='ph',who_Nest='str',mockfiles=[]):
-    r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs(mockfiles,who_xi=who_xi,who_Nest=who_Nest)
+    r,mean_xi,sig_xi,mean_nr,sig_nr,mean_d2,sig_d2,covmat_xi,covmat_nr,covmat_d2,cormat_xi,cormat_nr,cormat_d2,all_rhxi,all_rhnr,all_rhd2,all_xi,all_nr,all_d2=homogeneity_many_pairs(mockfiles,who_xi=who_xi,who_Nest=who_Nest,threshold_d2=threhold_d2)
     if who_give == 'xi':
         return(r,mean_xi/(bias**2),covmat_xi/(bias**2),sig_xi/(bias**2),all_xi/(bias**2),all_rhxi/(bias**2))
     elif who_give == 'xi_gal':
@@ -1806,7 +1806,7 @@ def read_cute_many_backup(files,who_Nest='JC',who_xi='ls',calc_xi=False):
 
 def read_cute_many(files,
     cosmoFID={},cosmoGAU={},biasFID=None,sigpFID=None,zmid=0.5,kaiserFID=False,dampingFID=False,galaxyFID=False,biasGAU=2.0,sigpGAU=350.,kaiserGAU=False,dampingGAU=False,galaxyGAU=False,change_gauge=True,change_gauge_xi=False,
-    who_Nest='JC',who_xi='ls',calc_xi=False,correct_smallscales=True,rMin_fnct_nr_gal=5.0):
+    who_Nest='JC',who_xi='ls',calc_xi=False,correct_smallscales=True,rMin_fnct_nr_gal=5.0,threshold_d2=2.97):
     
     r,xi0,dd,rr,dr,ng,nr = read_cute(files[0])
     nsim  = len(files)
@@ -1825,9 +1825,6 @@ def read_cute_many(files,
         all_nr[counter]  = N_of_xi(r,all_xi[counter])
         if calc_xi: all_xi[counter]  = xi(dd,rr,dr,who_xi=who_xi)
         if calc_xi: all_nr[counter]  = nr_gal(r,dd,rr,dr,who_Nest=who_Nest,correct_smallscales=correct_smallscales,rMin=rMin_fnct_nr_gal) #nr_gal(r,dd,rr,dr,who_Nest=who_Nest,correct_smallscales=True) #N_of_xi(r,all_xi[counter])
-
-        #if counter==3: stop
-
         all_rhxi[counter]=rhomo_nr(r,all_xi[counter])
 
         counter += 1            
@@ -1847,7 +1844,7 @@ def read_cute_many(files,
         thed2 = d2_of_N(r,all_nr[i,:])
 
         all_d2[i,:]=thed2
-        all_rhd2[i]=rhomo_d2(r,thed2)  #        all_rhd2[i]=rhomo_d2(r[1:],thed2)
+        all_rhd2[i]=rhomo_d2(r,thed2,threshold_d2=threhold_d2)  #        all_rhd2[i]=rhomo_d2(r[1:],thed2)
 
     #print nsim
     mean_xi,sig_xi,covmat_xi,cormat_xi=average_realisations(all_xi)
