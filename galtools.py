@@ -998,7 +998,7 @@ def get_rh_spline(x,y,cov,nbspl=12,nmock_prec=None,xstart=30,xstop=1300,doplot=T
     QPM2PL_a=np.nan,allObsN=None,nmock=None,rth=None,obs_theory=None,rh_obs_theory=None,znames=None,
     color='b',colordata='k',fignum=1,threshold_d2=2.97):
 
-    homogenValue,ylabel_val,legend_loc,ylims,threshold = give_fitVariables(who_give=who_give,threshold_d2=threshold_d2)
+    homogenValue,ylabel_val,legend_loc,ylims,threshold = give_fitVariables(who_give=who_give,size=40)
 
     # get desired sub array
     w=np.where((x >= xstart) & (x <= xstop))
@@ -1358,10 +1358,10 @@ def getd2_datamocks(datafile,covmat_y,
         rh = np.zeros(np.shape(data_y)[0])
         drh= np.zeros(np.shape(data_y)[0])
         for bi in range(np.shape(data_y)[0]):
-            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum,threshold_d2=threshold_d2)
+            rh[bi],drh[bi],result=get_rh_spline(data_x,data_y[bi],covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,ZOOM=ZOOM,doNrTrick=doNrTrick,fignum=fignum,size=40)
     else:
         rh,drh,result=get_rh_spline(data_x,data_y,covmat_y,nbspl=nbspl,nmock_prec=nmock_prec,xstart=r0,xstop=rstop,who_give=who_give,doplot=doplot,doNrTrick=doNrTrick,ZOOM1=ZOOM1,ZOOM=ZOOM, #!# Change
-            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum,threshold_d2=threshold_d2
+            QPM2PL_a=QPM2PL_a,allObsN=allObsN,nmock=nmock,rth=rth,obs_theory=obs_theory,rh_obs_theory=rh_obs_theory,znames=znames,fignum=fignum,size=40
             )
     print('res from get_rh_spline',result)
     
