@@ -827,7 +827,7 @@ def give_fitVariables(who_give='d2',threshold_d2=2.97):
         # [0.998,1.04],1.01
         # [0.999,1.01],1.001 
     elif who_give=='d2':
-        homogenValue,ylabel_val,legend_loc,ylims,threshold=3.,'$\mathcal{D}_2(r)$',4,[2.92,3.01],threshold_d2#[2.990,3.003],2.997
+        homogenValue,ylabel_val,legend_loc,ylims,threshold=3.,'$\mathcal{D}_2(r)$',4,[2.88,3.01],threshold_d2#[2.990,3.003],2.997
         # 3.,'$\mathcal{D}_2(r)$',4,[2.92,3.01],2.97
         # 3.,'$\mathcal{D}_2(r)$',4,[2.99,3.002],2.997 
         # 3.,'$\mathcal{D}_2(r)$',3,[2.96,3.002],2.97
