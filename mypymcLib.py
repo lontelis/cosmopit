@@ -203,7 +203,7 @@ def Sll_model_dcabrsrVom(datasets, variables = ['dc','a','b','rs','rV','om'], fi
     return(locals())
 
 Sfid_params_Aomol = {
-               'A': 1.2, # 1.2
+               'A': 1.0, # 1.2
                #'B': 0.57, # 0.55
                'om': 0.31, #0.31,
                'ol': 0.69, #0.69,
