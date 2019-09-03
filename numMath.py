@@ -63,6 +63,21 @@ def p_value_python(chi2_in=3.4,ndf_in=1):
     """
     return 1.-stats.chi2.cdf(chi2_in, ndf_in)
 
+def normal_test(x_normaltest):
+    ''' 
+    Test's if a random variable comes from a normal distribution 
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
+    '''
+
+    k2_normaltest, p_normaltest = stats.normaltest(x_normaltest)
+    alpha_normaltest = 1e-3
+    print("p = {:g}".format(p_normaltest))
+    if p_normaltest < alpha_normaltest: # null hypothesis: x comes from a normal distribution
+        print("The null hypothesis can be rejected")
+    else: 
+        print("The null hypothesis cannot be rejected")
+    return 0
+
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
     dim    = len(x)
