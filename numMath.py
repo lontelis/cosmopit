@@ -76,7 +76,7 @@ def normal_test(x_normaltest):
         print("The null hypothesis can be rejected")
     else: 
         print("The null hypothesis cannot be rejected")
-    return 0
+    return p_normaltest,alpha_normaltest
 
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
