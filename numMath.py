@@ -819,11 +819,12 @@ def NameZ2(minz,maxz,nbins):
     USE: zedge,znames,dz,zmid,nbins = numMath.NameZ2(minz=0.43,maxz=0.7,nbins=5)
     """
     zedge = np.linspace(minz,maxz,nbins+1)
-    znames = np.array(np.zeros(nbins), dtype='|S20')
-    
+
+    znames=[]
     for i in np.arange(nbins):
-        znames[i]='z_'+str(zedge[i])+'_'+str(zedge[i+1])
-    
+        znames.append('z_'+str(np.round(zedge[i],3))+'_'+str(np.round(zedge[i+1],3)))
+    znames=np.array(znames)
+
     dz=np.zeros(nbins)+(zedge[1]-zedge[0])/2
     zmid=(zedge[np.arange(nbins)]+zedge[np.arange(nbins)+1])/2
 
