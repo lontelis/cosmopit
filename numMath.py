@@ -78,6 +78,23 @@ def normal_test(x_normaltest):
         print("The null hypothesis cannot be rejected")
     return p_normaltest,alpha_normaltest
 
+def get_mean_median_std_plus_minus_68percintiles(given_array,bins=1000):
+    mean_array       = np.mean(given_array)
+    median_array     = np.median(given_array)
+    n_array ,array_bin_edge ,blabla = hist(given_array ,bins=bins)
+    array_bin        = array_bin_edge[:-1] +np.diff(array_bin_edge) *0.5
+    mode_array       = array_bin[n_array.argmax()]
+    std_array        = np.std(given_array)
+    p25= mean_array - np.percentile(given_array,100-68)
+    p75= mean_array - np.percentile(given_array,68)    
+    print(mean_array)
+    print(median_array)
+    print(mode_array)
+    print(std_array)
+    print(p25)
+    print(p75)
+    return(mean_array,median_array,mode_array,std_array,p25,p75)
+
 def covmat(x,y):
     """ return the covariane matrix of parameter x and y """
     dim    = len(x)

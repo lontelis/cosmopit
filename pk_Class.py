@@ -639,8 +639,13 @@ def cosmo_WZ():
 
 ################### VOIDING ###########################
 
+"""
+Eq 31 and nearby in 1409.3849 
+"""
+
 def eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
     mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
+    print(pi*mean_number_density*D/6.)
     return pi*mean_number_density*D/6.
 
 def alpha_1_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):

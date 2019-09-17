@@ -601,8 +601,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                         mm = np.mean(chain[var])
                         p25= np.percentile(chain[var],100-68) - mm 
                         p75= np.percentile(chain[var],68)     - mm
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm_{%0.2f}^{+%0.2f}$'%(mm, p25,p75 ))
-
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm_{%0.2f}^{+%0.2f}$'%(mm, p25,p75))
                     else:
                         plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f'%(np.mean(chain[var]), np.std(chain[var])))
                     if paper2=='2018':
