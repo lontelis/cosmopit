@@ -545,11 +545,12 @@ def N_of_xi(r,xi):
     return(N_gal)
 
 def d2_of_N(r,nr,mu=None,gradient=True,which_gradient=False):
+    nr = abs(nr)
     if gradient:
         dlogr = np.gradient(np.log(r))
         #d2_res = np.gradient(np.log(nr),dlogr) + 3.
         ''' gradient has changed on numpy 1.14.1 now to be compatible with previous gradient one needs to use '''
-        d2_res = np.gradient(np.log(nr))/dlogr + 3.
+        d2_res = np.gradient(np.log( nr ))/dlogr + 3.
     elif np.shape(np.shape(nr))==(2,): # NEW FEATURE NEED TO BE INTEGRATED TO ALL FUNCTIONS
         if which_gradient:
             d2_res = np.gradient( np.log(nr) , np.gradient(np.log(r))[:,None] , axis=0) + 3.
@@ -557,6 +558,7 @@ def d2_of_N(r,nr,mu=None,gradient=True,which_gradient=False):
             d2_res = np.gradient( np.gradient(np.log(nr), np.gradient(np.log(r))[:,None] , axis=0),np.gradient( np.log(mu))[None,:] ,axis=1)  + 3.
         print('# NEW FEATURE NEED TO BE INTEGRATED TO ALL FUNCTIONS')
     else:
+        print('you are here')
         dlogr = np.diff(np.log(r))
         dlognr = np.diff(np.log(nr))
         d2 = dlognr/dlogr + 3.

@@ -174,6 +174,36 @@ def Sll_model_b0fNL(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_
         return(ll)
     return(locals())
 
+Sfid_params_dcabrsrVomol = {
+              'dc':-1.0,
+              'a':3.5  ,
+              'b':2.7  ,
+              'rs':30  ,
+              'rV':30  ,
+              'om':0.32,
+              'ol':1-0.32,
+                }
+
+def Sll_model_dcabrsrVomol(datasets, variables = ['dc','a','b','rs','rV','om','ol'], fidvalues = Sfid_params_dcabrsrVomol):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+        
+    dc = pymc.Uniform('dc', -3.,0.0 , value = Sfid_params_dcabrsrVomol['dc'], observed = 'dc' not in variables)
+    a  = pymc.Uniform('a' , 2.0,5.0 , value = Sfid_params_dcabrsrVomol['a'] , observed = 'a' not in variables)
+    b  = pymc.Uniform('b' , 1.0,4.0, value = Sfid_params_dcabrsrVomol['b'] , observed = 'b' not in variables)
+    rs = pymc.Uniform('rs', 10.,100., value = Sfid_params_dcabrsrVomol['rs'], observed = 'rs' not in variables)
+    rV = pymc.Uniform('rV', 10.,100., value = Sfid_params_dcabrsrVomol['rV'], observed = 'rV' not in variables)
+    om = pymc.Uniform('om', 0.0,2.0 , value = Sfid_params_dcabrsrVomol['om'], observed = 'om' not in variables)
+    ol = pymc.Uniform('ol', 0.0,2.0 , value = Sfid_params_dcabrsrVomol['ol'], observed = 'ol' not in variables)
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0,dc=dc,a=a,b=b,rs=rs,rV=rV,om=om,ol=ol ):
+        ll=0.
+        pars = np.array([dc,a,b,rs,rV,om,ol])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
 Sfid_params_dcabrsrVom = {
               'dc':-1.0,
               'a':2.3  ,
@@ -530,6 +560,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='dcabrsrVom':
       feed_ll_model = Sll_model_dcabrsrVom
       feedPars       = Sfid_params_dcabrsrVom
+    elif w_ll_model=='dcabrsrVomol':
+      feed_ll_model = Sll_model_dcabrsrVomol
+      feedPars       = Sfid_params_dcabrsrVomol
     elif w_ll_model=='OmOLAsigmaA0A1A2':
       feed_ll_model = Sll_model_OmOLAsigmaA0A1A2
       feedPars       = Sfid_params_OmOLAsigmaA0A1A2

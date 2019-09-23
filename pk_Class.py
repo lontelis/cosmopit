@@ -645,8 +645,8 @@ Eq 31 and nearby in 1409.3849
 
 def eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
     mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
-    print(pi*mean_number_density*D/6.)
-    return pi*mean_number_density*D/6.
+    print(pi*mean_number_density*D**3./6.)
+    return pi*mean_number_density*D**3./6.
 
 def alpha_1_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
     eta_input = eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.)
@@ -673,7 +673,7 @@ def c_fnct(k,D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
 def P_exclusion_fnt(k,D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.,if_Gaussian_Damping=False,sig_G=10.,kstar=0.2):
     mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
     c_in = c_fnct(k,D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
-    result = c_in / (1.-(2.*pi)**3.*mean_number_density*c_in )
+    result = c_in / (1.-(2.*pi)**3.*mean_number_density*c_in ) 
     if if_Gaussian_Damping:
         result=result*exp(-0.5*(sig_G*(k-kstar) )**2.)         
     return result
