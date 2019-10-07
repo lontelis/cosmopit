@@ -28,6 +28,7 @@ class theory:
             'non linear': '',
             'output': 'mPk mTk', # Add the request for total matter transfer function in fourier space
             'z_max_pk': z_max_pk, #10.
+            #'k_pivot' : 0.05,
             'P_k_max_h/Mpc': P_k_max_h} #100.
         if 'Omega_k' in cosmopars.keys(): pass 
         else: cosmopars.update({'Omega_k':0.0})
@@ -195,7 +196,7 @@ class theory:
             pk_in = P_exclusion_input 
         elif if_Pk_VOIDS=='pk_exclusion + pk': 
             P_exclusion_input = P_exclusion_fnt(self.k,D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3,if_Gaussian_Damping=if_Gaussian_Damping,sig_G=sig_G,kstar=kstar)
-            pk_in = P_exclusion_input + pk_in
+            pk_in = P_exclusion_input * pk_in 
         else: pass
 
         if (type(vShape)==tuple) or (type(vShape)==np.ndarray): AShape = self.fctShape(x,vShape)
@@ -434,17 +435,20 @@ class theory:
 
     # Non-Linearities #############################
 
-    def fgrowth(self,z,gammaexp=0.55):
+    def fgrowth(self,z,gammaexp=0.55,if_paper='Coho2019'):
         ###return (Om*(1+z)**3.)**0.55
         # Parameterized Beyond-Einstein Growth
         # https://arxiv.org/pdf/astro-ph/0701317.pdf
         # after equation 3 second to last sentence of the paragraph
-        # return ( Om*(1.+z)**3. /( Om*(1.+z)**3. + 1. - Om ) )**gammaexp
+        # print( ( self.Omega_m*(1.+z)**3. /( self.Omega_m*(1.+z)**3. + 1. - self.Omega_m ) )**gammaexp )
         #print('Omega_k,Omega_m,Omega_L')
         #print(self.Omega_k,self.Omega_m,self.Omega_L)
         #print(1-(self.Omega_m+self.Omega_L)) 
-        res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
-        #print('fgrowth=%0.3f'%(res))
+        if if_paper=='Coho2019':
+            res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
+        elif if_paper=='fnl2019':
+            res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0)**2. )**gammaexp
+        print('fgrowth=%0.3f'%(res))
         return res
 
 def Kaiser_TERM(fgrowth,bias):
@@ -643,22 +647,23 @@ def cosmo_WZ():
 Eq 31 and nearby in 1409.3849 
 """
 
-def eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+def eta_fnct(D=35.,number_of_voids=122907.,volume_in_Mpc_h_power_3=2000**3.):
+    """ packing factor """
     mean_number_density = number_of_voids/volume_in_Mpc_h_power_3
     print(pi*mean_number_density*D**3./6.)
     return pi*mean_number_density*D**3./6.
 
-def alpha_1_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
-    eta_input = eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.)
-    return (1.+2.*eta_input)**2./(1.-eta_input)**4.
+def alpha_1_fnct(D=35.,number_of_voids=122907.,volume_in_Mpc_h_power_3=2000**3.):
+    eta_input = eta_fnct(D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    return ((1.+2.*eta_input)**2.)/((1.-eta_input)**4.)
 
-def alpha_2_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
-    eta_input = eta_fnct(D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.)
-    return -(1.+eta_input/2.)**2./(1.-eta_input)**4.
+def alpha_2_fnct(D=35.,number_of_voids=122907.,volume_in_Mpc_h_power_3=2000**3.):
+    eta_input = eta_fnct(D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
+    return -1.0*((1.+eta_input/2.)**2.)/((1.-eta_input)**4.)
 
 def q_fnt(k,D=35.): return k*D
 
-def c_fnct(k,D=35.,number_of_voids=12207.,volume_in_Mpc_h_power_3=2000**3.):
+def c_fnct(k,D=35.,number_of_voids=122907.,volume_in_Mpc_h_power_3=2000**3.):
     q_in       = q_fnt(k,D=D)
     eta_in     = eta_fnct(    D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
     alpha_2_in = alpha_2_fnct(D=D,number_of_voids=number_of_voids,volume_in_Mpc_h_power_3=volume_in_Mpc_h_power_3)
