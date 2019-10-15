@@ -17,24 +17,32 @@ print('This mypymclib new')
 ###############################################################################
 ### define data classes #######################################################
 class Data():
-    def __init__(self, xvals=None, yvals=None, errors=None, model=None, prior=False, nmock_prec=None):
+    def __init__(self, xvals=None, yvals=None, errors=None, yvals_right=None, model=None, model_right=None, prior=False, nmock_prec=None):
         self.prior = prior
         self.model = model
         self.xvals = xvals
         self.yvals = yvals
+        if np.any(yvals_right!=None) and model_right!=None:
+            self.model_right = model_right
+            self.yvals_right = yvals_right
         if not self.prior:
             if np.size(np.shape(errors)) == 1:
                 self.covar=np.zeros((np.size(errors),np.size(errors)))
                 self.covar[np.arange(np.size(errors)),np.arange(np.size(errors))]=errors**2
             else:
                 self.covar = errors
-            if nmock_prec!=None: self.covar = self.covar* (nmock_prec-1.)/(nmock_prec-len(self.xvals)-2.)
+            if nmock_prec!=None: self.covar = self.covar * (nmock_prec-1.)/(nmock_prec-len(self.xvals)-2.)
             self.invcov = np.linalg.inv(self.covar)
     
     def __call__(self,*pars):
         if  not self.prior:
-            val=self.model(self.xvals,pars[0])
-            chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals-val)
+            if np.any(self.yvals_right!=None) and self.model_right!=None:
+                val      =self.model(self.xvals,pars[0])
+                val_right=self.model_right(self.xvals,pars[0])
+                chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals_right-val_right)
+            else:
+                val=self.model(self.xvals,pars[0])
+                chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals-val)
         else:
             chi2 = self.model(self.xvals, pars[0])
         return(-0.5*chi2)
@@ -155,7 +163,7 @@ def Sll_model_b0OmfNL(datasets, variables = ['b0','om0','fNL'], fidvalues = Sfid
 
 
 Sfid_params_b0fNL = {
-               'b0':2.0,
+               'b0':1.0,
                #'h':0.67,
                'fNL':0.0,
                 }
@@ -163,7 +171,7 @@ Sfid_params_b0fNL = {
 def Sll_model_b0fNL(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_b0fNL):
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    b0     = pymc.Uniform('b0',    1.0,8.0 , value = Sfid_params_b0fNL['b0'] , observed = 'b0'  not in variables)
+    b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNL['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -200.,200., value = Sfid_params_b0fNL['fNL'], observed = 'fNL' not in variables) 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, b0=b0,fNL=fNL): 

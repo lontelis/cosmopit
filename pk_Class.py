@@ -47,6 +47,7 @@ class theory:
         self.r_s = cosmo_CLASS.rs_drag()
         self.h   = cosmopars['h']
         self.Omega_m=(cosmo_CLASS.pars['omega_b']+cosmo_CLASS.pars['omega_cdm'])/(cosmo_CLASS.pars['h']**2) 
+        self.n_s    = cosmo_CLASS.pars['n_s']
 
         if ExtraPars: self.w0,self.wa=cosmo_CLASS.pars['w0_fld'],cosmo_CLASS.pars['wa_fld']
         else:         self.w0,self.wa=-1.,0.
@@ -74,6 +75,7 @@ class theory:
         
         self.nk=nk
         self.k=np.linspace(kmin,kmax,nk) #0.001
+        self.kmin=kmin
         self.pk=self.k*0.
         self.sig8_Ext=sig8_Ext
         self.sig8_CLASS=sig8_CLASS
@@ -82,6 +84,7 @@ class theory:
         self.redshift=z
 
         self.pk_class_MM,self.pk_interpol=self.calc_pk_CMMpk_interp_sig8(self.redshift)
+        self.pk_class_MM0,self.pk_interpol0=self.calc_pk_CMMpk_interp_sig8(0.0)
 
         # compute Tk from class
         self.d_Transfer_tot,self.k_h_Mpc_for_transfer = cosmo_CLASS.get_transfer()['d_tot'],cosmo_CLASS.get_transfer()['k (h/Mpc)']
@@ -110,12 +113,51 @@ class theory:
         return pk_CMM,pk_interp 
 
     def get_Tk(self,kin):
-        '''  calculating the Tk according to your k from the one obtained from CLASS software '''
-        #Tkout = zeros(kin)
-        Tk_interp = interpolate.interp1d(self.k_h_Mpc_for_transfer,self.d_Transfer_tot)
-        Tkout = Tk_interp(kin)
-        print('warning! Verify that this is the Tk not the density of Tk as CLASS software writes')
-        return Tkout 
+        r"""
+        Forked from : https://nbodykit.readthedocs.io/en/latest/_modules/nbodykit/cosmology/power/transfers.html#CLASS.__call__
+        Return the CLASS linear transfer function at :attr:`redshift`. This
+        computes the transfer function from the CLASS linear power spectrum
+        using:
+
+        .. math::
+
+            T(k) = \left [ P_L(k) / k^n_s  \right]^{1/2}.
+
+        We normalize the transfer function :math:`T(k)` to unity as
+        :math:`k \rightarrow 0` at :math:`z=0`.
+
+        Parameters
+        ---------
+        k : float, array_like
+            the wavenumbers in units of :math:`h \mathrm{Mpc}^{-1}`
+
+        Returns
+        -------
+        Tk : float, array_like
+            the transfer function evaluated at ``k``, normalized to unity on
+            large scales
+
+        """
+        print('get_Tk still needs debugging')
+
+        k = numpy.asarray(kin)
+        nonzero = k>0
+        linearP = self.pk_interpol0(k[nonzero]) 
+        primordialP = k[nonzero]**(self.n_s) # put k into h Mpc^{-1}
+
+        # find the low-k amplitude to normalize to 1 as k->0 at z = 0
+        self._norm = 1.
+
+        # return shape
+        Tk = numpy.ones(nonzero.shape)
+
+        # at k=0, this is 1.0 * D(z), where T(k) = 1.0 at z=0
+        Tk[~nonzero] = 1.0
+
+        # fill in all k>0
+        Tk[nonzero] = self._norm * (linearP / primordialP)**0.5
+
+        return Tk
 
     def get_P_at_k(self,k_specific):
         return self.cosmo_CLASS.pk(k_specific,z=self.redshift)
@@ -141,6 +183,9 @@ class theory:
 
     def get_wa(self):
         return self.wa
+    
+    def get_ns(self):
+        return self.n_s
 
     def get_sig8(self):
         return self.sig8
