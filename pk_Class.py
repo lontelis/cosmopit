@@ -493,7 +493,7 @@ class theory:
             res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0) )**gammaexp
         elif if_paper=='fnl2019':
             res = ( self.Omega_m*(1.+z)**3. / cosmology.EE(z,self.Omega_m,self.Omega_L,omegaRad=0.0)**2. )**gammaexp
-        print('fgrowth=%0.3f'%(res))
+        #print('fgrowth=%0.3f'%(res))
         return res
 
 def Kaiser_TERM(fgrowth,bias):

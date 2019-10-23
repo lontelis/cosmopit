@@ -89,7 +89,8 @@ class MyChi2:
 def do_minuit(x,y,covarin,guess,functname=thepolynomial,nmock_prec=None,parbounds=None):
     # check if covariance or error bars were given
     # input - covarin: either covariance matrix(x,x) or std(x,x)
-    if nmock_prec!=None: covarin = covarin * (nmock_prec-1.)/(nmock_prec-len(x)-2.)
+    if nmock_prec!=None: 
+        covarin = covarin * (nmock_prec-1.)/(nmock_prec-len(x)-2.)
     
     covar=covarin
     if np.size(np.shape(covarin)) == 1:

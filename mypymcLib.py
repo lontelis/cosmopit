@@ -17,12 +17,13 @@ print('This mypymclib new')
 ###############################################################################
 ### define data classes #######################################################
 class Data():
-    def __init__(self, xvals=None, yvals=None, errors=None, yvals_right=None, model=None, model_right=None, prior=False, nmock_prec=None):
+    def __init__(self, xvals=None, yvals=None, errors=None,  model=None, if_cross_Likelihood=False ,yvals_right=None, model_right=None, prior=False, nmock_prec=None):
         self.prior = prior
         self.model = model
         self.xvals = xvals
         self.yvals = yvals
-        if np.any(yvals_right!=None) and model_right!=None:
+        self.if_cross_Likelihood=if_cross_Likelihood
+        if if_cross_Likelihood:
             self.model_right = model_right
             self.yvals_right = yvals_right
         if not self.prior:
@@ -36,7 +37,7 @@ class Data():
     
     def __call__(self,*pars):
         if  not self.prior:
-            if np.any(self.yvals_right!=None) and self.model_right!=None:
+            if self.if_cross_Likelihood:
                 val      =self.model(self.xvals,pars[0])
                 val_right=self.model_right(self.xvals,pars[0])
                 chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals_right-val_right)
@@ -172,7 +173,7 @@ def Sll_model_b0fNL(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
     b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNL['b0'] , observed = 'b0'  not in variables)
-    fNL    = pymc.Uniform('fNL', -200.,200., value = Sfid_params_b0fNL['fNL'], observed = 'fNL' not in variables) 
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNL['fNL'], observed = 'fNL' not in variables) 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, b0=b0,fNL=fNL): 
         ll=0.
@@ -638,13 +639,14 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                     bla=np.histogram(chain[var],bins=nbins,normed=True)
                     xhist=(bla[1][0:nbins]+bla[1][1:nbins+1])/2
                     yhist=gaussian_filter1d(bla[0],ss[i]/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
+                    mode_xhist=xhist[ np.argmax(yhist) ]
                     if Bpercentile:
                         mm = np.mean(chain[var])
                         p25= np.percentile(chain[var],100-68) - mm 
                         p75= np.percentile(chain[var],68)     - mm
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm_{%0.2f}^{+%0.2f}$'%(mm, p25,p75))
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm_{%0.2f}^{+%0.2f}$, mode=%0.2f'%(mm, p25,p75, mode_xhist ))
                     else:
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f'%(np.mean(chain[var]), np.std(chain[var])))
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
                     if paper2=='2018':
                       ylim([0.,1.1])
 
@@ -652,13 +654,13 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                     if paper2=='2019':
                       ylim([0.,1.0])
 
-                      if vars[j]=='om': xlim([0.0,0.5]) #xlim([0.2,0.6]) #0.0,0.6
-                      if vars[j]=='ol': xlim([0.5,1.5]) #xlim([0.5,0.8]) #0.4,1.0
-                      if vars[j]=='A' : xlim([0.0,1.7])
+                      if vars[j]=='om': xlim([0.2,0.7]) #xlim([0.2,0.6]) #0.0,0.6
+                      if vars[j]=='ol': xlim([0.3,1.0]) #xlim([0.5,0.8]) #0.4,1.0
+                      if vars[j]=='A' : xlim([1.0,1.8])
                     if paper2=='2020':
                       ylim([0.,2.0])
-                      if vars[j]=='om': xlim([0.1,0.5]) #xlim([0.2,0.6]) #0.0,0.6
-                      if vars[j]=='ol': xlim([0.5,1.0]) #xlim([0.5,0.8]) #0.4,1.0
+                      #if vars[j]=='b0': xlim(0.86,1.01) #xlim(0.75,1.01)
+                      #if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
                     else:
                       ylim([0.,3.0])
                     if plotLegendLikelihood: legend(frameon=False,fontsize=8) # 12##8 12 15
@@ -673,19 +675,18 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                   print(vars[j])
                   xlim([0.0,1.0])
                 elif paper2=='2019':
-                  if   vars[j]=='om': xlim([0.0,0.5]) #xlim([0.2,0.6]) #0.0,0.6
-                  elif vars[j]=='ol': xlim([0.5,1.5]) #xlim([0.5,0.8]) #0.4,1.0
-                  elif vars[j]=='A':  xlim([0.0,1.7]) #1.2,2.5
-                  if   vars[i]=='om': ylim([0.0,0.5]) # ylim([0.1,0.8])#ylim([0.2,0.6]) #0.0,0.6
-                  elif vars[i]=='ol': ylim([0.5,1.5]) # ylim([0.2,1.0]) #ylim([0.5,0.8]) #0.4,1.0
-                  elif vars[i]=='A':  ylim([0.0,1.7]) # ylim([0.9,1.9]) #1.2,2.5
+                  if   vars[j]=='om': xlim([0.2,0.7]) #xlim([0.2,0.6]) #0.0,0.6
+                  elif vars[j]=='ol': xlim([0.3,1.0]) #xlim([0.5,0.8]) #0.4,1.0
+                  elif vars[j]=='A':  xlim([1.0,1.8]) #1.2,2.5
+                  if   vars[i]=='om': ylim([0.2,0.7]) # ylim([0.1,0.8])#ylim([0.2,0.6]) #0.0,0.6
+                  elif vars[i]=='ol': ylim([0.3,1.0]) # ylim([0.2,1.0]) #ylim([0.5,0.8]) #0.4,1.0
+                  elif vars[i]=='A':  ylim([1.0,1.8]) # ylim([0.9,1.9]) #1.2,2.5
                 elif paper2=='2020':
                   ylim(limits[i])  
                   xlim(limits[j])
-                  if   vars[j]=='om': xlim([0.1,0.5]) #xlim([0.2,0.6]) #0.0,0.6
-                  elif vars[j]=='ol': xlim([0.5,1.0]) #xlim([0.5,0.8]) #0.4,1.0
-                  if   vars[i]=='om': ylim([0.1,0.5]) # ylim([0.1,0.8])#ylim([0.2,0.6]) #0.0,0.6
-                  elif vars[i]=='ol': ylim([0.5,1.0]) # ylim([0.2,1.0]) #ylim([0.5,0.8]) #0.4,1.0
+                  #                # ylim(-100.,100.)
+                  #xlim(0.75,1.01) # xlim(0.86,1.01)
+
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
                   else:               xlim(limits[j])
@@ -716,7 +717,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
     #subplots_adjust(wspace=0.15,hspace=0.1)
     #subplots_adjust(wspace=0.,hspace=0.)
     return(a0)
-    
+
 def getcols(color):
     color=str(color)
     if (color == 'blue') or (color == 'b'):
@@ -738,6 +739,9 @@ def getcols(color):
     elif color == 'brown':
         cols=['BurlyWood','SaddleBrown']
     return(cols)
+
+def get_array_colors():
+    return np.array(['blue','red','green','pink','yellow','black','orange','purple','brown'])
 
 def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
      nbins=256,
@@ -775,6 +779,7 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
     else:
         contour(xmap, ymap, z, vals[0:1],colors=cols[1],**kwargs)
         contour(xmap, ymap, z, vals[1:2],colors=cols[1],**kwargs)
+
     a=Rectangle((np.max(xmap),np.max(ymap)),0.1,0.1,fc=cols[1])
     
     if plotScatter: scatter(x,y,color=color,marker=u'.')
