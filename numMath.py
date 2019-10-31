@@ -524,7 +524,6 @@ def kth_diag_indices(matrix, k):
 
 def cov_smooth(covmat):
     dim = np.shape(covmat)[0]
-
     mean_diag = np.zeros(dim)
     covmat_new = covmat*0.0 + covmat
     for i in xrange(dim):
@@ -534,7 +533,6 @@ def cov_smooth(covmat):
         if (i>0): # smooth all except the diagonal
             covmat_new[kth_diag_indices(covmat_new, i)] = mean_diag[None,i]
             covmat_new[kth_diag_indices(covmat_new, -i)] = mean_diag[None,i]
-
     return covmat_new
 
 def give_msc(x,y,decimals=2):
@@ -691,11 +689,11 @@ def plot_colorplot(f_xy,x=None,y=None,labelx='$z_i$',labely='$z_j$',ColorbarLabe
     plt.clim(np.nanmin(f_xy), np.nanmax(f_xy))
     if saveplot: plt.savefig(savename)
 
-def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',**kwargs):
+def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',colormap='viridis',**kwargs):
     """
     f_xy 1D array
     """
-    cm = plt.cm.get_cmap('rainbow')
+    cm = plt.cm.get_cmap(colormap)
     sc = plt.scatter(x,y, c=f_xy, s=35, cmap=cm)
     plt.ylabel(yylabel,size=25),plt.xlabel(xxlabel,size=25)
     plt.colorbar(sc).set_label(zzlabel,size=25)
@@ -740,7 +738,7 @@ def mySVD(matrix,doCheck=0,kk=False):
     U,s,Vh    = linalg.svd(matrix)
     Sig       = linalg.diagsvd(s,M,N)
 
-    V = np.matrix(Vh).H
+    V  = np.matrix(Vh).H
     Ut = np.matrix(U).T
     
     # invSig = linalg.inv( np.matrix(Sig) )
@@ -872,7 +870,6 @@ def logBinning(r_max=1500.,nb_r=50,n_logint=10,a=1.):
             #radius[i]=(i+0.5)/(nb_r*(1./r_max)) # for regular binning                        
     radiusL=10**powerL * r_max
     return radiusL
-
 
 def stat_realisations(datasim1,datasim2):
     """

@@ -421,7 +421,7 @@ def Sll_model_AB(datasets, variables = ['A','B'], fidvalues = Sfid_params_AB):
 
 #### END: MODELS and Bounds #####
 
-def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000):
+def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True):
     if w_ll_model=='LCDM':
         feed_ll_model= ll_model
         feedPars     = fid_params
@@ -552,7 +552,6 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='BR_nOmOX':
         feed_ll_model = ll_BR_nOmOX
         feedPars      = fid_BR_nOmOX
-
     elif w_ll_model=='test_linear':
       feed_ll_model  = ll_test_linear
       feedPars       = fid_test_linear      
@@ -587,7 +586,12 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     chain.sample(iter=niter,burn=nburn,thin=nthin)
     ch ={}
     for v in variables: ch[v] = chain.trace(v)[:]
-    return ch
+    if if_get_chains_chi2:
+        chi2 = -2.*chain.logp
+        print('chains,chi2')
+        return ch,chi2
+    else: 
+        return ch
 
 def burnChains(chains,kmin=0):
     newChains=dict(chains) # dict(chains)
@@ -598,7 +602,7 @@ def burnChains(chains,kmin=0):
     return newChains
 
 #### PLOTTING
-def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labels=None,Blabel=None,Blabelsize=20,plotCorrCoef=True,plotScatter=False,NsigLim=3,ChangeLabel=False,Bpercentile=False,kk=0,plotNumberContours='12',paper2=True,plotLegendLikelihood=True):
+def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labels=None,Blabel=None,Blabelsize=20,plotCorrCoef=True,plotScatter=False,NsigLim=3,ChangeLabel=False,Bpercentile=False,kk=0,plotNumberContours='12',paper2=True,plotLegendLikelihood=True,if_condition_chain=False):
     '''
     kk=5 # kk==0 gives all parameters
            kk!=0 removes kk first parameters
@@ -620,6 +624,11 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
         limits=[]
         for i in np.arange(nplots):
             limits.append([mm[i]-NsigLim*ss[i],mm[i]+NsigLim*ss[i]]) # 3
+    if if_condition_chain:
+        condition_chain=np.where((chain['A']>1.3)&(chain['A']<1.4))
+        for var in chain.keys():
+            chain[var] = chain[var][condition_chain]
+
     num=0
     for i in np.arange(nplots-kk)+kk:
          for j in np.arange(nplots-kk)+kk:
@@ -659,8 +668,8 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                       if vars[j]=='A' : xlim([1.0,1.8])
                     if paper2=='2020':
                       ylim([0.,2.0])
-                      #if vars[j]=='b0': xlim(0.86,1.01) #xlim(0.75,1.01)
-                      #if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
+                      if vars[j]=='b0': xlim(0.86,0.90) #xlim(0.75,1.01)
+                      if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
                     else:
                       ylim([0.,3.0])
                     if plotLegendLikelihood: legend(frameon=False,fontsize=8) # 12##8 12 15
@@ -684,8 +693,9 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                 elif paper2=='2020':
                   ylim(limits[i])  
                   xlim(limits[j])
-                  #                # ylim(-100.,100.)
-                  #xlim(0.75,1.01) # xlim(0.86,1.01)
+                  ylim(-100.,100.)#                # ylim(-100.,100.)
+                  xlim(0.86,0.90) #xlim(0.75,1.01) # xlim(0.86,1.01)
+                  
 
                 else:
                   if vars[j]=='bias': xlim( [mm[j]-20*ss[j],mm[j]+20*ss[j]] )
