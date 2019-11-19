@@ -1245,7 +1245,7 @@ def read_data(datafile,who_xi='ls',who_Nest='JC',combine=False,corrSS = False,rM
         r,dd,rr,dr,ngal,nrand=read_pairs_combine_regions(datafile[0],datafile[1])
     elif combine is 'cute':
         r,xi0,dd,rr,dr,ngal,nrand=read_cute(datafile)
-        corrSS = True
+        corrSS          = True
     elif combine is 'cute_combine':
         r,xi0,dd,rr,dr,ngal,nrand=read_cute_combine_regions(datafile[0],datafile[1])
         corrSS = True
@@ -1318,7 +1318,7 @@ def read_datamocks(datafile,mockdir,who_give='d2',who_xi='ls',who_Nest='JC',bias
     '''need update'''
     print('need update' )
     stop
-    if who_give=='xi': obs=xi
+    if   who_give=='xi': obs=xi
     elif who_give=='nr': obs=nr
     elif who_give=='d2': obs=d2                   
     return(r,obs,covmatObs,np.mean(all_rhObs))
