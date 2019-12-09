@@ -18,7 +18,7 @@ from cosmopit import numMath,SplineFitting
 from cosmopit import fitting
 #from Cosmology import pyxi ######
 #import healpy as hp
-from astropy import coordinates
+#from astropy import coordinates
 import astropy.io.fits as afits
 import pymangle as mg
 # Taken from J.C.Hamilton and remodified by P.Ntelis June 2014

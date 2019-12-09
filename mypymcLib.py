@@ -40,9 +40,9 @@ class Data():
             if self.if_cross_Likelihood:
                 val      =self.model(self.xvals,pars[0])
                 val_right=self.model_right(self.xvals,pars[0])
-                chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals_right-val_right)
+                chi2     =np.dot(np.dot(self.yvals-val,self.invcov),self.yvals_right-val_right)
             else:
-                val=self.model(self.xvals,pars[0])
+                val =self.model(self.xvals,pars[0])
                 chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals-val)
         else:
             chi2 = self.model(self.xvals, pars[0])
@@ -252,7 +252,8 @@ def Sll_model_Aomol(datasets, variables = ['A','om','ol'], fidvalues = Sfid_para
     if (isinstance(datasets, list) is False): datasets=[datasets]
     A_min,A_max   = 0.1,2.00 #RH 1.0,2.50, 1.0,2.50 #0.5,4.0  # optimum! #2.15,2.25 still shit # 1.0,3.0
     om_min,om_max = 0.1,1.5 #0.2,0.60 #RH 0.2,0.60 #0.2,0.90 #0.0,1.0 but for interpolated Rh we need 0.2,1.0
-    ol_min,ol_max = 0.1,1.1 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    #ol_min,ol_max = 0.1,1.1 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    ol_min,ol_max = 0.1,1.5 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
     A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_Aomol['A'], observed = 'A' not in variables)
     om     = pymc.Uniform('om', om_min,om_max, value = Sfid_params_Aomol['om'], observed = 'om' not in variables)
     ol     = pymc.Uniform('ol', ol_min,ol_max, value = Sfid_params_Aomol['ol'], observed = 'ol' not in variables)

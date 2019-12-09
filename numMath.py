@@ -105,6 +105,17 @@ def covmat(x,y):
             covmat[i,j] =  sum( (z[i]-np.mean(x) )*(z[j]-np.mean(y)) ) / (dim-1.)
     return covmat
 
+def get_mode(array_in):
+    """
+    returns the mode of an array (mode)
+    the mode of an array is the element that 
+    corresponds to the most occured element in
+    the array
+    """
+    px,x=np.histogram(array_test,bins=1000)    
+    res = x[where(px==max(px))]
+    return res
+
 def blockMat1row(matr):
     temp = []
     for i in range(len(matr)):
