@@ -113,7 +113,7 @@ def get_mode(array_in,bins=1000):
     the array
     """
     px,x=np.histogram(array_in,bins=bins)    
-    res = x[where(px==max(px))]
+    res = x[where(px==max(px))][0]
     return res
 
 def blockMat1row(matr):
@@ -940,6 +940,17 @@ def plotCorrMat(x,y,datasim1,datasim2,savename='corrplot',save=False):
         print( 'Saving ...' )
         plt.savefig(savename+'.png',dpi=100)
 
+def legendre_polynomials(l,mu):
+    """
+    \mathcal{L}_{l}(\mu)
+    wikipedia https://en.wikipedia.org/wiki/Legendre_polynomials
+    """
+    if   l==0:
+        return mu*0.0+1.0
+    elif l==2:
+        return (3.*mu**2.-1.)/2.
+    elif l==4:
+        return (35.*mu**4.-30.*mu**2.+3)/8
 
 # rounding indices inside a dictionary
 class LessPrecise(float):
