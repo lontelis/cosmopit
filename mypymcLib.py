@@ -591,7 +591,7 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='LCDM_b0fNL':
       feed_ll_model  = Sll_model_b0fNL
       feedPars       = Sfid_params_b0fNL
-    elif w_ll_model=='LCDM_b0fNL':
+    elif w_ll_model=='LCDM_b0fNLbifi':
       feed_ll_model  = Sll_model_b0fNLbifi
       feedPars       = Sfid_params_b0fNLbifi
     elif w_ll_model=='dcabrsrVom':
