@@ -183,6 +183,32 @@ def Sll_model_b0fNL(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_
         return(ll)
     return(locals())
 
+Sfid_params_b0fNLbifi = {
+               'b0':1.0,
+               #'h':0.67,
+               'fNL':0.0,
+               'bi':1.0,
+               'fi':0.1,
+                }
+
+def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_b0fNL):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
+    bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
+    fi     = pymc.Uniform('fi',    0.01,0.5, value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, b0=b0,fNL=fNL,bi=bi,fi=fi): 
+        ll=0.
+        pars = np.array([b0,fNL,bi,fi]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
 Sfid_params_dcabrsrVomol = {
               'dc':-1.0,
               'a':3.5  ,
@@ -252,9 +278,9 @@ def Sll_model_Aomol(datasets, variables = ['A','om','ol'], fidvalues = Sfid_para
     if (isinstance(datasets, list) is False): datasets=[datasets]
     A_min,A_max   = 0.1,2.00 #RH 1.0,2.50, 1.0,2.50 #0.5,4.0  # optimum! #2.15,2.25 still shit # 1.0,3.0
     om_min,om_max = 0.1,1.5 #0.2,0.60 #RH 0.2,0.60 #0.2,0.90 #0.0,1.0 but for interpolated Rh we need 0.2,1.0
-    #ol_min,ol_max = 0.1,1.1 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
-    ol_min,ol_max = 0.1,1.5 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
-    A     = pymc.Uniform('A', A_min,A_max, value = Sfid_params_Aomol['A'], observed = 'A' not in variables)
+    ol_min,ol_max = 0.1,1.1 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    #ol_min,ol_max = 0.1,1.5 #0.55,0.75 #RH 0.5,0.80 #0.4,0.90 #0.0,1.0 but for interpolated Rh we need 0.4,1.0
+    A      = pymc.Uniform('A', A_min,A_max, value = Sfid_params_Aomol['A'], observed = 'A' not in variables)
     om     = pymc.Uniform('om', om_min,om_max, value = Sfid_params_Aomol['om'], observed = 'om' not in variables)
     ol     = pymc.Uniform('ol', ol_min,ol_max, value = Sfid_params_Aomol['ol'], observed = 'ol' not in variables)
     @pymc.stochastic(trace=True,observed=True,plot=False)
@@ -559,13 +585,15 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='test_linear_fixed_b':
       feed_ll_model  = ll_test_linear_fixed_b
       feedPars       = fid_test_linear_fixed_b 
-
     elif w_ll_model=='LCDM_b0OmfNL':
       feed_ll_model  = Sll_model_b0OmfNL
       feedPars       = Sfid_params_b0OmfNL
     elif w_ll_model=='LCDM_b0fNL':
       feed_ll_model  = Sll_model_b0fNL
       feedPars       = Sfid_params_b0fNL
+    elif w_ll_model=='LCDM_b0fNL':
+      feed_ll_model  = Sll_model_b0fNLbifi
+      feedPars       = Sfid_params_b0fNLbifi
     elif w_ll_model=='dcabrsrVom':
       feed_ll_model = Sll_model_dcabrsrVom
       feedPars       = Sfid_params_dcabrsrVom
@@ -621,10 +649,12 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
         if vars[i] in chain.keys():
             mm[i]=np.mean( chain[vars[i]] )
             ss[i]=np.std(  chain[vars[i]] )
+
     if limits is None:
         limits=[]
         for i in np.arange(nplots):
             limits.append([mm[i]-NsigLim*ss[i],mm[i]+NsigLim*ss[i]]) # 3
+
     if if_condition_chain:
         condition_chain=np.where((chain['A']>1.3)&(chain['A']<1.4))
         for var in chain.keys():
@@ -651,10 +681,10 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                     yhist=gaussian_filter1d(bla[0],ss[i]/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
                     mode_xhist=xhist[ np.argmax(yhist) ]
                     if Bpercentile:
-                        mm = np.mean(chain[var])
-                        p25= np.percentile(chain[var],100-68) - mm 
-                        p75= np.percentile(chain[var],68)     - mm
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm_{%0.2f}^{+%0.2f}$, mode=%0.2f'%(mm, p25,p75, mode_xhist ))
+                        mm_temp = np.mean(chain[var])
+                        ss_temp = np.std(chain[var])
+                        p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma=numMath.get_percentiles(chain[var])
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm$%0.2f $_{-%0.2f}^{+%0.2f}$, mode=%0.2f'%(mm_temp, ss_temp, p_left_1sigma,p_right_1sigma, mode_xhist ))
                     else:
                         plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
                     if paper2=='2018':
@@ -677,7 +707,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
 
             if (i>j):
                 a=subplot(nplots-kk,nplots-kk,num)
-                a.tick_params(labelsize=12) #8 15
+                a.tick_params(labelsize=8) #12 8 15
 
                 var0=labels[j]
                 var1=labels[i]

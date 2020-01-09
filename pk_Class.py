@@ -593,6 +593,35 @@ def cosmo_PlanckAll(giveErrs=False,giveExtra=False):
     else:
         return cosmo
 
+def cosmo_Planck2018(giveErrs=False):
+    ''' Define parameters for CLASS soft '''
+    ## Model Class: 
+    #planck 2015, does not give sigma8
+    params = {
+        'h': 0.674,
+        'omega_b': 0.0224,
+        'omega_cdm': 0.120,
+        'n_s': 0.965,
+        'ln10^{10}A_s': 3.044, 
+        #'A_s': np.exp(3.094)*1e-10,
+        #'Omega_k': -0.044,
+        }
+    sigma_8  = 0.8111
+
+    # omega_b/omega_cdm = 0.1857 = 1/5
+
+    dparams={
+        'h': 0.005,
+        'omega_b': 0.0001,
+        'omega_cdm': 0.001,
+        'n_s': 0.004,
+        'ln10^{10}A_s': 0.014,
+        #'Omega_k':0.0018,
+        }
+    dsigma_8 = 0.0060
+    if giveErrs: return params,dparams 
+    else:        return params
+
 def cosmo_QPM_Big():
     ''' Defined parameters in for Cosmology Use'''
     #Cpars = [0.274,0.726,-1,0.8,0.7,0.046,0.95] # QPM Values

@@ -417,6 +417,18 @@ means,stds,covMat,corMat=numMath.average_realisations(chains_out.T)
 
     return(meansim,sigsim,covmat,cormat)
 
+def get_percentiles(array_in):
+    """
+    return the percentiles that correspond to 1 sigma, 2 sigma left right
+    use: p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma=numMath.get_percentiles(array_in)
+    according to https://en.wikipedia.org/wiki/Percentile_rank
+    """
+    p_left_1sigma = np.percentile(array_in,50.0) - np.percentile(array_in,15.86555)
+    p_right_1sigma= np.percentile(array_in,84.13445)  - np.percentile(array_in,50.) 
+    p_left_2sigma = np.percentile(array_in,50.0) - np.percentile(array_in,2.2775)
+    p_right_2sigma= np.percentile(array_in,97.7225)  - np.percentile(array_in,50.) 
+    return p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma
+
 def insertP(arrmat):
     ''' inserts an additional column, and row with zeros on a matrix'''
     a_zero_c = np.zeros(len(arrmat))
