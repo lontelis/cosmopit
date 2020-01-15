@@ -67,6 +67,28 @@ def ll_test_linear(datasets, variables = ['a', 'b'], fidvalues = fid_test_linear
         return(ll)
     return(locals())
 
+fid_test_quadratic = {
+               'a': 1.0,
+               'b': 1.0,
+               'c': 1.0,
+               'd': 1.0,                              
+                }
+
+def ll_test_quadratic(datasets, variables = ['a', 'b','c','d'], fidvalues = fid_test_quadratic):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    a      = pymc.Uniform('a', -4.,4.,   value = fid_test_quadratic['a'], observed = 'a' not in variables)
+    b      = pymc.Uniform('b', -4,4.0, value = fid_test_quadratic['b'], observed = 'b' not in variables)
+    c      = pymc.Uniform('c', -4,4.0, value = fid_test_quadratic['c'], observed = 'c' not in variables)
+    d      = pymc.Uniform('d', -4,4.0, value = fid_test_quadratic['d'], observed = 'd' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, a=a,b=b,c=c,d=d):
+        ll=0.
+        pars = np.array([a,b,c,d])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
 fid_test_linear_fixed_b = {
                'a': 2.0,
                 }
@@ -191,13 +213,13 @@ Sfid_params_b0fNLbifi = {
                'fi':0.1,
                 }
 
-def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_b0fNL):
+def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues = Sfid_params_b0fNL):
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
     b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
     bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
-    fi     = pymc.Uniform('fi',    0.01,0.5, value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
+    fi     = pymc.Uniform('fi',    0.0,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, b0=b0,fNL=fNL,bi=bi,fi=fi): 
@@ -585,6 +607,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='test_linear_fixed_b':
       feed_ll_model  = ll_test_linear_fixed_b
       feedPars       = fid_test_linear_fixed_b 
+    elif w_ll_model=='test_quadratic':
+      feed_ll_model  = ll_test_quadratic
+      feedPars       = fid_test_quadratic
     elif w_ll_model=='LCDM_b0OmfNL':
       feed_ll_model  = Sll_model_b0OmfNL
       feedPars       = Sfid_params_b0OmfNL
