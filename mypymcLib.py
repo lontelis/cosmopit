@@ -219,7 +219,7 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
     b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
     bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
-    fi     = pymc.Uniform('fi',    0.0,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
+    fi     = pymc.Uniform('fi',   -0.5,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, b0=b0,fNL=fNL,bi=bi,fi=fi): 
