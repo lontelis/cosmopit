@@ -216,9 +216,11 @@ Sfid_params_b0fNLbifi = {
 def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues = Sfid_params_b0fNL):
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
+    #b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
+    b0     = pymc.Uniform('b0',    0.5,2.5 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
-    bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
+    #bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
+    bi     = pymc.Uniform('bi',    0.5,2.5 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
     fi     = pymc.Uniform('fi',   -0.5,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
@@ -728,7 +730,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                       if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
                     else:
                       ylim([0.,3.0])
-                    if plotLegendLikelihood: legend(frameon=False,fontsize=8) # 12##8 12 15
+                    if plotLegendLikelihood: legend(frameon=False,fontsize=12) #* 12##8 12 15
 
             if (i>j):
                 a=subplot(nplots-kk,nplots-kk,num)
@@ -859,7 +861,7 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
         yarr = np.array([mmy-ssy,mmy+ssy])
         plot(xarr,xarr*0.0+mmy,color,label=label_cont)
         plot(xarr*0.0+mmx,yarr,color) 
-        legend(loc=2,frameon=False,numpoints=1,fontsize=12) #8 15 20
+        legend(loc='best',frameon=False,numpoints=1,fontsize=12) #8 15 20
 
     return(a)
 
