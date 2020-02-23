@@ -391,6 +391,58 @@ def Sll_model_OmOL(datasets, variables = ['Om','OL'], fidvalues = Sfid_params_Om
         return(ll)
     return(locals())
 
+Sfid_params_OmOLw0 = {
+
+               'Om':0.31,
+               'OL':0.69,
+               'w0':-1.0,
+                }
+
+def Sll_model_OmOLw0(datasets, variables = ['Om','OL','w0'], fidvalues = Sfid_params_OmOLw0):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLw0['Om'],observed = 'Om'    not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLw0['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,w0=w0):
+        ll=0.
+        pars = np.array([Om,OL,w0]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OmOLw0wa = {
+
+               'Om':0.31,
+               'OL':0.69,
+               'w0':-1.0,
+               'wa':0.0,
+                }
+
+def Sll_model_OmOLw0wa(datasets, variables = ['Om','OL','w0','wa'], fidvalues = Sfid_params_OmOLw0wa):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLw0wa['Om'],observed = 'Om' not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLw0wa['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0wa['w0'],observed = 'w0' not in variables) # 0.090,0.300 
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OmOLw0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,w0=w0,wa=wa):
+        ll=0.
+        pars = np.array([Om,OL,w0,wa]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
+
 Sfid_params_w0OL = {
 
                'w0':-1.0,
@@ -633,6 +685,12 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='OmOL':
       feed_ll_model = Sll_model_OmOL
       feedPars       = Sfid_params_OmOL
+    elif w_ll_model=='OmOLw0':
+      feed_ll_model = Sll_model_OmOLw0
+      feedPars       = Sfid_params_OmOLw0
+    elif w_ll_model=='OmOLw0wa':
+      feed_ll_model = Sll_model_OmOLw0wa
+      feedPars       = Sfid_params_OmOLw0wa
     elif w_ll_model=='w0OL':
       feed_ll_model = Sll_model_w0OL
       feedPars       = Sfid_params_w0OL
@@ -660,7 +718,26 @@ def burnChains(chains,kmin=0):
     return newChains
 
 #### PLOTTING
-def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labels=None,Blabel=None,Blabelsize=20,plotCorrCoef=True,plotScatter=False,NsigLim=3,ChangeLabel=False,Bpercentile=False,kk=0,plotNumberContours='12',paper2=True,plotLegendLikelihood=True,if_condition_chain=False):
+def matrixplot(chain,vars,col,sm,
+                limits=None,
+                nbins=None,
+                doit=None,
+                alpha=0.7,
+                labels=None,
+                Blabel=None,
+                Blabelsize=20,
+                plotCorrCoef=True,
+                plotScatter=False,
+                fontsize_legend=8,
+                NsigLim=3,
+                ChangeLabel=False,
+                Bpercentile=False,
+                kk=0,
+                plotNumberContours='12',
+                paper2=True,
+                plotLegendLikelihood=True,
+                if_condition_chain=False
+                ):
     '''
     kk=5 # kk==0 gives all parameters
            kk!=0 removes kk first parameters
@@ -732,7 +809,7 @@ def matrixplot(chain,vars,col,sm,limits=None,nbins=None,doit=None,alpha=0.7,labe
                       if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
                     else:
                       ylim([0.,3.0])
-                    if plotLegendLikelihood: legend(frameon=False,fontsize=12) #* 12##8 12 15
+                    if plotLegendLikelihood: legend(frameon=False,fontsize=fontsize_legend) #* 12##8 12 15
 
             if (i>j):
                 a=subplot(nplots-kk,nplots-kk,num)
@@ -815,7 +892,7 @@ def get_array_colors():
 
 def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
      nbins=256,
-     nsmooth=4,Fill=True,plotCorrCoef=True,plotScatter=False,**kwargs):
+     nsmooth=4,Fill=True,plotCorrCoef=True,plotScatter=False,fontsize_legend=8,**kwargs):
 
     levels.sort()
     levels.reverse()
@@ -863,7 +940,7 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
         yarr = np.array([mmy-ssy,mmy+ssy])
         plot(xarr,xarr*0.0+mmy,color,label=label_cont)
         plot(xarr*0.0+mmx,yarr,color) 
-        legend(loc='best',frameon=False,numpoints=1,fontsize=12) #8 15 20
+        legend(loc='best',frameon=False,numpoints=1,fontsize=fontsize_legend) #8 15 20
 
     return(a)
 
