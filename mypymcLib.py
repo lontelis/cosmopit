@@ -697,8 +697,8 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
 
     chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
-    # for better convergence, since the pymc stucks to some values and does not jumbs further
-    #chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay) 
+    # for better convergence, since the pymc stucks to some values and does not jumbs further try with 400000 for the b0fNLbifi model, still waiting for result
+    chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay) 
     chain.sample(iter=niter,burn=nburn,thin=nthin)
     ch ={}
     for v in variables: ch[v] = chain.trace(v)[:]
