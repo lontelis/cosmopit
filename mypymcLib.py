@@ -416,7 +416,6 @@ def Sll_model_OmOLw0(datasets, variables = ['Om','OL','w0'], fidvalues = Sfid_pa
     return(locals())
 
 Sfid_params_OmOLw0wa = {
-
                'Om':0.31,
                'OL':0.69,
                'w0':-1.0,
@@ -424,14 +423,11 @@ Sfid_params_OmOLw0wa = {
                 }
 
 def Sll_model_OmOLw0wa(datasets, variables = ['Om','OL','w0','wa'], fidvalues = Sfid_params_OmOLw0wa):
-
     if (isinstance(datasets, list) is False): datasets=[datasets]
-
     Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLw0wa['Om'],observed = 'Om' not in variables)
     OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLw0wa['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
     w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0wa['w0'],observed = 'w0' not in variables) # 0.090,0.300 
     wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OmOLw0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
-
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, Om=Om,OL=OL,w0=w0,wa=wa):
         ll=0.
@@ -441,6 +437,22 @@ def Sll_model_OmOLw0wa(datasets, variables = ['Om','OL','w0','wa'], fidvalues = 
         return(ll)
     return(locals())
 
+Sfid_params_w0wa = {
+               'w0':-1.0,
+               'wa':0.0,
+                }
+def Sll_model_w0wa(datasets, variables = ['w0','wa'], fidvalues = Sfid_params_w0wa):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0wa['w0'],observed = 'w0' not in variables) # 0.090,0.300 
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_w0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,wa=wa):
+        ll=0.
+        pars = np.array([w0,wa]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
 
 
 Sfid_params_w0OL = {
@@ -691,6 +703,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='OmOLw0wa':
       feed_ll_model = Sll_model_OmOLw0wa
       feedPars       = Sfid_params_OmOLw0wa
+    elif w_ll_model=='w0wa':
+      feed_ll_model = Sll_model_w0wa
+      feedPars       = Sfid_params_w0wa
     elif w_ll_model=='w0OL':
       feed_ll_model = Sll_model_w0OL
       feedPars       = Sfid_params_w0OL
