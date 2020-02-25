@@ -427,7 +427,7 @@ def Sll_model_OmOLw0wa(datasets, variables = ['Om','OL','w0','wa'], fidvalues = 
     Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLw0wa['Om'],observed = 'Om' not in variables)
     OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLw0wa['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
     w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0wa['w0'],observed = 'w0' not in variables) # 0.090,0.300 
-    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OmOLw0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -2.0,2.0,   value = Sfid_params_OmOLw0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, Om=Om,OL=OL,w0=w0,wa=wa):
         ll=0.
@@ -444,7 +444,7 @@ Sfid_params_w0wa = {
 def Sll_model_w0wa(datasets, variables = ['w0','wa'], fidvalues = Sfid_params_w0wa):
     if (isinstance(datasets, list) is False): datasets=[datasets]
     w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0wa['w0'],observed = 'w0' not in variables) # 0.090,0.300 
-    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_w0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -2.0,2.0,   value = Sfid_params_w0wa['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, w0=w0,wa=wa):
         ll=0.
