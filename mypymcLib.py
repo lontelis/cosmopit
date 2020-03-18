@@ -221,7 +221,7 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
     #bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
     bi     = pymc.Uniform('bi',    0.5,2.5 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
-    fi     = pymc.Uniform('fi',   -0.5,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
+    fi     = pymc.Uniform('fi',   0.0,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, b0=b0,fNL=fNL,bi=bi,fi=fi): 
@@ -534,6 +534,83 @@ def Sll_model_AB(datasets, variables = ['A','B'], fidvalues = Sfid_params_AB):
         return(ll)
     return(locals())
 
+
+######### GW scenarios 
+fid_MC = {
+               'MC': 37.,
+                }
+
+def ll_MC(datasets, variables = ['MC'], fidvalues = fid_MC):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    MC      = pymc.Uniform('MC', 0,100,   value = fid_MC['MC'], observed = 'MC' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, MC=MC):
+        ll=0.
+        pars = np.array([MC])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+fid_TcMC = {
+               'Tc': 0.42,
+               'MC': 37.,
+                }
+
+def ll_TcMC(datasets, variables = ['Tc','MC'], fidvalues = fid_TcMC):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Tc      = pymc.Uniform('Tc', 0.3,0.5, value = fid_TcMC['Tc'], observed = 'Tc' not in variables)
+    MC      = pymc.Uniform('MC', 0,100,   value = fid_TcMC['MC'], observed = 'MC' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Tc=Tc,MC=MC):
+        ll=0.
+        pars = np.array([Tc,MC])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+fid_Tcm1m2 = {
+               'Tc': 0.42,
+               'm1': 30.0,
+               'm2': 50.0,
+                }
+
+def ll_Tcm1m2(datasets, variables = ['Tc','m1','m2'], fidvalues = fid_Tcm1m2):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Tc      = pymc.Uniform('Tc', 0.3,0.5, value = fid_Tcm1m2['Tc'], observed = 'Tc' not in variables)
+    m1      = pymc.Uniform('m1', 0.0,100., value = fid_Tcm1m2['m1'], observed = 'm1' not in variables)
+    m2      = pymc.Uniform('m2', 0.0,100., value = fid_Tcm1m2['m2'], observed = 'm2' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Tc=Tc,m1=m1,m2=m2):
+        ll=0.
+        pars = np.array([Tc,m1,m2])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+fid_m1m2 = {
+               'm1': 30.0,
+               'm2': 50.0,
+                }
+
+def ll_m1m2(datasets, variables = ['m1','m2'], fidvalues = fid_m1m2):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    m1      = pymc.Uniform('m1', 0.0,100., value = fid_m1m2['m1'], observed = 'm1' not in variables)
+    m2      = pymc.Uniform('m2', 0.0,100., value = fid_m1m2['m2'], observed = 'm2' not in variables)
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, m1=m1,m2=m2):
+        ll=0.
+        pars = np.array([m1,m2])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
+######### GW scenarios 
+
 #### END: MODELS and Bounds #####
 
 def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True):
@@ -709,6 +786,18 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='w0OL':
       feed_ll_model = Sll_model_w0OL
       feedPars       = Sfid_params_w0OL
+    elif w_ll_model=='MC':
+      feed_ll_model = ll_MC
+      feedPars      = fid_MC
+    elif w_ll_model=='TcMC':
+      feed_ll_model = ll_TcMC
+      feedPars      = fid_TcMC
+    elif w_ll_model=='Tcm1m2':
+      feed_ll_model = ll_Tcm1m2
+      feedPars      = fid_Tcm1m2
+    elif w_ll_model=='m1m2':
+      feed_ll_model = ll_m1m2
+      feedPars      = fid_m1m2
 
     chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
@@ -727,8 +816,8 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
 def burnChains(chains,kmin=0):
     newChains=dict(chains) # dict(chains)
     # python 2:  kmax = newChains[newChains.keys()[0]].size
-    # python 3:  kmax = np.size(newChains[next(iter(newChains))])
-    kmax = np.size(newChains[next(iter(newChains))])
+    # python 3:  kmax = size(newChains[next(iter(newChains))])
+    kmax = size(newChains[next(iter(newChains))])
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
@@ -797,10 +886,10 @@ def matrixplot(chain,vars,col,sm,
                 ylim(0,1.2)
                 if (var in chain.keys()) and (doit[j]==True):
                     if nbins is None: nbins=100 
-                    bla=np.histogram(chain[var],bins=nbins,normed=True)
-                    xhist=(bla[1][0:nbins]+bla[1][1:nbins+1])/2
-                    yhist=gaussian_filter1d(bla[0],ss[i]/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
-                    mode_xhist=xhist[ np.argmax(yhist) ]
+                    bla       = np.histogram(chain[var],bins=nbins,normed=True)
+                    xhist     = (bla[1][0:nbins]+bla[1][1:nbins+1])/2
+                    yhist     = gaussian_filter1d(bla[0],ss[i]/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
+                    mode_xhist= xhist[ np.argmax(yhist) ]
                     if Bpercentile:
                         mm_temp = np.mean(chain[var])
                         ss_temp = np.std(chain[var])
@@ -869,6 +958,8 @@ def matrixplot(chain,vars,col,sm,
         frame1=plt.subplot(nplots,nplots,nplots) #,facecolor='white')
         frame1.plot(1,1,col,label=Blabel)
         frame1.legend(loc=1,numpoints=1,frameon=False,prop={'size':Blabelsize}) #25 15
+        print(Blabelsize)
+        print(Blabel)
         frame1.set_frame_on(False)
         frame1.axes.get_xaxis().set_visible(False)
         frame1.axes.get_yaxis().set_visible(False)
