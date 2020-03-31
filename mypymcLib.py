@@ -217,7 +217,8 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
     #b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
-    b0     = pymc.Uniform('b0',    0.5,2.5 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
+    #b0     = pymc.Uniform('b0',    0.5,2.5 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
+    b0     = pymc.Uniform('b0',    0.8,1.2 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
     #bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
     bi     = pymc.Uniform('bi',    0.5,2.5 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
