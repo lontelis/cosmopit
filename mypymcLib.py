@@ -479,6 +479,405 @@ def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_w0
         return(ll)
     return(locals())
 
+
+"""
+#Start: Scenarios with Dark Energy Dark Matter and Neutrino
+
+OmOLw0waSmnuNeff
+OmOLw0SmnuNeff
+OmOLSmnuNeff
+OmSmnuNeff
+SmnuNeff
+Neff
+Smnu
+
+w0waSmnuNeff
+w0SmnuNeff
+w0Smnu
+w0Neff
+
+OLw0waSmnuNeff
+OLw0SmnuNeff
+OLSmnuNeff
+OLNeff
+OLSmnu
+OLw0Smnu
+OLw0Neff
+OLw0waSmnu
+OLw0waNeff
+"""
+
+
+
+Sfid_params_OmOLw0waSmnuNeff = {
+               'Om':0.31,
+               'OL':0.69,
+               'w0':-1.0,
+               'wa':0.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OmOLw0waSmnuNeff(datasets, variables = ['Om','OL','w0','wa','Smnu','Neff'], fidvalues = Sfid_params_OmOLw0waSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -2.0,2.0,   value = Sfid_params_OmOLw0waSmnuNeff['Om'],observed = 'Om' not in variables)
+    OL   = pymc.Uniform('OL', -2.0,2.0,   value = Sfid_params_OmOLw0waSmnuNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0waSmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OmOLw0waSmnuNeff['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OmOLw0waSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OmOLw0waSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,w0=w0,wa=wa,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([Om,OL,w0,wa,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OmOLw0SmnuNeff = {
+               'Om':0.31,
+               'OL':0.69,
+               'w0':-1.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OmOLw0SmnuNeff(datasets, variables = ['Om','OL','w0','Smnu','Neff'], fidvalues = Sfid_params_OmOLw0SmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLw0SmnuNeff['Om'],observed = 'Om' not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLw0SmnuNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OmOLw0SmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                                                                        
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,  value = Sfid_params_OmOLw0SmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OmOLw0SmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,w0=w0,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([Om,OL,w0,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OmOLSmnuNeff = {
+               'Om':0.31,
+               'OL':0.69,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OmOLSmnuNeff(datasets, variables = ['Om','OL','Smnu','Neff'], fidvalues = Sfid_params_OmOLSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLSmnuNeff['Om'],observed = 'Om' not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLSmnu['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OmOLSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OmOLSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([Om,OL,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OmSmnuNeff = {
+               'Om':0.31,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OmSmnuNeff(datasets, variables = ['Om','Smnu','Neff'], fidvalues = Sfid_params_OmSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmSmnuNeff['Om'],observed = 'Om' not in variables)
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OmSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OmSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([Om,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_SmnuNeff = {
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_SmnuNeff(datasets, variables = ['Smnu','Neff'], fidvalues = Sfid_params_SmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_SmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_SmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_Smnu = {
+               'Smnu':0.06,
+                }
+
+def Sll_model_Smnu(datasets, variables = ['Smnu'], fidvalues = Sfid_params_Smnu):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_Smnu['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                                                                        
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Smnu=Smnu):
+        ll=0.
+        pars = np.array([Smnu]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_Neff = {
+               'Neff':3.046,
+                }
+
+def Sll_model_Neff(datasets, variables = ['Neff'], fidvalues = Sfid_params_Neff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]                                                    
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_Neff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Neff=Neff):
+        ll=0.
+        pars = np.array([Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_w0waSmnuNeff = {
+               'w0':-1.0,
+               'wa':0.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_w0waSmnuNeff(datasets, variables = ['w0','wa','Smnu','Neff'], fidvalues = Sfid_params_w0waSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]                                                  
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0waSmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_w0waSmnuNeff['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_w0waSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_w0waSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,wa=wa,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([w0,wa,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_w0SmnuNeff = {
+               'w0':-1.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_w0SmnuNeff(datasets, variables = ['w0','Smnu','Neff'], fidvalues = Sfid_params_w0SmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]                                                  
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0SmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                                                                      
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_w0SmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_w0SmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([w0,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_w0Smnu = {
+               'w0':-1.0,
+               'Smnu':0.06,
+                }
+
+def Sll_model_w0Smnu(datasets, variables = ['w0','Smnu'], fidvalues = Sfid_params_w0Smnu):
+    if (isinstance(datasets, list) is False): datasets=[datasets]                                                  
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0Smnu['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                                                                      
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_w0Smnu['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,Smnu=Smnu):
+        ll=0.
+        pars = np.array([w0,Smnu]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_w0Neff = {
+               'w0':-1.0,
+               'Neff':3.046,
+                }
+
+def Sll_model_w0Neff(datasets, variables = ['w0','Neff'], fidvalues = Sfid_params_w0Neff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]                                                  
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_w0Neff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                                                                                                                          
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_w0Neff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, w0=w0,Neff=Neff):
+        ll=0.
+        pars = np.array([w0,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLw0waSmnuNeff = {
+               'OL':0.69,
+               'w0':-1.0,
+               'wa':0.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OLw0waSmnuNeff(datasets, variables = ['OL','w0','wa','Smnu','Neff'], fidvalues = Sfid_params_OLw0waSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLw0waSmnuNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OLw0waSmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OLw0waSmnuNeff['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OLw0waSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OLw0waSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,w0=w0,wa=wa,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([OL,w0,wa,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLw0SmnuNeff = {
+               'OL':0.69,
+               'w0':-1.0,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OLw0SmnuNeff(datasets, variables = ['OL','w0','Smnu','Neff'], fidvalues = Sfid_params_OLw0SmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLw0SmnuNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OLw0SmnuNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                                                                       
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OLw0SmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OLw0SmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,w0=w0,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([OL,w0,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLSmnuNeff = {
+               'OL':0.69,
+               'Smnu':0.06,
+               'Neff':3.046,
+                }
+
+def Sll_model_OLSmnuNeff(datasets, variables = ['OL','Smnu','Neff'], fidvalues = Sfid_params_OLSmnuNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLSmnuNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                                                                                                                       
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OLSmnuNeff['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OLSmnuNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,Smnu=Smnu,Neff=Neff):
+        ll=0.
+        pars = np.array([OL,Smnu,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLNeff = {
+               'OL':0.69,
+               'Neff':3.046,
+                }
+
+def Sll_model_OLNeff(datasets, variables = ['OL','Neff'], fidvalues = Sfid_params_OLNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                                                                                                                                                                          
+    Neff = pymc.Uniform('Neff',0.0,10.0,   value = Sfid_params_OLNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,Neff=Neff):
+        ll=0.
+        pars = np.array([OL,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLSmnu = {
+               'OL':0.69,
+               'Smnu':0.06,
+                }
+
+def Sll_model_OLSmnu(datasets, variables = ['OL','Smnu'], fidvalues = Sfid_params_OLSmnu):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLSmnu['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                                                                                                                       
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OLSmnu['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,Smnu=Smnu):
+        ll=0.
+        pars = np.array([OL,Smnu]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLw0waSmnu = {
+               'OL':0.69,
+               'w0':-1.0,
+               'wa':0.0,
+               'Smnu':0.06,
+                }
+
+def Sll_model_OLw0waSmnu(datasets, variables = ['OL','w0','wa','Smnu'], fidvalues = Sfid_params_OLw0waSmnu):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLw0waSmnu['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OLw0waSmnu['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OLw0waSmnu['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                     
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,  value = Sfid_params_OLw0waSmnu['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                                                                          
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,w0=w0,wa=wa,Smnu=Smnu):
+        ll=0.
+        pars = np.array([OL,w0,wa,Smnu]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OLw0waNeff = {
+               'OL':0.69,
+               'w0':-1.0,
+               'wa':0.0,
+               'Neff':3.046,
+                }
+
+def Sll_model_OLw0waNeff(datasets, variables = ['OL','w0','wa','Neff'], fidvalues = Sfid_params_OLw0waNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OLw0waNeff['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -3.0,0.0,   value = Sfid_params_OLw0waNeff['w0'],observed = 'w0' not in variables) # 0.090,0.300                                                     
+    wa   = pymc.Uniform('wa', -1.0,1.0,   value = Sfid_params_OLw0waNeff['wa'],observed = 'wa' not in variables) # 0.090,0.300                                                                                                       
+    Neff = pymc.Uniform('Neff',0.0,10.0,  value = Sfid_params_OLw0waNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, OL=OL,w0=w0,wa=wa,Neff=Neff):
+        ll=0.
+        pars = np.array([OL,w0,wa,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+#End: Scenarios with Dark Energy Dark Matter and Neutrino
+
+
 Sfid_params_A = {
                'A': 1.45, #1.5, #2.2,
                #'om': 0.31,
@@ -787,6 +1186,66 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='w0OL':
       feed_ll_model = Sll_model_w0OL
       feedPars       = Sfid_params_w0OL
+    elif w_ll_model=='OmOLw0waSmnuNeff':
+      feed_ll_model = Sll_model_OmOLw0waSmnuNeff
+      feedPars       = Sfid_params_OmOLw0waSmnuNeff
+    elif w_ll_model=='OmOLw0SmnuNeff':
+      feed_ll_model = Sll_model_OmOLw0SmnuNeff
+      feedPars       = Sfid_params_OmOLw0SmnuNeff
+    elif w_ll_model=='OmOLSmnuNeff':
+      feed_ll_model = Sll_model_OmOLSmnuNeff
+      feedPars       = Sfid_params_OmOLSmnuNeff
+    elif w_ll_model=='OmSmnuNeff':
+      feed_ll_model = Sll_model_OmSmnuNeff
+      feedPars       = Sfid_params_OmSmnuNeff
+    elif w_ll_model=='SmnuNeff':
+      feed_ll_model = Sll_model_SmnuNeff
+      feedPars       = Sfid_params_SmnuNeff
+    elif w_ll_model=='SmnuNeff':
+      feed_ll_model = Sll_model_Neff
+      feedPars       = Sfid_params_Neff
+    elif w_ll_model=='Smnu':
+      feed_ll_model = Sll_model_Smnu
+      feedPars       = Sfid_params_Smnu
+    elif w_ll_model=='w0waSmnuNeff':
+      feed_ll_model = Sll_model_w0waSmnuNeff
+      feedPars       = Sfid_params_w0waSmnuNeff
+    elif w_ll_model=='w0SmnuNeff':
+      feed_ll_model = Sll_model_w0SmnuNeff
+      feedPars       = Sfid_params_w0SmnuNeff
+    elif w_ll_model=='w0Smnu':
+      feed_ll_model = Sll_model_w0Smnu
+      feedPars       = Sfid_params_w0Smnu
+    elif w_ll_model=='w0Neff':
+      feed_ll_model = Sll_model_w0Neff
+      feedPars       = Sfid_params_w0Neff
+    elif w_ll_model=='OLw0waSmnuNeff':
+      feed_ll_model = Sll_model_OLw0waSmnuNeff
+      feedPars       = Sfid_params_OLw0waSmnuNeff
+    elif w_ll_model=='OLw0SmnuNeff':
+      feed_ll_model = Sll_model_OLw0SmnuNeff
+      feedPars       = Sfid_params_OLw0SmnuNeff
+    elif w_ll_model=='OLSmnuNeff':
+      feed_ll_model = Sll_model_OLSmnuNeff
+      feedPars       = Sfid_params_OLSmnuNeff
+    elif w_ll_model=='OLSmnu':
+      feed_ll_model = Sll_model_OLSmnu
+      feedPars       = Sfid_params_OLSmnu
+    elif w_ll_model=='OLNeff':
+      feed_ll_model = Sll_model_OLNeff
+      feedPars       = Sfid_params_OLNeff
+    elif w_ll_model=='OLw0waSmnu':
+      feed_ll_model = Sll_model_OLw0waSmnu
+      feedPars       = Sfid_params_OLw0waSmnu
+    elif w_ll_model=='OLw0waNeff':
+      feed_ll_model = Sll_model_OLw0waNeff
+      feedPars       = Sfid_params_OLw0waNeff
+    elif w_ll_model=='OLw0Smnu':
+      feed_ll_model = Sll_model_OLw0Smnu
+      feedPars       = Sfid_params_OLw0Smnu
+    elif w_ll_model=='OLw0waNeff':
+      feed_ll_model = Sll_model_OLw0Neff
+      feedPars       = Sfid_params_OLw0Neff
     elif w_ll_model=='MC':
       feed_ll_model = ll_MC
       feedPars      = fid_MC

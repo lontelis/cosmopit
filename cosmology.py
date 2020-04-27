@@ -198,6 +198,17 @@ def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,N
         result = 56.067 * exp( -49.7*(omega_nu+0.0020)**2  )  /( (omega_cb**0.24360)*(omega_b**0.128876) ) / ( 1+(Neff-3.046)/30.60 )
     return result 
 
+def z_d_numerical_fit(omega0,h):
+    """ redshift to the drag epoch
+    eq. 4 from https://arxiv.org/pdf/astro-ph/9709112.pdf
+    \Omega_0 \simeq 1 is the total density ratio in an Einstein-de-Sitter Universe. 
+    """
+    Omega0h2 = omega0*h**2.
+    b_1 = 0.313* ( ( Omega0h2 )**(-0.419) )*( 1+0.607*Omega0h2**0.674 )
+    b_2 = 0.238*Omega0h2**0.233
+    res = 1291.*( ( Omega0h2**0.251  ) / ( 1+0.659*Omega0h2**0.828 ) )* ( 1+b_1*Omega0h2**b_2 )
+    print(res)
+
 def D_C_approx(z,params=[0.3,0.7,-1,0],wz=None):
     ''' D_C approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
     return get_dist(z,type='proper',params=params,wz=wz)

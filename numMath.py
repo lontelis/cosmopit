@@ -84,7 +84,7 @@ def get_mean_median_std_plus_minus_68percintiles(given_array,bins=1000):
     """
     mean_array       = np.mean(given_array)
     median_array     = np.median(given_array)
-    n_array ,array_bin_edge ,blabla = hist(given_array ,bins=bins)
+    n_array ,array_bin_edge  = np.histogram(given_array ,bins=bins)
     array_bin        = array_bin_edge[:-1] +np.diff(array_bin_edge) *0.5
     mode_array       = array_bin[n_array.argmax()]
     std_array        = np.std(given_array)
