@@ -12,6 +12,12 @@ emcee   (http://dan.iel.fm/emcee/current/) <br />
 pymc    (https://pymc-devs.github.io/pymc/) <br />   
 <br />
 CLASS (software for cosmology https://github.com/lesgourg/class_public/wiki/Installation )  <br />
+<br />
+To install CLASS, just do:
+```
+git clone https://github.com/lesgourg/class_public.git class
+```
+<br />
 
 
 # INSTALLATION: 
