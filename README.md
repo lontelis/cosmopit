@@ -1,6 +1,15 @@
 # cosmopit
 cosmological python initial toolkit
 
+# INSTALLATION: 
+In order to use these libraries one need to download these files in their directory: <br />
+<br />
+Simply do on terminal:
+```
+git clone https://github.com/lontelis/cosmopit.git
+```
+<br />
+
 # Prerequist
 python 2.7+ <br />
 numpy <br />
@@ -18,10 +27,6 @@ To install CLASS, just do:
 git clone https://github.com/lesgourg/class_public.git class
 ```
 <br />
-
-
-# INSTALLATION: 
-In order to use these libraries one need to download these files in their directory: <br />
 
 # USE example:  
 import each file like: <br />
