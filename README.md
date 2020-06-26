@@ -29,7 +29,7 @@ git clone https://github.com/lesgourg/class_public.git class
 <br />
 
 # USE example:  
-import each file like: <br />
+import each file as: <br />
 ``` 
 from cosmopit import cosmology 
 from cosmopit import numMath
