@@ -29,7 +29,7 @@ git clone https://github.com/lesgourg/class_public.git class
 <br />
 
 # USE example:  
-import each file like: <br />
+import each file as: <br />
 ``` 
 from cosmopit import cosmology 
 from cosmopit import numMath
@@ -46,7 +46,9 @@ If you use this code please cite at least the following paper: <br />
 P.Ntelis et al 2018 https://arxiv.org/abs/1810.09362 <br />
 <br />
 
-Papers that use partially of the aforementioned code package are: <br />
+Citable papers which use partially the aforementioned code package 
+(and which can be also be cited for the same reason)
+are: <br />
 
 The scale of cosmic homogeneity as a standard ruler <br />
 P.Ntelis et al 2018 https://arxiv.org/abs/1810.09362  <br /> <br />
