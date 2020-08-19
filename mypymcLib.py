@@ -902,7 +902,7 @@ Sfid_params_OmNeff = {
                'Neff':3.046
                 }
 
-def Sll_model_OmSmnu(datasets, variables = ['Om','Neff'], fidvalues = Sfid_params_OmNeff):
+def Sll_model_OmNeff(datasets, variables = ['Om','Neff'], fidvalues = Sfid_params_OmNeff):
     if (isinstance(datasets, list) is False): datasets=[datasets]
     Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmNeff['Om'],observed = 'Om' not in variables)
     Neff = pymc.Uniform('Neff',0.0,10.0,  value = Sfid_params_OmNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
