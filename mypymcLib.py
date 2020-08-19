@@ -8,7 +8,8 @@ import scipy
 from scipy import integrate
 from scipy import interpolate
 from scipy import ndimage
-#import numMath,cosmology
+from cosmopit import numMath
+#from cosmopit import cosmology
 # Taken from J.C.Hamilton and remodified by P.Ntelis October 2016
 
 print('This mypymclib new')
@@ -505,6 +506,9 @@ OLw0Smnu
 OLw0Neff
 OLw0waSmnu
 OLw0waNeff
+
+OmSmnu
+OmNeff
 """
 
 
@@ -875,7 +879,127 @@ def Sll_model_OLw0waNeff(datasets, variables = ['OL','w0','wa','Neff'], fidvalue
         return(ll)
     return(locals())
 
+Sfid_params_OmNeff = {
+               'Om':0.31,
+               'Smnu':0.06
+                }
+
+def Sll_model_OmSmnu(datasets, variables = ['Om','Smnu'], fidvalues = Sfid_params_OmSmnu):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -1.0,1.0,    value = Sfid_params_OmSmnu['Om'],observed = 'Om' not in variables)
+    Smnu = pymc.Uniform('Smnu',0.0,10.0,   value = Sfid_params_OmSmnu['Smnu'],observed = 'Smnu' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,Smnu=Smnu):
+        ll=0.
+        pars = np.array([Om,Smnu]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_OmNeff = {
+               'Om':0.31,
+               'Neff':3.046
+                }
+
+def Sll_model_OmSmnu(datasets, variables = ['Om','Neff'], fidvalues = Sfid_params_OmNeff):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmNeff['Om'],observed = 'Om' not in variables)
+    Neff = pymc.Uniform('Neff',0.0,10.0,  value = Sfid_params_OmNeff['Neff'],observed = 'Neff' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,Neff=Neff):
+        ll=0.
+        pars = np.array([Om,Neff]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
 #End: Scenarios with Dark Energy Dark Matter and Neutrino
+
+#Start: Scenarios with Exotic Matter, Exotic Dark Matter Exotic Baryonic Matter
+
+Sfid_params_Omegam0w_cdmw_b = {
+               'Omegam0':0.31,
+               'w_cdm':0.0,
+               'w_b':0.0,
+                }
+
+def Sll_model_Omegam0w_cdmw_b(datasets, variables = ['Omegam0','w_cdm','w_b'], fidvalues = Sfid_params_Omegam0w_cdmw_b):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Omegam0   = pymc.Uniform('Omegam0', -1.0,1.0,   value = Sfid_params_Omegam0w_cdmw_b['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_cdm     = pymc.Uniform('w_cdm'  , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmw_b['w_cdm'],observed = 'w_cdm' not in variables) # 0.090,0.300                                                     
+    w_b       = pymc.Uniform('w_b'    , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmw_b['w_b'],observed = 'w_b' not in variables) # 0.090,0.300                                                                                                       
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Omegam0=Omegam0,w_cdm=w_cdm,w_b=w_b):
+        ll=0.
+        pars = np.array([Omegam0,w_cdm,w_b]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_Omegam0w_cdmOmegaLambda0 = {
+               'Omegam0':0.31,
+               'w_cdm':0.0,
+               'OmegaLambda0':0.69,
+                }
+
+def Sll_model_Omegam0w_cdmOmegaLambda0(datasets, variables = ['Omegam0','w_cdm','OmegaLambda0'], fidvalues = Sfid_params_Omegam0w_cdmOmegaLambda0):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Omegam0       = pymc.Uniform('Omegam0'      , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_cdm         = pymc.Uniform('w_cdm'        , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['w_cdm'],observed = 'w_cdm' not in variables) # 0.090,0.300                                                     
+    OmegaLambda0  = pymc.Uniform('OmegaLambda0' , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['OmegaLambda0'],observed = 'OmegaLambda0' not in variables) # 0.090,0.300                                                                                                       
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Omegam0=Omegam0,w_cdm=w_cdm,OmegaLambda0=OmegaLambda0):
+        ll=0.
+        pars = np.array([Omegam0,w_cdm,OmegaLambda0]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_Omegam0w_mOmegaLambda0 = {
+               'Omegam0':0.31,
+               'w_m':0.0,
+               'OmegaLambda0':0.69,
+                }
+
+def Sll_model_Omegam0w_mOmegaLambda0(datasets, variables = ['Omegam0','w_m','OmegaLambda0'], fidvalues = Sfid_params_Omegam0w_mOmegaLambda0):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Omegam0       = pymc.Uniform('Omegam0'      , -1.0,1.0, value = Sfid_params_Omegam0w_mOmegaLambda0['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_m           = pymc.Uniform('w_m'          , -1.0,1.0, value = Sfid_params_Omegam0w_mOmegaLambda0['w_m'],observed = 'w_m' not in variables) # 0.090,0.300                                                     
+    OmegaLambda0  = pymc.Uniform('OmegaLambda0' , -1.0,1.0, value = Sfid_params_Omegam0w_mOmegaLambda0['OmegaLambda0'],observed = 'OmegaLambda0' not in variables) # 0.090,0.300                                                                                                       
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Omegam0=Omegam0,w_m=w_m,OmegaLambda0=OmegaLambda0):
+        ll=0.
+        pars = np.array([Omegam0,w_m,OmegaLambda0]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_Omegam0w_m = {
+               'Omegam0':0.31,
+               'w_m':0.0,
+                }
+
+def Sll_model_Omegam0w_m(datasets, variables = ['Omegam0','w_m'], fidvalues = Sfid_params_Omegam0w_m):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Omegam0       = pymc.Uniform('Omegam0'      , -1.0,1.0, value = Sfid_params_Omegam0w_m['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_m           = pymc.Uniform('w_m'          , -1.0,1.0, value = Sfid_params_Omegam0w_m['w_m'],observed = 'w_m' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Omegam0=Omegam0,w_m=w_m):
+        ll=0.
+        pars = np.array([Omegam0,w_m]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
+#End: Scenarios with Exotic Matter, Exotic Dark Matter Exotic Baryonic Matter
 
 
 Sfid_params_A = {
@@ -933,6 +1057,39 @@ def Sll_model_AB(datasets, variables = ['A','B'], fidvalues = Sfid_params_AB):
             ll=ll+ds(pars)
         return(ll)
     return(locals())
+
+
+########## Action EFT model scenarios
+fid_params_ActionEFT = {
+    'beta_s1':1,
+    'phi_1':2,
+    'n_1':1,
+    'alpha_s2':1,
+    'phi_2':2,
+    'n_2':1,
+}
+
+def ll_model_ActionEFT(datasets, variables = ['beta_s1','phi_1','n_1','alpha_s2','phi_2','n_2'], fidvalues = fid_params_ActionEFT):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    beta_s1 = pymc.Uniform('beta_s1', 0.0,1.9, value = fid_params_ActionEFT['beta_s1'], observed = 'beta_s1' not in variables)
+    phi_1   = pymc.Uniform('phi_1'   , 0.0,4, value = fid_params_ActionEFT['phi_1'], observed = 'phi_1' not in variables)
+    n_1     = pymc.Uniform('n_1'      , -1.0,1.9, value = fid_params_ActionEFT['n_1'], observed = 'n_1' not in variables)
+    alpha_s2= pymc.Uniform('alpha_s2', 0.1,3.0, value = fid_params_ActionEFT['alpha_s2'], observed = 'alpha_s2' not in variables)
+    phi_2   = pymc.Uniform('phi_2'   , 1.1,2.9, value = fid_params_ActionEFT['phi_2'], observed = 'phi_2' not in variables)
+    n_2     = pymc.Uniform('n_2'      , -1.0,3.0, value = fid_params_ActionEFT['n_2'], observed = 'n_2' not in variables)
+
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, beta_s1=beta_s1,phi_1=phi_1,n_1=n_1,alpha_s2=alpha_s2,phi_2=phi_2,n_2=n_2):
+        ll=0.
+        pars = np.array([beta_s1,phi_1,n_1,alpha_s2,phi_2,n_2])
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+########## End: Action EFTofLSS model scenarios
 
 
 ######### GW scenarios 
@@ -1145,107 +1302,125 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
         feed_ll_model = ll_BR_nOmOX
         feedPars      = fid_BR_nOmOX
     elif w_ll_model=='test_linear':
-      feed_ll_model  = ll_test_linear
-      feedPars       = fid_test_linear      
+      feed_ll_model = ll_test_linear
+      feedPars      = fid_test_linear      
     elif w_ll_model=='test_linear_fixed_b':
-      feed_ll_model  = ll_test_linear_fixed_b
-      feedPars       = fid_test_linear_fixed_b 
+      feed_ll_model = ll_test_linear_fixed_b
+      feedPars      = fid_test_linear_fixed_b 
     elif w_ll_model=='test_quadratic':
-      feed_ll_model  = ll_test_quadratic
-      feedPars       = fid_test_quadratic
+      feed_ll_model = ll_test_quadratic
+      feedPars      = fid_test_quadratic
     elif w_ll_model=='LCDM_b0OmfNL':
-      feed_ll_model  = Sll_model_b0OmfNL
-      feedPars       = Sfid_params_b0OmfNL
+      feed_ll_model = Sll_model_b0OmfNL
+      feedPars      = Sfid_params_b0OmfNL
     elif w_ll_model=='LCDM_b0fNL':
-      feed_ll_model  = Sll_model_b0fNL
-      feedPars       = Sfid_params_b0fNL
+      feed_ll_model = Sll_model_b0fNL
+      feedPars      = Sfid_params_b0fNL
     elif w_ll_model=='LCDM_b0fNLbifi':
-      feed_ll_model  = Sll_model_b0fNLbifi
-      feedPars       = Sfid_params_b0fNLbifi
+      feed_ll_model = Sll_model_b0fNLbifi
+      feedPars      = Sfid_params_b0fNLbifi
     elif w_ll_model=='dcabrsrVom':
       feed_ll_model = Sll_model_dcabrsrVom
-      feedPars       = Sfid_params_dcabrsrVom
+      feedPars      = Sfid_params_dcabrsrVom
     elif w_ll_model=='dcabrsrVomol':
       feed_ll_model = Sll_model_dcabrsrVomol
-      feedPars       = Sfid_params_dcabrsrVomol
+      feedPars      = Sfid_params_dcabrsrVomol
     elif w_ll_model=='OmOLAsigmaA0A1A2':
       feed_ll_model = Sll_model_OmOLAsigmaA0A1A2
-      feedPars       = Sfid_params_OmOLAsigmaA0A1A2
+      feedPars      = Sfid_params_OmOLAsigmaA0A1A2
     elif w_ll_model=='OmOL':
       feed_ll_model = Sll_model_OmOL
-      feedPars       = Sfid_params_OmOL
+      feedPars      = Sfid_params_OmOL
     elif w_ll_model=='OmOLw0':
       feed_ll_model = Sll_model_OmOLw0
-      feedPars       = Sfid_params_OmOLw0
+      feedPars      = Sfid_params_OmOLw0
     elif w_ll_model=='OmOLw0wa':
       feed_ll_model = Sll_model_OmOLw0wa
-      feedPars       = Sfid_params_OmOLw0wa
+      feedPars      = Sfid_params_OmOLw0wa
     elif w_ll_model=='w0wa':
       feed_ll_model = Sll_model_w0wa
-      feedPars       = Sfid_params_w0wa
+      feedPars      = Sfid_params_w0wa
     elif w_ll_model=='w0OL':
       feed_ll_model = Sll_model_w0OL
-      feedPars       = Sfid_params_w0OL
+      feedPars      = Sfid_params_w0OL
     elif w_ll_model=='OmOLw0waSmnuNeff':
       feed_ll_model = Sll_model_OmOLw0waSmnuNeff
-      feedPars       = Sfid_params_OmOLw0waSmnuNeff
+      feedPars      = Sfid_params_OmOLw0waSmnuNeff
     elif w_ll_model=='OmOLw0SmnuNeff':
       feed_ll_model = Sll_model_OmOLw0SmnuNeff
-      feedPars       = Sfid_params_OmOLw0SmnuNeff
+      feedPars      = Sfid_params_OmOLw0SmnuNeff
     elif w_ll_model=='OmOLSmnuNeff':
       feed_ll_model = Sll_model_OmOLSmnuNeff
-      feedPars       = Sfid_params_OmOLSmnuNeff
+      feedPars      = Sfid_params_OmOLSmnuNeff
     elif w_ll_model=='OmSmnuNeff':
       feed_ll_model = Sll_model_OmSmnuNeff
-      feedPars       = Sfid_params_OmSmnuNeff
+      feedPars      = Sfid_params_OmSmnuNeff
     elif w_ll_model=='SmnuNeff':
       feed_ll_model = Sll_model_SmnuNeff
-      feedPars       = Sfid_params_SmnuNeff
+      feedPars      = Sfid_params_SmnuNeff
     elif w_ll_model=='SmnuNeff':
       feed_ll_model = Sll_model_Neff
-      feedPars       = Sfid_params_Neff
+      feedPars      = Sfid_params_Neff
     elif w_ll_model=='Smnu':
       feed_ll_model = Sll_model_Smnu
-      feedPars       = Sfid_params_Smnu
+      feedPars      = Sfid_params_Smnu
     elif w_ll_model=='w0waSmnuNeff':
       feed_ll_model = Sll_model_w0waSmnuNeff
-      feedPars       = Sfid_params_w0waSmnuNeff
+      feedPars      = Sfid_params_w0waSmnuNeff
     elif w_ll_model=='w0SmnuNeff':
       feed_ll_model = Sll_model_w0SmnuNeff
-      feedPars       = Sfid_params_w0SmnuNeff
+      feedPars      = Sfid_params_w0SmnuNeff
     elif w_ll_model=='w0Smnu':
       feed_ll_model = Sll_model_w0Smnu
-      feedPars       = Sfid_params_w0Smnu
+      feedPars      = Sfid_params_w0Smnu
     elif w_ll_model=='w0Neff':
       feed_ll_model = Sll_model_w0Neff
-      feedPars       = Sfid_params_w0Neff
+      feedPars      = Sfid_params_w0Neff
     elif w_ll_model=='OLw0waSmnuNeff':
       feed_ll_model = Sll_model_OLw0waSmnuNeff
-      feedPars       = Sfid_params_OLw0waSmnuNeff
+      feedPars      = Sfid_params_OLw0waSmnuNeff
     elif w_ll_model=='OLw0SmnuNeff':
       feed_ll_model = Sll_model_OLw0SmnuNeff
-      feedPars       = Sfid_params_OLw0SmnuNeff
+      feedPars      = Sfid_params_OLw0SmnuNeff
     elif w_ll_model=='OLSmnuNeff':
       feed_ll_model = Sll_model_OLSmnuNeff
-      feedPars       = Sfid_params_OLSmnuNeff
+      feedPars      = Sfid_params_OLSmnuNeff
     elif w_ll_model=='OLSmnu':
       feed_ll_model = Sll_model_OLSmnu
-      feedPars       = Sfid_params_OLSmnu
+      feedPars      = Sfid_params_OLSmnu
     elif w_ll_model=='OLNeff':
       feed_ll_model = Sll_model_OLNeff
-      feedPars       = Sfid_params_OLNeff
+      feedPars      = Sfid_params_OLNeff
     elif w_ll_model=='OLw0waSmnu':
       feed_ll_model = Sll_model_OLw0waSmnu
-      feedPars       = Sfid_params_OLw0waSmnu
+      feedPars      = Sfid_params_OLw0waSmnu
     elif w_ll_model=='OLw0waNeff':
       feed_ll_model = Sll_model_OLw0waNeff
-      feedPars       = Sfid_params_OLw0waNeff
+      feedPars      = Sfid_params_OLw0waNeff
     elif w_ll_model=='OLw0Smnu':
       feed_ll_model = Sll_model_OLw0Smnu
-      feedPars       = Sfid_params_OLw0Smnu
+      feedPars      = Sfid_params_OLw0Smnu
     elif w_ll_model=='OLw0waNeff':
       feed_ll_model = Sll_model_OLw0Neff
-      feedPars       = Sfid_params_OLw0Neff
+      feedPars      = Sfid_params_OLw0Neff
+    elif w_ll_model=='OmSmnu':
+      feed_ll_model = Sll_model_OmSmnu
+      feedPars      = Sfid_params_OmSmnu
+    elif w_ll_model=='OmNeff':
+      feed_ll_model = Sll_model_OmNeff
+      feedPars      = Sfid_params_OmNeff
+    elif w_ll_model=='Omegam0w_cdmw_b':
+      feed_ll_model = Sll_model_Omegam0w_cdmw_b
+      feedPars      = Sfid_params_Omegam0w_cdmw_b 
+    elif w_ll_model=='Omegam0w_cdmOmegaLambda0':
+      feed_ll_model = Sll_model_Omegam0w_cdmOmegaLambda0
+      feedPars      = Sfid_params_Omegam0w_cdmOmegaLambda0 
+    elif w_ll_model=='Omegam0w_mOmegaLambda0':
+      feed_ll_model = Sll_model_Omegam0w_mOmegaLambda0
+      feedPars      = Sfid_params_Omegam0w_mOmegaLambda0 
+    elif w_ll_model=='Omegam0w_m':
+      feed_ll_model = Sll_model_Omegam0w_m
+      feedPars      = Sfid_params_Omegam0w_m 
     elif w_ll_model=='MC':
       feed_ll_model = ll_MC
       feedPars      = fid_MC
@@ -1258,6 +1433,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='m1m2':
       feed_ll_model = ll_m1m2
       feedPars      = fid_m1m2
+    elif w_ll_model=='ActionEFT':
+      feed_ll_model = ll_model_ActionEFT 
+      feedPars      = fid_params_ActionEFT
 
     chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
@@ -1354,9 +1532,9 @@ def matrixplot(chain,vars,col,sm,
                         mm_temp = np.mean(chain[var])
                         ss_temp = np.std(chain[var])
                         p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma=numMath.get_percentiles(chain[var])
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm$%0.2f $_{-%0.2f}^{+%0.2f}$, mode=%0.2f'%(mm_temp, ss_temp, p_left_1sigma,p_right_1sigma, mode_xhist ))
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm$%0.2f $_{-%0.2f}^{+%0.2f}$, \n mode=%0.2f'%(mm_temp, ss_temp, p_left_1sigma,p_right_1sigma, mode_xhist ))
                     else:
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
+                        plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, \n mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
                     if paper2=='2018':
                       ylim([0.,1.1])
 

@@ -522,7 +522,7 @@ def cosmo_Planck(giveErrs=False):
     params = {
         'h': 0.6727,
         'omega_b': 0.02225,
-        'omega_cdm': 0.1198,
+        'omega_cdm': 0.1198, # (0.1198+0.02225)*0.6727**2.
         'n_s': 0.9645,
         'ln10^{10}A_s': 3.094, 
         #'A_s': np.exp(3.094)*1e-10,

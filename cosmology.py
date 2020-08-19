@@ -4,14 +4,11 @@ from pylab import *
 import warnings
 from scipy import integrate
 from scipy import interpolate
-# Taken from J.C.Hamilton and remodified by P.Ntelis June 2014
+print('# Authors: P.Ntelis')
+print('# original code taken from J.C.Hamilton in June 2014')
 c=3e8       #m.s-1
-H0_over_h= 1000*100 #H0_def(h)  #m.s-1.Mpc-1 ###### CORRECTION for TIME default: 1000*h*100
+H0_over_h= 1000*100 #m.s-1.Mpc-1s
 dHubble = c/H0_over_h # Mpc/h
-
-def dclock(z,AA=0.58,BB=.64):
-    ''' the estimation of distance-redshift clock relation'''
-    return dHubble * ( np.log(AA*z+BB)/AA - np.log(BB)/AA )
 
 def get_dh():
     return dHubble
@@ -28,10 +25,13 @@ def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00,comp
     """
     # if no wz on input the calculate it from w0 and w1
     if wz is None: wz=w0+(z*1./(1.+z))*w1
-    # calculate evolution of omegax accounting for its equation of state
+    # calculate evolution of omegax accounting for its equation of state updated to just simple formulat, instead of an integral
+    """
     omegaxz=zeros(z.size)
     omegaxz[0]=omegax
     omegaxz[1:z.size]=omegax*exp(3*integrate.cumtrapz((1.+wz)/(1.+z),x=z))
+    """
+    omegaxz=omegax*(1+z)**(3.*(1+w0+w1))*np.exp(-3.*w1*z/(1+z))
 
     # figure(4),plot(z,omegaxz),show()
     # curvature
@@ -57,7 +57,7 @@ def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00,comp
     if curv==-1: dist=sinh(sqrt(kk)*chi)/sqrt(kk)
     if curv==0:  dist=chi
     
-    return dist,wz,omegaxz,Ez,curv
+    return(dist,wz,omegaxz,Ez,curv)
 
 def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial=False):
     """
@@ -114,14 +114,14 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
         f=interpolate.interp1d(res,zvalues)
     else: 
         f=interpolate.interp1d(zvalues,res) 
-    return f(z)
+    return(f(z))
 
-def VolCalcSurvey(zCentral,DeltaZrange,OmegaSky=1e4,type='vco',params=[0.3,0.7,-1,0],wz=None):
+def VolCalcSurvey(zCentral,DeltaZrange,OmegaSky=1e4,params=[0.3,0.7,-1,0],wz=None):
     ''' Returns Comoving Volume in (Mpc/h)**3 of a survey for any cosmology with:
         OmegaSky # in deg**2
         zcentral 
         DeltaZrange '''
-    Vcomo = get_dist(zCentral,type=type,params=params,wz=wz)
+    Vcomo = get_dist(zCentral,type='vco',params=params,wz=wz)
     Volume= Vcomo*DeltaZrange*OmegaSky*(pi/180.)**2
     return Volume # in (Mpc/h)**3
 
@@ -157,7 +157,7 @@ def integrant(z,omegam,omegax):
 def D1(z,params=[0.3,0.7,-1,0]):
     """ 
     Returns the Growthfactor given by 
-    http://www.astronomy.ohio-state.edu/~dhw/A873/notes8.pdf
+    -
     equation linear growth factor
     Correction on formula:
         since we have the normalization
@@ -176,7 +176,8 @@ def D1(z,params=[0.3,0.7,-1,0]):
     Normalization = integrate.quad(integrant, 0., np.infty, args=(omegam,omegax))[0] # ensures D1(z=0)=1
 
     result = D1_z/Normalization
-
+    print('Normalization=',Normalization)
+    #print('result=',result)
     return result
 
 def omega_nuf(sum_mass_nu=0.06,Neff=3.046):
@@ -198,16 +199,77 @@ def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,N
         result = 56.067 * exp( -49.7*(omega_nu+0.0020)**2  )  /( (omega_cb**0.24360)*(omega_b**0.128876) ) / ( 1+(Neff-3.046)/30.60 )
     return result 
 
-def z_d_numerical_fit(omega0,h):
+def z_d_EH1998(Omegam0=0.313,Omegab0=0.44,h=0.6727):
     """ redshift to the drag epoch
     eq. 4 from https://arxiv.org/pdf/astro-ph/9709112.pdf
     \Omega_0 \simeq 1 is the total density ratio in an Einstein-de-Sitter Universe. 
     """
-    Omega0h2 = omega0*h**2.
-    b_1 = 0.313* ( ( Omega0h2 )**(-0.419) )*( 1+0.607*Omega0h2**0.674 )
-    b_2 = 0.238*Omega0h2**0.233
-    res = 1291.*( ( Omega0h2**0.251  ) / ( 1+0.659*Omega0h2**0.828 ) )* ( 1+b_1*Omega0h2**b_2 )
-    print(res)
+    Omegam0h2 = Omegam0*h**2.
+    Omegab0h2 = Omegab0*h**2.
+    b_1 = 0.313* ( ( Omegam0h2 )**(-0.419) )*( 1+0.607*Omegam0h2**0.674 )
+    b_2 = 0.238*Omegam0h2**0.233
+    result = 1291.*( ( Omegam0h2**0.251  ) / ( 1+0.659*Omegam0h2**0.828 ) )*( 1+b_1*Omegab0h2**b_2 )
+    return(result)
+
+def c_s_EH1998_approximate(z,Omegab0=0.44,h=0.6727):
+    """
+    From https://arxiv.org/pdf/astro-ph/9709112.pdf
+    eq. 5 and previous text
+    c_s = 1/sqrt{2(1+R)}
+    """
+    Theta_27 = 2.728/2.7 #
+    T_CMB = 2.7*Theta_27 # in K (Fixsen et al. 1996)
+    R_EH1998_approximate = 31.5*Omegab0*h**2.*Theta_27**(-4.)*(1000./z)
+    res = c/1e3/np.sqrt(3.*(1.+R_EH1998_approximate)) # in km/s
+    return res
+
+def c_s_EH1998(z,h=0.6727,Omegab0=0.44,w_b=0.0,Omegagamma0=0.001):
+    """
+    From https://arxiv.org/pdf/astro-ph/9709112.pdf
+    eq. 5 expanded 
+    R(z) \equiv (3\rho_b(z) )/(4\rho_{\gamma}(z) ) \rightarrow (3\Omega_b(z) )/ (4\Omega_{\gamma}(z) ) by deviding by \rho_c, 
+    in the standard FLRW metric
+    This is translated to the 
+    case of a equation stated dependend quantity as:
+    (3\Omega_{b,0}(1+z)^3  )/ (4\Omega_{\gamma,0}()^{4} )
+    where w_b=-1./3. for the standard FLRW metric
+    and previous text
+    c_s = 1/sqrt{2(1+R(z))}
+    """
+    Theta_27 = 2.728/2.7 #
+    T_CMB = 2.7*Theta_27 # in K (Fixsen et al. 1996)
+    Nominator   = 3.*Omegab0*(1+z)**(3.*(w_b+1)) 
+    Denominator = 4.*Omegagamma0*(1+z)**4.
+    R_EH1998 = Nominator/Denominator
+    res = c/1e3/np.sqrt(3.*(1.+R_EH1998)) # in km/s
+    return(res)
+
+def c_s_z_EH1998_div_by_Ez(z,h=0.6727,Omegam0=0.31,OmegaLambda0=1.-0.31,Omegab0=0.044,Omegagamma0=0.01):
+    """
+    From https://arxiv.org/pdf/astro-ph/9709112.pdf
+    eq. 5 expanded 
+    R(z) \equiv (3\rho_b(z) )/(4\rho_{\gamma}(z) ) \rightarrow (3\Omega_b(z) )/ (4\Omega_{\gamma}(z) ) by deviding by \rho_c, 
+    in the standard FLRW metric
+    This is translated to the 
+    case of a equation stated dependend quantity as:
+    (3\Omega_{b,0}(1+z)^3 )/ (4\Omega_{\gamma,0}()^{4} )
+    and previous text
+    c_s = 1/sqrt{2(1+R(z))}
+    approximate formula
+    """
+    Theta_27 = 2.728/2.7 #
+    T_CMB = 2.7*Theta_27 # in K (Fixsen et al. 1996)
+    Nominator   = 3.*(Omegab0*(1+z)**3.)
+    Denominator = 4.*Omegagamma0*(1+z)**4.
+    R_EH1998 = Nominator/Denominator
+    c_s_z_EH1998 = dHubble/np.sqrt(3.*(1.+R_EH1998)) # in Mpc/h
+    res = c_s_z_EH1998/EE(z,omegam=Omegam0,omegax=OmegaLambda0,omegaRad=Omegagamma0)
+    return(res)
+
+def radius_of_sound_horizon_given_by_c_s_z_EH1998_div_by_Ez(z_d_input,h=0.6727,Omegam0=0.31,OmegaLambda0=1.-0.31,Omegab0=0.044,w_b=-1./3.,Omegagamma0=0.0001,epsabs=1.49e-07,epsrel=1.49e-07):
+    """ https://arxiv.org/pdf/astro-ph/9709112.pdf """
+    res = integrate.quad( c_s_z_EH1998_div_by_Ez , z_d_input, np.inf, args=(h,Omegam0,OmegaLambda0,Omegab0,w_b,Omegagamma0),epsabs=epsabs, epsrel=epsrel )[0]
+    return(res)
 
 def D_C_approx(z,params=[0.3,0.7,-1,0],wz=None):
     ''' D_C approximated in Mpc/h https://arxiv.org/pdf/1411.1074.pdf'''
@@ -238,6 +300,9 @@ def z2age_of_univ(z,H0=67.27,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0
     elif in_timeunits=='Gyr':
         return time_z/(365.*24.*3600.)/1e9 #31556926 simeq 365.*24*3600.
 
+def dclock(z,AA=0.58,BB=.64):
+    ''' the estimation of distance-redshift clock relation'''
+    return dHubble * ( np.log(AA*z+BB)/AA - np.log(BB)/AA )
 
 """
 # test light-travel distance or look-back time 
