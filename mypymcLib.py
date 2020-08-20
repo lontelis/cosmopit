@@ -879,7 +879,7 @@ def Sll_model_OLw0waNeff(datasets, variables = ['OL','w0','wa','Neff'], fidvalue
         return(ll)
     return(locals())
 
-Sfid_params_OmNeff = {
+Sfid_params_OmSmnu = {
                'Om':0.31,
                'Smnu':0.06
                 }
