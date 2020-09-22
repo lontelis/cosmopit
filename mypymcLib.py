@@ -1170,7 +1170,7 @@ def ll_m1m2(datasets, variables = ['m1','m2'], fidvalues = fid_m1m2):
 
 #### END: MODELS and Bounds #####
 
-def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True):
+def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True, if_feedpars_external=None):
     if w_ll_model=='LCDM':
         feed_ll_model= ll_model
         feedPars     = fid_params
@@ -1437,7 +1437,10 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
       feed_ll_model = ll_model_ActionEFT 
       feedPars      = fid_params_ActionEFT
 
-    chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
+    if if_feedpars_external!=None:
+        chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=if_feedpars_external))
+    else:
+        chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
     # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
     # for better convergence, since the pymc stucks to some values and does not jumbs further try with 400000 for the b0fNLbifi model, still waiting for result
     chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay) 
