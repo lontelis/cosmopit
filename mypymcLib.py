@@ -24,7 +24,7 @@ class Data():
         self.xvals = xvals
         self.yvals = yvals
         self.if_cross_Likelihood=if_cross_Likelihood
-        if if_cross_Likelihood:
+        if self.if_cross_Likelihood:
             self.model_right = model_right
             self.yvals_right = yvals_right
         if not self.prior:
@@ -222,7 +222,7 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
     b0     = pymc.Uniform('b0',    0.8,1.2 , value = Sfid_params_b0fNLbifi['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLbifi['fNL'], observed = 'fNL' not in variables) 
     #bi     = pymc.Uniform('bi',    0.0,5.0 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
-    bi     = pymc.Uniform('bi',    0.5,2.5 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
+    bi     = pymc.Uniform('bi',    0.5,1.5 , value = Sfid_params_b0fNLbifi['bi'] , observed = 'bi'  not in variables)
     fi     = pymc.Uniform('fi',   -0.5,0.5 , value = Sfid_params_b0fNLbifi['fi'] , observed = 'fi' not in variables) 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
@@ -1459,6 +1459,15 @@ def burnChains(chains,kmin=0):
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
     return newChains
 
+def chains_hist_mode_out(chain_var,nbins=100):
+    mm        = np.mean( chain_var )
+    ss        = np.std(  chain_var )
+    bla       = np.histogram(chain_var,bins=nbins,normed=True)
+    xhist     = (bla[1][0:nbins]+bla[1][1:nbins+1])/2
+    yhist     = gaussian_filter1d(bla[0],ss/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
+    mode_xhist= xhist[ np.argmax(yhist) ]
+    return(xhist,yhist,mm,ss,mode_xhist)
+
 #### PLOTTING
 def matrixplot(chain,vars,col,sm,
                 limits=None,
@@ -1478,7 +1487,8 @@ def matrixplot(chain,vars,col,sm,
                 plotNumberContours='12',
                 paper2=True,
                 plotLegendLikelihood=True,
-                if_condition_chain=False
+                if_condition_chain=False,
+                if_plot_stat=True
                 ):
     '''
     kk=5 # kk==0 gives all parameters
@@ -1524,17 +1534,17 @@ def matrixplot(chain,vars,col,sm,
                 ylim(0,1.2)
                 if (var in chain.keys()) and (doit[j]==True):
                     if nbins is None: nbins=100 
-                    bla       = np.histogram(chain[var],bins=nbins,normed=True)
-                    xhist     = (bla[1][0:nbins]+bla[1][1:nbins+1])/2
-                    yhist     = gaussian_filter1d(bla[0],ss[i]/5/(xhist[1]-xhist[0]),mode='constant',order=0,truncate=3)
-                    mode_xhist= xhist[ np.argmax(yhist) ]
-                    if Bpercentile:
-                        mm_temp = np.mean(chain[var])
-                        ss_temp = np.std(chain[var])
-                        p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma=numMath.get_percentiles(chain[var])
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm$%0.2f $_{-%0.2f}^{+%0.2f}$, \n mode=%0.2f'%(mm_temp, ss_temp, p_left_1sigma,p_right_1sigma, mode_xhist ))
-                    else:
-                        plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, \n mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
+                    xhist,yhist,mm,ss,mode_xhist=chains_hist_mode_out(chain[var],nbins=nbins)
+                    if if_plot_stat:
+                        if Bpercentile:
+                            mm_temp = np.mean(chain[var])
+                            ss_temp = np.std(chain[var])
+                            p_left_1sigma,p_right_1sigma,p_left_2sigma,p_right_2sigma=numMath.get_percentiles(chain[var])
+                            plot(xhist,yhist/max(yhist),color=col,label='%0.2f $\pm$%0.2f $_{-%0.2f}^{+%0.2f}$, \n mode=%0.2f'%(mm_temp, ss_temp, p_left_1sigma,p_right_1sigma, mode_xhist ))
+                        else:
+                            plot(xhist,yhist/max(yhist),color=col,label='%0.3f $\pm$ %0.3f, \n mode=%0.2f'%(np.mean(chain[var]), np.std(chain[var]) , mode_xhist ) )
+                    else: 
+                        plot(xhist,yhist/max(yhist),color=col)
                     if paper2=='2018':
                       ylim([0.,1.1])
 
@@ -1546,7 +1556,7 @@ def matrixplot(chain,vars,col,sm,
                       if vars[j]=='ol': xlim([0.3,1.0]) #xlim([0.5,0.8]) #0.4,1.0
                       if vars[j]=='A' : xlim([1.0,1.8])
                     if paper2=='2020':
-                      ylim([0.,2.0])
+                      ylim([0.,1.1])
                       if vars[j]=='b0': xlim(0.86,0.90) #xlim(0.75,1.01)
                       if vars[j]=='fNL': xlim(-100,100) #xlim(0.75,1.01)
                     else:
@@ -1595,7 +1605,7 @@ def matrixplot(chain,vars,col,sm,
     if Blabel:
         frame1=plt.subplot(nplots,nplots,nplots) #,facecolor='white')
         frame1.plot(1,1,col,label=Blabel)
-        frame1.legend(loc=1,numpoints=1,frameon=False,prop={'size':Blabelsize}) #25 15
+        frame1.legend(loc=1,numpoints=1,frameon=False,prop={'size':Blabelsize}) #Blabelsize}) #25 15
         print(Blabelsize)
         print(Blabel)
         frame1.set_frame_on(False)
@@ -1675,16 +1685,17 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
     
     if plotScatter: scatter(x,y,color=color,marker=u'.')
     if plotCorrCoef:
-        mmx,ssx = x.mean(),x.std()
-        mmy,ssy = y.mean(),y.std()
         rcorrcoeff = np.corrcoef(x,y)[0,1]
-        #if abs(rcorrcoeff)>0.65:
         label_cont='$\\rho$=%0.2f'%(rcorrcoeff)
-        xarr = np.array([mmx-ssx,mmx+ssx])
-        yarr = np.array([mmy-ssy,mmy+ssy])
-        plot(xarr,xarr*0.0+mmy,color,label=label_cont)
-        plot(xarr*0.0+mmx,yarr,color) 
-        legend(loc='best',frameon=False,numpoints=1,fontsize=fontsize_legend) #8 15 20
+    else:
+        label_cont=None
+    mmx,ssx = x.mean(),x.std()
+    mmy,ssy = y.mean(),y.std()
+    xarr = np.array([mmx-ssx,mmx+ssx])
+    yarr = np.array([mmy-ssy,mmy+ssy])
+    plot(xarr,xarr*0.0+mmy,color,label=label_cont)
+    plot(xarr*0.0+mmx,yarr,color) 
+    legend(loc='best',frameon=False,numpoints=1,fontsize=fontsize_legend) #8 15 20
 
     return(a)
 
