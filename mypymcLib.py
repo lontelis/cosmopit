@@ -42,6 +42,8 @@ class Data():
                 val      =self.model(self.xvals,pars[0])
                 val_right=self.model_right(self.xvals,pars[0])
                 chi2     =np.dot(np.dot(self.yvals-val,self.invcov),self.yvals_right-val_right)
+                if chi2<0: chi2=+1e30
+                else: pass
             else:
                 val =self.model(self.xvals,pars[0])
                 chi2=np.dot(np.dot(self.yvals-val,self.invcov),self.yvals-val)
