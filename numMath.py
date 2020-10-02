@@ -969,7 +969,22 @@ def legendre_polynomials(l,mu):
     elif l==2:
         return (3.*mu**2.-1.)/2.
     elif l==4:
-        return (35.*mu**4.-30.*mu**2.+3)/8
+        return (35.*mu**4.-30.*mu**2.+3)/8.
+
+def latex_float(float_input,decimals_input="{0:.2g}"):
+    """
+    example use: 
+    import matplotlib.pyplot as plt
+    plt.figure(),plt.clf()
+    plt.plot(np.array([1,2.]),'ko-',label="$P_0="+latex_float(7.63e-5)+'$'),
+    plt.legend() 
+    """
+    float_str = decimals_input.format(float_input)
+    if "e" in float_str:
+        base, exponent = float_str.split("e")
+        return r"{0} \times 10^{{{1}}}".format(base, int(exponent))
+    else:
+        return float_str
 
 # rounding indices inside a dictionary
 class LessPrecise(float):

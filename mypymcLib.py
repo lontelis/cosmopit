@@ -35,6 +35,8 @@ class Data():
                 self.covar = errors
             if nmock_prec!=None: self.covar = self.covar * (nmock_prec-1.)/(nmock_prec-len(self.xvals)-2.)
             self.invcov = np.linalg.inv(self.covar)
+            #try:    self.invcov = np.linalg.inv(self.covar)
+            #except: self.invcov = np.linalg.pinv(self.covar)
     
     def __call__(self,*pars):
         if  not self.prior:
