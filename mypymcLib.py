@@ -236,6 +236,35 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
         return(ll)
     return(locals())
 
+Sfid_params_b0fNLb1b2f1f2 = {
+               'b0':1.0,
+               #'h':0.67,
+               'fNL':0.0,
+               'b1':1.0,
+               'b2':1.0,               
+               'f1':0.1,
+               'f2':0.1,
+                }
+
+def Sll_model_b0fNLb1b2f1f2(datasets, variables = ['b0','fNL','b1','b2','f1','f2'], fidvalues = Sfid_params_b0fNLb1b2f1f2):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    b0     = pymc.Uniform('b0',    0.8,1.2 , value = Sfid_params_b0fNLb1b2f1f2['b0'] , observed = 'b0'  not in variables)
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLb1b2f1f2['fNL'], observed = 'fNL' not in variables) 
+    b1     = pymc.Uniform('b1',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b1'] , observed = 'b1'  not in variables)
+    b2     = pymc.Uniform('b2',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b2'] , observed = 'b2'  not in variables)
+    f1     = pymc.Uniform('f1',   -0.5,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f1'] , observed = 'f1'  not in variables) 
+    f2     = pymc.Uniform('f2',   -0.5,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f2'] , observed = 'f2'  not in variables) 
+
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, b0=b0,fNL=fNL,b1=b1,b2=b2,f1=f1,f2=f2): 
+        ll=0.
+        pars = np.array([b0,fNL,b1,b2,f1,f2]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
 
 Sfid_params_dcabrsrVomol = {
               'dc':-1.0,
@@ -1321,6 +1350,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='LCDM_b0fNLbifi':
       feed_ll_model = Sll_model_b0fNLbifi
       feedPars      = Sfid_params_b0fNLbifi
+    elif w_ll_model=='LCDM_b0fNLb1b2f1f2':
+      feed_ll_model = Sll_model_b0fNLb1b2f1f2
+      feedPars      = Sfid_params_b0fNLb1b2f1f2
     elif w_ll_model=='dcabrsrVom':
       feed_ll_model = Sll_model_dcabrsrVom
       feedPars      = Sfid_params_dcabrsrVom
