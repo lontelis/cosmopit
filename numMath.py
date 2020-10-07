@@ -724,7 +724,7 @@ def plotScatter(x,y,f_xy,xxlabel='',yylabel='',zzlabel='',colormap='viridis',**k
     f_xy 1D array
     """
     cm = plt.cm.get_cmap(colormap)
-    sc = plt.scatter(x,y, c=f_xy, s=35, cmap=cm)
+    sc = plt.scatter(x,y, s=f_xy, cmap=cm)
     plt.ylabel(yylabel,size=25),plt.xlabel(xxlabel,size=25)
     plt.colorbar(sc).set_label(zzlabel,size=25)
 

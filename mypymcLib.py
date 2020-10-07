@@ -1670,16 +1670,30 @@ def getcols(color):
         cols=['Yellow','Gold']
     elif (color == 'black') or (color == 'k'):
         cols=['grey','black']
-    elif color == 'orange':
+    elif color == 'Coral':
         cols=['Coral','OrangeRed']
     elif color == 'purple':
         cols=['Violet','DarkViolet']
     elif color == 'brown':
         cols=['BurlyWood','SaddleBrown']
+    elif color == 'turquoise':
+        cols=['turquoise','darkturquoise']
+    elif color == 'salmon':
+        cols=['lightsalmon','darksalmon']
+    elif color == 'steelblue':
+        cols=['aliceblue','steelblue']
+    elif color == 'khaki':
+        cols=['khaki','darkkhaki']
+    elif color == 'goldenrod':
+        cols=['goldenrod', 'darkgoldenrod']
+    elif color == 'orange':
+        cols=['orange','darkorange']
+    elif color =='cyan':
+        cols=['cyan','aqua']
     return(cols)
 
 def get_array_colors():
-    return np.array(['blue','red','green','pink','yellow','black','orange','purple','brown'])
+    return np.array(['blue','red','green','black','yellow','pink','Coral','purple','brown','turquoise','salmon','steelblue','khaki','goldenrod','orange','cyan'])
 
 def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
      nbins=256,
