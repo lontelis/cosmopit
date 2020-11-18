@@ -1525,7 +1525,9 @@ def matrixplot(chain,vars,col,sm,
                 paper2=True,
                 plotLegendLikelihood=True,
                 if_condition_chain=False,
-                if_plot_stat=True
+                if_plot_stat=True,
+                xlabel_size=20,
+                ylabel_size=20
                 ):
     '''
     kk=5 # kk==0 gives all parameters
@@ -1562,8 +1564,8 @@ def matrixplot(chain,vars,col,sm,
             if (i == j):
                 a=subplot(nplots-kk,nplots-kk,num)
                 a.tick_params(labelsize=8)
-                if i == 0: ylabel('$\mathcal{L}($'+labels[i]+'$)/\mathcal{L}_{max}$',size=20)
-                if i == nplots-1: xlabel(labels[j],size=20)
+                if i == 0: ylabel('$\mathcal{L}($'+labels[i]+'$)/\mathcal{L}_{max}$',size=ylabel_size)
+                if i == nplots-1: xlabel(labels[j],size=xlabel_size)
                 var=vars[j]
                 if vars[i]=='bias': xlim( [mm[i]-20*ss[i],mm[i]+20*ss[i]] )
                 else: xlim( limits[i] )
@@ -1628,8 +1630,8 @@ def matrixplot(chain,vars,col,sm,
                   else:               xlim(limits[j])
 
                   ylim(limits[i])
-                if i == nplots-1: xlabel(var0,size=20)
-                if j == 0+kk: ylabel(var1,size=20)    
+                if i == nplots-1: xlabel(var0,size=xlabel_size)
+                if j == 0+kk: ylabel(var1,size=ylabel_size)    
                 if (vars[i] in chain.keys()) and (vars[j] in chain.keys()) and (doit[j]==True) and (doit[i]==True):
                     if plotNumberContours=='12':
                         levels = [0.9545,0.6827]

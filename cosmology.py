@@ -20,7 +20,7 @@ def H0_def(h):
 def properdistance(z,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,omegaRad=0.00,compute_which_chi='comoving_distance'):
     """
         Gives the proper distance in the defined cosmology
-        The c/Ho factor is ommited
+        The c/H0 factor is ommited
         Returns dist(z), w(z), omegax(z), H(z), curvature
     """
     # if no wz on input the calculate it from w0 and w1
@@ -145,11 +145,12 @@ def D_V(z,h=0.7,omegam=0.3,omegax=0.7,w0=-1,w1=0,wz=None,NNz=1000):
     result = (dHubble/h) * ( (z/Ez ) * dist**2. )**(1./3.)
     return result[-1:]
 
-def EE(z,omegam,omegax,omegaRad=0.0):
+def EE(z,omegam,omegax,omegaRad=0.0,w0=-1.0,wa=0.0):
     # gives the E(z)=H(z)/H0
-    omega = omegax+omegam+omegaRad
-    res   = sqrt( (1.-omega)*(1+z)**2+omegax+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
-    return res
+    omegaxz= omegax*(1+z)**(3.*(1+w0+wa))*np.exp(-3.*wa*z/(1+z))
+    omega  = omegaxz+omegam+omegaRad
+    res    = sqrt( (1.-omega)*(1+z)**2+omegaxz+omegam*(1+z)**3 + omegaRad*(1+z)**4 )
+    return(res)
 
 def integrant(z,omegam,omegax):
     return (1+z)/(EE(z,omegam,omegax))**3 
@@ -178,11 +179,11 @@ def D1(z,params=[0.3,0.7,-1,0]):
     result = D1_z/Normalization
     print('Normalization=',Normalization)
     #print('result=',result)
-    return result
+    return(result)
 
 def omega_nuf(sum_mass_nu=0.06,Neff=3.046):
     result = 0.0107*sum_mass_nu/1.0
-    return result
+    return(result)
 
 def r_d(omega_cdm=0.1198,omega_b=0.02225,nonRelativistic=True,sum_mass_nu=0.06,Neff=3.046):
     """

@@ -628,7 +628,7 @@ def corrc_xy(x,y):
     '''
     num_sigma_xy = sigma_xy(x,y)
     num_corrc_xy = num_sigma_xy/(np.std(x)*np.std(y))
-    return num_corrc_xy
+    return(num_corrc_xy)
 
 def corrmat(covmat):
     dims = np.shape(covmat)
@@ -636,8 +636,8 @@ def corrmat(covmat):
 
     for i in range(dims[0]):
         for j in range(dims[1]):
-            cc[i][j] = covmat[i][j]/np.sqrt(covmat[i][i]*covmat[j][j])
-    return cc
+            cc[i,j] = covmat[i,j]/(np.sqrt(covmat[i,i]*covmat[j,j]))
+    return(cc)
 
 def stat2var(x,y):
     ''' return mx,sx,my,sy,cov(x,y),corr(x,y) '''
@@ -714,7 +714,7 @@ def plot_colorplot(f_xy,x=None,y=None,labelx='$z_i$',labely='$z_j$',ColorbarLabe
     """
     plt.imshow(f_xy,origin='lower',extent=[x.min(),x.max(),y.min(),y.max()])
     plt.xlabel(labelx,size=20),plt.ylabel(labely,size=20)
-    cbar = plt.colorbar() 
+    cbar = plt.colorbar(norm=matplotlib.colors.SymLogNorm(10**(-2.))) 
     cbar.set_label(ColorbarLabel,size=18)
     plt.clim(np.nanmin(f_xy), np.nanmax(f_xy))
     if saveplot: plt.savefig(savename)
@@ -971,8 +971,9 @@ def legendre_polynomials(l,mu):
     elif l==4:
         return (35.*mu**4.-30.*mu**2.+3)/8.
 
-def latex_float(float_input,decimals_input="{0:.2g}"):
+def latex_float(float_input,decimals_input="{0:.3g}"):
     """
+    label_plot= scientific notation
     example use: 
     import matplotlib.pyplot as plt
     plt.figure(),plt.clf()
