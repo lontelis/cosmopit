@@ -1516,6 +1516,7 @@ def matrixplot(chain,vars,col,sm,
                 Blabelsize=20,
                 plotCorrCoef=True,
                 plotScatter=False,
+                plotMeanStd=True,
                 fontsize_legend=8,
                 NsigLim=3,
                 ChangeLabel=False,
@@ -1639,7 +1640,7 @@ def matrixplot(chain,vars,col,sm,
                         levels = [0.6827]
                     elif plotNumberContours=='2':
                         levels = [0.9545]
-                    a0=cont(chain[vars[j]],chain[vars[i]],levels=levels,color=col,nsmooth=sm,alpha=alpha,plotCorrCoef=plotCorrCoef,plotScatter=plotScatter) 
+                    a0=cont(chain[vars[j]],chain[vars[i]],levels=levels,color=col,nsmooth=sm,alpha=alpha,plotCorrCoef=plotCorrCoef,plotScatter=plotScatter,plotMeanStd=plotMeanStd) 
                 
     if Blabel:
         frame1=plt.subplot(nplots,nplots,nplots) #,facecolor='white')
@@ -1670,10 +1671,10 @@ def getcols(color):
         cols=['LightPink','HotPink']
     elif (color == 'yellow') or (color == 'y'):
         cols=['Yellow','Gold']
+    elif color == 'Coral' or (color == 'O'):
+        cols=['Coral','OrangeRed']
     elif (color == 'black') or (color == 'k'):
         cols=['grey','black']
-    elif color == 'Coral':
-        cols=['Coral','OrangeRed']
     elif color == 'purple':
         cols=['Violet','DarkViolet']
     elif color == 'brown':
@@ -1695,11 +1696,19 @@ def getcols(color):
     return(cols)
 
 def get_array_colors():
-    return np.array(['blue','red','green','black','yellow','pink','Coral','purple','brown','turquoise','salmon','steelblue','khaki','goldenrod','orange','cyan'])
+    res = np.array(['blue','red','green','black','yellow','Coral','pink',
+                    'purple','brown','turquoise','salmon','steelblue','khaki',
+                    'goldenrod','orange','cyan',
+                    'cyan','cyan','cyan',
+                    'cyan','cyan','cyan',
+                    'cyan','cyan','cyan'])
+    return(res)
 
 def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
      nbins=256,
-     nsmooth=4,Fill=True,plotCorrCoef=True,plotScatter=False,fontsize_legend=8,**kwargs):
+     nsmooth=4,Fill=True,plotCorrCoef=True,plotScatter=False,fontsize_legend=8,
+     plotMeanStd=True,
+     **kwargs):
 
     levels.sort()
     levels.reverse()
@@ -1742,12 +1751,13 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
         label_cont='$\\rho$=%0.2f'%(rcorrcoeff)
     else:
         label_cont=None
-    mmx,ssx = x.mean(),x.std()
-    mmy,ssy = y.mean(),y.std()
-    xarr = np.array([mmx-ssx,mmx+ssx])
-    yarr = np.array([mmy-ssy,mmy+ssy])
-    plot(xarr,xarr*0.0+mmy,color,label=label_cont)
-    plot(xarr*0.0+mmx,yarr,color) 
+    if plotMeanStd:
+        mmx,ssx = x.mean(),x.std()
+        mmy,ssy = y.mean(),y.std()
+        xarr = np.array([mmx-ssx,mmx+ssx])
+        yarr = np.array([mmy-ssy,mmy+ssy])
+        plot(xarr,xarr*0.0+mmy,color,label=label_cont)
+        plot(xarr*0.0+mmx,yarr,color) 
     legend(loc='best',frameon=False,numpoints=1,fontsize=fontsize_legend) #8 15 20
 
     return(a)

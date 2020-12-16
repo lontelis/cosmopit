@@ -971,7 +971,7 @@ def legendre_polynomials(l,mu):
     elif l==4:
         return (35.*mu**4.-30.*mu**2.+3)/8.
 
-def latex_float(float_input,decimals_input="{0:.3g}"):
+def latex_float(float_input,decimals_input="{0:.2g}"):
     """
     label_plot= scientific notation
     example use: 
