@@ -8,6 +8,10 @@ Simply do on terminal:
 ```
 git clone https://github.com/lontelis/cosmopit.git
 ```
+or 
+```
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps cosmopit
+```
 <br />
 
 # Prerequist
