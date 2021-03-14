@@ -219,7 +219,7 @@ def compute_Rubyn(totos,nlag=0):
         Rubyn Test                                                                                                                                                                                                                      
         input :   totos = [CMBBAO0,CMBBAO1]                                                                                                                                                                                     
         outout:   Rubyn_test         : All computed rubin statistic for each parameter                                                                                                                                                  
-                  vars               : the name of the parameter correposnding to each test                                                                                                                                             
+                  vars               : the name of the parameter corresponding to each test                                                                                                                                             
                   means_means_thetas : the mean of the means of the parameters                                                                                                                                                          
                   arange(nlag)       :                                                                                                                                                                                                  
         To see convergence check the condition                                                                                                                                                                                          
@@ -965,11 +965,11 @@ def legendre_polynomials(l,mu):
     wikipedia https://en.wikipedia.org/wiki/Legendre_polynomials
     """
     if   l==0:
-        return mu*0.0+1.0
+        return(mu*0.0+1.0)
     elif l==2:
-        return (3.*mu**2.-1.)/2.
+        return((3.*mu**2.-1.)/2.)
     elif l==4:
-        return (35.*mu**4.-30.*mu**2.+3)/8.
+        return((35.*mu**4.-30.*mu**2.+3)/8.)
 
 def latex_float(float_input,decimals_input="{0:.2g}"):
     """
@@ -1000,3 +1000,28 @@ def roundDict(d,num=4):
             d[k] = v
     return d 
 # rounding indices inside a dictionary
+
+print('# fancy matplotlib libraries')
+from matplotlib.legend_handler import HandlerLine2D
+import matplotlib.path as mpath
+from matplotlib.transforms import BboxTransformFrom, BboxTransformTo, Bbox
+print('# credit: https://stackoverflow.com/questions/53122592/legend-with-vertical-line-in-matplotlib')
+class HandlerMiniatureLine(HandlerLine2D):
+    def create_artists(self, legend, orig_handle,
+                       xdescent, ydescent, width, height, fontsize,
+                       trans):
+
+        legline, _ = HandlerLine2D.create_artists(self,legend, orig_handle,
+                                xdescent, ydescent, width, height, fontsize, trans)
+
+        legline.set_data(*orig_handle.get_data())
+
+        ext = mpath.get_paths_extents([orig_handle.get_path()])
+        if ext.width == 0:
+            ext.x0 -= 0.1
+            ext.x1 += 0.1
+        bbox0 = BboxTransformFrom(ext)
+        bbox1 = BboxTransformTo(Bbox.from_bounds(xdescent, ydescent, width, height))
+
+        legline.set_transform(bbox0 + bbox1 + trans)
+        return legline,

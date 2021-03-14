@@ -971,21 +971,25 @@ def Sll_model_Omegam0w_cdmw_b(datasets, variables = ['Omegam0','w_cdm','w_b'], f
         return(ll)
     return(locals())
 
-Sfid_params_Omegam0w_cdmOmegaLambda0 = {
-               'Omegam0':0.31,
-               'w_cdm':0.0,
-               'OmegaLambda0':0.69,
+Sfid_params_OmOLwcdmw0wa = {
+               'Om':    0.31,
+               'OL':    0.69,
+               'w_cdm': 0.0,
+               'w0':   -1.0,
+               'wa':    0.0,
                 }
 
-def Sll_model_Omegam0w_cdmOmegaLambda0(datasets, variables = ['Omegam0','w_cdm','OmegaLambda0'], fidvalues = Sfid_params_Omegam0w_cdmOmegaLambda0):
+def Sll_model_OmOLwcdmw0wa(datasets, variables = ['Om','OL','w_cdm','w0','wa'], fidvalues = Sfid_params_OmOLwcdmw0wa):
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    Omegam0       = pymc.Uniform('Omegam0'      , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
-    w_cdm         = pymc.Uniform('w_cdm'        , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['w_cdm'],observed = 'w_cdm' not in variables) # 0.090,0.300                                                     
-    OmegaLambda0  = pymc.Uniform('OmegaLambda0' , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['OmegaLambda0'],observed = 'OmegaLambda0' not in variables) # 0.090,0.300                                                                                                       
+    Om    = pymc.Uniform('Om'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['Om'],observed = 'Om' not in variables)
+    OL    = pymc.Uniform('OL'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['OL'],observed = 'OL' not in variables)
+    w_cdm = pymc.Uniform('w_cdm'  , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['w_cdm'],observed = 'w_cdm' not in variables)
+    w0    = pymc.Uniform('w0'     , -3.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['w0'],observed = 'w0' not in variables)
+    wa    = pymc.Uniform('wa'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['wa'],observed = 'wa' not in variables)
     @pymc.stochastic(trace=True,observed=True,plot=False)
-    def loglikelihood(value=0, Omegam0=Omegam0,w_cdm=w_cdm,OmegaLambda0=OmegaLambda0):
+    def loglikelihood(value=0, Om=Om,OL=OL,w_cdm=w_cdm,w0=w0,wa=wa):
         ll=0.
-        pars = np.array([Omegam0,w_cdm,OmegaLambda0]) 
+        pars = np.array([Om,OL,w_cdm,w0,wa])
         for ds in datasets:
             ll=ll+ds(pars)
         return(ll)
@@ -1029,6 +1033,23 @@ def Sll_model_Omegam0w_m(datasets, variables = ['Omegam0','w_m'], fidvalues = Sf
         return(ll)
     return(locals())
 
+Sfid_params_OmOLw_cdmw0wa = {
+               'Om0':0.31,
+               'w_m':0.0,
+                }
+
+def Sll_model_Omegam0w_m(datasets, variables = ['Om','OL','w_m','w0','wa'], fidvalues = Sfid_params_Omegam0w_m):
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    Om0       = pymc.Uniform('Om0'      , -1.0,1.0, value = Sfid_params_Omegam0w_m['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_cdm     = pymc.Uniform('w_cdm'          , -1.0,1.0, value = Sfid_params_Omegam0w_m['w_m'],observed = 'w_m' not in variables) # 0.090,0.300                                                     
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Omegam0=Omegam0,w_m=w_m):
+        ll=0.
+        pars = np.array([Omegam0,w_m]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
 
 #End: Scenarios with Exotic Matter, Exotic Dark Matter Exotic Baryonic Matter
 
@@ -1201,7 +1222,7 @@ def ll_m1m2(datasets, variables = ['m1','m2'], fidvalues = fid_m1m2):
 
 #### END: MODELS and Bounds #####
 
-def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True, if_feedpars_external=None):
+def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w'], external=None, w_ll_model='LCDMsimple',delay=1000,if_get_chains_chi2=True, if_feedpars_external=None, if_use_zeus=False):
     if w_ll_model=='LCDM':
         feed_ll_model= ll_model
         feedPars     = fid_params
@@ -1446,6 +1467,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='Omegam0w_cdmw_b':
       feed_ll_model = Sll_model_Omegam0w_cdmw_b
       feedPars      = Sfid_params_Omegam0w_cdmw_b 
+    elif w_ll_model=='OmOLwcdmw0wa':
+      feed_ll_model = Sll_model_OmOLwcdmw0wa
+      feedPars      = Sfid_params_OmOLwcdmw0wa
     elif w_ll_model=='Omegam0w_cdmOmegaLambda0':
       feed_ll_model = Sll_model_Omegam0w_cdmOmegaLambda0
       feedPars      = Sfid_params_Omegam0w_cdmOmegaLambda0 
@@ -1471,22 +1495,28 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
       feed_ll_model = ll_model_ActionEFT 
       feedPars      = fid_params_ActionEFT
 
-    if if_feedpars_external!=None:
-        chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=if_feedpars_external))
-    else:
-        chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
-    # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
-    # for better convergence, since the pymc stucks to some values and does not jumbs further try with 400000 for the b0fNLbifi model, still waiting for result
-    chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay) 
-    chain.sample(iter=niter,burn=nburn,thin=nthin)
-    ch ={}
-    for v in variables: ch[v] = chain.trace(v)[:]
-    if if_get_chains_chi2:
-        chi2 = -2.*chain.logp
-        print('chains,chi2')
-        return ch,chi2
+    if if_use_zeus: 
+        import zeus
+        sampler = zeus.EnsembleSampler(nstart,ndim,data)
+        ch ={}
+        for v in variables: ch[v] = chain.trace(v)[:]
+        return(ch,toto)        
     else: 
-        return ch
+        if if_feedpars_external!=None:
+            chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=if_feedpars_external))
+        else:
+            chain = pymc.MCMC(feed_ll_model(data, variables, fidvalues=feedPars))
+        # change 18/02/2020. comment out so that the pymc selects by itself the step_method according to https://github.com/pymc-devs/pymc3/issues/981
+        # for better convergence, since the pymc stucks to some values and does not jumbs further try with 400000 for the b0fNLbifi model, still waiting for result
+        chain.use_step_method(pymc.AdaptiveMetropolis,chain.stochastics,delay=delay) 
+        chain.sample(iter=niter,burn=nburn,thin=nthin)
+        ch ={}
+        for v in variables: ch[v] = chain.trace(v)[:]
+        if if_get_chains_chi2:
+            chi2 = -2.*chain.logp
+            return(ch,chi2)
+        else: 
+            return(ch)
 
 def burnChains(chains,kmin=0):
     newChains=dict(chains) # dict(chains)
