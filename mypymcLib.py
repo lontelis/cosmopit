@@ -249,7 +249,7 @@ Sfid_params_b0fNLb1b2f1f2 = {
 def Sll_model_b0fNLb1b2f1f2(datasets, variables = ['b0','fNL','b1','b2','f1','f2'], fidvalues = Sfid_params_b0fNLb1b2f1f2):
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    b0     = pymc.Uniform('b0',    0.8,1.2 , value = Sfid_params_b0fNLb1b2f1f2['b0'] , observed = 'b0'  not in variables)
+    b0     = pymc.Uniform('b0',    0.7,1.3 , value = Sfid_params_b0fNLb1b2f1f2['b0'] , observed = 'b0'  not in variables)
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLb1b2f1f2['fNL'], observed = 'fNL' not in variables) 
     b1     = pymc.Uniform('b1',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b1'] , observed = 'b1'  not in variables)
     b2     = pymc.Uniform('b2',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b2'] , observed = 'b2'  not in variables)
