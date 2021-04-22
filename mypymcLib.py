@@ -253,8 +253,8 @@ def Sll_model_b0fNLb1b2f1f2(datasets, variables = ['b0','fNL','b1','b2','f1','f2
     fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLb1b2f1f2['fNL'], observed = 'fNL' not in variables) 
     b1     = pymc.Uniform('b1',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b1'] , observed = 'b1'  not in variables)
     b2     = pymc.Uniform('b2',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2['b2'] , observed = 'b2'  not in variables)
-    f1     = pymc.Uniform('f1',   -0.5,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f1'] , observed = 'f1'  not in variables) 
-    f2     = pymc.Uniform('f2',   -0.5,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f2'] , observed = 'f2'  not in variables) 
+    f1     = pymc.Uniform('f1',    0.0,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f1'] , observed = 'f1'  not in variables) 
+    f2     = pymc.Uniform('f2',    0.0,0.5 , value = Sfid_params_b0fNLb1b2f1f2['f2'] , observed = 'f2'  not in variables) 
 
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
@@ -401,6 +401,33 @@ def Sll_model_OmOLAsigmaA0A1A2(datasets, variables = ['Om','OL','A','sigma','A0'
         return(ll)
     return(locals())
 
+
+
+Sfid_params_OmOLcrdH0 = {
+
+               'Om':0.31,
+               'OL':0.69,
+               'crdH0':30009.,
+                }
+
+def Sll_model_OmOLcrdH0(datasets, variables = ['Om','OL','crdH0'], fidvalues = Sfid_params_OmOLcrdH0):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+
+    Om   = pymc.Uniform('Om', -1.0,1.0,   value = Sfid_params_OmOLcrdH0['Om'],observed = 'Om'    not in variables)
+    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_OmOLcrdH0['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    crdH0= pymc.Uniform('crdH0', 25000.,35000.,   value = Sfid_params_OmOLcrdH0['crdH0'],observed = 'crdH0' not in variables) # 0.090,0.300  
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, Om=Om,OL=OL,crdH0=crdH0):
+        ll=0.
+        pars = np.array([Om,OL,crdH0]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+
 Sfid_params_OmOL = {
 
                'Om':0.31,
@@ -499,8 +526,8 @@ def Sll_model_w0OL(datasets, variables = ['w0','OL'], fidvalues = Sfid_params_w0
 
     if (isinstance(datasets, list) is False): datasets=[datasets]
 
-    w0   = pymc.Uniform('w0', -2.0,0.0 ,  value = Sfid_params_w0OL['w0'],observed = 'w0' not in variables)
-    OL   = pymc.Uniform('OL', -1.0,1.0,   value = Sfid_params_w0OL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
+    w0   = pymc.Uniform('w0', -10.0,10.0 ,  value = Sfid_params_w0OL['w0'],observed = 'w0' not in variables)
+    OL   = pymc.Uniform('OL',   0.0, 1.0,   value = Sfid_params_w0OL['OL'],observed = 'OL' not in variables) # 0.090,0.300                                                     
 
     @pymc.stochastic(trace=True,observed=True,plot=False)
     def loglikelihood(value=0, w0=w0,OL=OL):
@@ -971,25 +998,21 @@ def Sll_model_Omegam0w_cdmw_b(datasets, variables = ['Omegam0','w_cdm','w_b'], f
         return(ll)
     return(locals())
 
-Sfid_params_OmOLwcdmw0wa = {
-               'Om':    0.31,
-               'OL':    0.69,
-               'w_cdm': 0.0,
-               'w0':   -1.0,
-               'wa':    0.0,
+Sfid_params_Omegam0w_cdmOmegaLambda0 = {
+               'Omegam0':0.31,
+               'w_cdm':0.0,
+               'OmegaLambda0':0.69,
                 }
 
-def Sll_model_OmOLwcdmw0wa(datasets, variables = ['Om','OL','w_cdm','w0','wa'], fidvalues = Sfid_params_OmOLwcdmw0wa):
+def Sll_model_Omegam0w_cdmOmegaLambda0(datasets, variables = ['Omegam0','w_cdm','OmegaLambda0'], fidvalues = Sfid_params_Omegam0w_cdmOmegaLambda0):
     if (isinstance(datasets, list) is False): datasets=[datasets]
-    Om    = pymc.Uniform('Om'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['Om'],observed = 'Om' not in variables)
-    OL    = pymc.Uniform('OL'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['OL'],observed = 'OL' not in variables)
-    w_cdm = pymc.Uniform('w_cdm'  , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['w_cdm'],observed = 'w_cdm' not in variables)
-    w0    = pymc.Uniform('w0'     , -3.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['w0'],observed = 'w0' not in variables)
-    wa    = pymc.Uniform('wa'     , -1.0,1.0,   value = Sfid_params_OmOLwcdmw0wa['wa'],observed = 'wa' not in variables)
+    Omegam0       = pymc.Uniform('Omegam0'      , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
+    w_cdm         = pymc.Uniform('w_cdm'        , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['w_cdm'],observed = 'w_cdm' not in variables) # 0.090,0.300                                                     
+    OmegaLambda0  = pymc.Uniform('OmegaLambda0' , -1.0,1.0,   value = Sfid_params_Omegam0w_cdmOmegaLambda0['OmegaLambda0'],observed = 'OmegaLambda0' not in variables) # 0.090,0.300                                                                                                       
     @pymc.stochastic(trace=True,observed=True,plot=False)
-    def loglikelihood(value=0, Om=Om,OL=OL,w_cdm=w_cdm,w0=w0,wa=wa):
+    def loglikelihood(value=0, Omegam0=Omegam0,w_cdm=w_cdm,OmegaLambda0=OmegaLambda0):
         ll=0.
-        pars = np.array([Om,OL,w_cdm,w0,wa])
+        pars = np.array([Omegam0,w_cdm,OmegaLambda0]) 
         for ds in datasets:
             ll=ll+ds(pars)
         return(ll)
@@ -1033,23 +1056,6 @@ def Sll_model_Omegam0w_m(datasets, variables = ['Omegam0','w_m'], fidvalues = Sf
         return(ll)
     return(locals())
 
-Sfid_params_OmOLw_cdmw0wa = {
-               'Om0':0.31,
-               'w_m':0.0,
-                }
-
-def Sll_model_Omegam0w_m(datasets, variables = ['Om','OL','w_m','w0','wa'], fidvalues = Sfid_params_Omegam0w_m):
-    if (isinstance(datasets, list) is False): datasets=[datasets]
-    Om0       = pymc.Uniform('Om0'      , -1.0,1.0, value = Sfid_params_Omegam0w_m['Omegam0'],observed = 'Omegam0' not in variables) # 0.090,0.300                                                     
-    w_cdm     = pymc.Uniform('w_cdm'          , -1.0,1.0, value = Sfid_params_Omegam0w_m['w_m'],observed = 'w_m' not in variables) # 0.090,0.300                                                     
-    @pymc.stochastic(trace=True,observed=True,plot=False)
-    def loglikelihood(value=0, Omegam0=Omegam0,w_m=w_m):
-        ll=0.
-        pars = np.array([Omegam0,w_m]) 
-        for ds in datasets:
-            ll=ll+ds(pars)
-        return(ll)
-    return(locals())
 
 #End: Scenarios with Exotic Matter, Exotic Dark Matter Exotic Baryonic Matter
 
@@ -1383,6 +1389,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='OmOLAsigmaA0A1A2':
       feed_ll_model = Sll_model_OmOLAsigmaA0A1A2
       feedPars      = Sfid_params_OmOLAsigmaA0A1A2
+    elif w_ll_model=='OmOLcrdH0':
+      feed_ll_model = Sll_model_OmOLcrdH0
+      feedPars      = Sfid_params_OmOLcrdH0
     elif w_ll_model=='OmOL':
       feed_ll_model = Sll_model_OmOL
       feedPars      = Sfid_params_OmOL
@@ -1467,9 +1476,6 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='Omegam0w_cdmw_b':
       feed_ll_model = Sll_model_Omegam0w_cdmw_b
       feedPars      = Sfid_params_Omegam0w_cdmw_b 
-    elif w_ll_model=='OmOLwcdmw0wa':
-      feed_ll_model = Sll_model_OmOLwcdmw0wa
-      feedPars      = Sfid_params_OmOLwcdmw0wa
     elif w_ll_model=='Omegam0w_cdmOmegaLambda0':
       feed_ll_model = Sll_model_Omegam0w_cdmOmegaLambda0
       feedPars      = Sfid_params_Omegam0w_cdmOmegaLambda0 
@@ -1498,6 +1504,9 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     if if_use_zeus: 
         import zeus
         sampler = zeus.EnsembleSampler(nstart,ndim,data)
+        start = niter/100
+        sampler.run_mcmc(start, nsteps)
+        chain   = sampler.chain
         ch ={}
         for v in variables: ch[v] = chain.trace(v)[:]
         return(ch,toto)        
