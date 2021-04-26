@@ -237,13 +237,13 @@ def Sll_model_b0fNLbifi(datasets, variables = ['b0','fNL','bi','fi'], fidvalues 
     return(locals())
 
 Sfid_params_b0fNLb1b2f1f2 = {
-               'b0':1.0,
+               'b0': 1.0,
                #'h':0.67,
-               'fNL':0.0,
-               'b1':1.0,
-               'b2':1.0,               
-               'f1':0.1,
-               'f2':0.1,
+               'fNL': 0.0,
+               'b1': 1.0,
+               'b2': 1.0,               
+               'f1': 0.0,
+               'f2': 0.0,
                 }
 
 def Sll_model_b0fNLb1b2f1f2(datasets, variables = ['b0','fNL','b1','b2','f1','f2'], fidvalues = Sfid_params_b0fNLb1b2f1f2):
