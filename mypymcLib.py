@@ -208,6 +208,51 @@ def Sll_model_b0fNL(datasets, variables = ['b0','fNL'], fidvalues = Sfid_params_
         return(ll)
     return(locals())
 
+
+Sfid_params_b0fNLaSN = {
+               'b0':1.0,
+               #'h':0.67,
+               'fNL':0.0,
+               'aSN':0.0
+                }
+
+def Sll_model_b0fNLaSN(datasets, variables = ['b0','fNL','aSN'], fidvalues = Sfid_params_b0fNLaSN):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    b0     = pymc.Uniform('b0',    0.0,5.0 , value = Sfid_params_b0fNLaSN['b0'] , observed = 'b0'  not in variables)
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLaSN['fNL'], observed = 'fNL' not in variables) 
+    aSN    = pymc.Uniform('aSN', -300.,300., value = Sfid_params_b0fNLaSN['aSN'], observed = 'aSN' not in variables) 
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, b0=b0,fNL=fNL,aSN=aSN): 
+        ll=0.
+        pars = np.array([b0,fNL,aSN]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_b0Ab0BfNL = {
+               'b0A':1.0,
+               'b0B':1.0,
+               #'h':0.67,
+               'fNL':0.0,
+                }
+
+def Sll_model_b0Ab0BfNL(datasets, variables = ['b0A','b0B','fNL'], fidvalues = Sfid_params_b0Ab0BfNL):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    b0A    = pymc.Uniform('b0A',    0.0,5.0 , value = Sfid_params_b0Ab0BfNL['b0A'] , observed = 'b0A'  not in variables)
+    b0B    = pymc.Uniform('b0B',    0.0,5.0 , value = Sfid_params_b0Ab0BfNL['b0B'] , observed = 'b0B'  not in variables)
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0Ab0BfNL['fNL']  , observed = 'fNL'  not in variables) 
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, b0A=b0A, b0B=b0B, fNL=fNL): 
+        ll=0.
+        pars = np.array([b0A,b0B,fNL]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
 Sfid_params_b0fNLbifi = {
                'b0':1.0,
                #'h':0.67,
@@ -261,6 +306,37 @@ def Sll_model_b0fNLb1b2f1f2(datasets, variables = ['b0','fNL','b1','b2','f1','f2
     def loglikelihood(value=0, b0=b0,fNL=fNL,b1=b1,b2=b2,f1=f1,f2=f2): 
         ll=0.
         pars = np.array([b0,fNL,b1,b2,f1,f2]) 
+        for ds in datasets:
+            ll=ll+ds(pars)
+        return(ll)
+    return(locals())
+
+Sfid_params_b0fNLb1b2f1f2aSN = {
+               'b0': 1.0,
+               #'h':0.67,
+               'fNL': 0.0,
+               'b1': 1.0,
+               'b2': 1.0,               
+               'f1': 0.0,
+               'f2': 0.0,
+               'aSN':0.0,
+                }
+
+def Sll_model_b0fNLb1b2f1f2aSN(datasets, variables = ['b0','fNL','b1','b2','f1','f2','aSN'], fidvalues = Sfid_params_b0fNLb1b2f1f2):
+
+    if (isinstance(datasets, list) is False): datasets=[datasets]
+    b0     = pymc.Uniform('b0',    0.7,1.3 , value = Sfid_params_b0fNLb1b2f1f2aSN['b0'] , observed = 'b0'  not in variables)
+    fNL    = pymc.Uniform('fNL', -300.,300., value = Sfid_params_b0fNLb1b2f1f2aSN['fNL'], observed = 'fNL' not in variables) 
+    b1     = pymc.Uniform('b1',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2aSN['b1'] , observed = 'b1'  not in variables)
+    b2     = pymc.Uniform('b2',    0.5,1.5 , value = Sfid_params_b0fNLb1b2f1f2aSN['b2'] , observed = 'b2'  not in variables)
+    f1     = pymc.Uniform('f1',    0.0,0.5 , value = Sfid_params_b0fNLb1b2f1f2aSN['f1'] , observed = 'f1'  not in variables) 
+    f2     = pymc.Uniform('f2',    0.0,0.5 , value = Sfid_params_b0fNLb1b2f1f2aSN['f2'] , observed = 'f2'  not in variables) 
+    aSN    = pymc.Uniform('aSN', -300.,300., value = Sfid_params_b0fNLb1b2f1f2aSN['aSN'], observed = 'fNL' not in variables) 
+
+    @pymc.stochastic(trace=True,observed=True,plot=False)
+    def loglikelihood(value=0, b0=b0,fNL=fNL,b1=b1,b2=b2,f1=f1,f2=f2,aSN=aSN): 
+        ll=0.
+        pars = np.array([b0,fNL,b1,b2,f1,f2,aSN]) 
         for ds in datasets:
             ll=ll+ds(pars)
         return(ll)
@@ -1374,12 +1450,21 @@ def run_mcmc(data,niter=80000, nburn=20000, nthin=1, variables=['Om', 'Ol', 'w']
     elif w_ll_model=='LCDM_b0fNL':
       feed_ll_model = Sll_model_b0fNL
       feedPars      = Sfid_params_b0fNL
+    elif w_ll_model=='LCDM_b0fNLaSN':
+      feed_ll_model = Sll_model_b0fNLaSN
+      feedPars      = Sfid_params_b0fNLaSN      
+    elif w_ll_model=='LCDM_b0Ab0BfNL':
+      feed_ll_model = Sll_model_b0Ab0BfNL
+      feedPars      = Sfid_params_b0Ab0BfNL
     elif w_ll_model=='LCDM_b0fNLbifi':
       feed_ll_model = Sll_model_b0fNLbifi
       feedPars      = Sfid_params_b0fNLbifi
     elif w_ll_model=='LCDM_b0fNLb1b2f1f2':
       feed_ll_model = Sll_model_b0fNLb1b2f1f2
       feedPars      = Sfid_params_b0fNLb1b2f1f2
+    elif w_ll_model=='LCDM_b0fNLb1b2f1f2aSN':
+      feed_ll_model = Sll_model_b0fNLb1b2f1f2aSN
+      feedPars      = Sll_model_b0fNLb1b2f1f2aSN      
     elif w_ll_model=='dcabrsrVom':
       feed_ll_model = Sll_model_dcabrsrVom
       feedPars      = Sfid_params_dcabrsrVom
@@ -1533,9 +1618,10 @@ def burnChains(chains,kmin=0):
     # python 3:  kmax = size(newChains[next(iter(newChains))])
     kmax = size(newChains[next(iter(newChains))])
     for k in newChains.keys(): newChains[k] = newChains[k][kmin:kmax]
-    return newChains
+    return(newChains)
 
 def chains_hist_mode_out(chain_var,nbins=100):
+    """use: xhist,yhist,mm,ss,mode_xhist=chains_hist_mode_out(chain_var,nbins=100)"""
     mm        = np.mean( chain_var )
     ss        = np.std(  chain_var )
     bla       = np.histogram(chain_var,bins=nbins,normed=True)
@@ -1786,8 +1872,14 @@ def cont(x,y,xlim=None,ylim=None,levels=[0.9545,0.6827],alpha=0.7,color='blue',
     
     if plotScatter: scatter(x,y,color=color,marker=u'.')
     if plotCorrCoef:
+        mmx,ssx = x.mean(),x.std()
+        mmy,ssy = y.mean(),y.std()
+        xarr = np.array([mmx-ssx,mmx+ssx])
+        yarr = np.array([mmy-ssy,mmy+ssy])
         rcorrcoeff = np.corrcoef(x,y)[0,1]
-        label_cont='$\\rho$=%0.2f'%(rcorrcoeff)
+        label_cont='$\\rho$=%0.2f'%(rcorrcoeff)        
+        plot(xarr,xarr*0.0+mmy,color,label=label_cont)
+        plot(xarr*0.0+mmx,yarr,color)       
     else:
         label_cont=None
     if plotMeanStd:
