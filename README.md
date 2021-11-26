@@ -63,4 +63,4 @@ P.Laurent, ..., P. Ntelis, et al. https://arxiv.org/abs/1602.09010
 
 # QUERIES:
 please feel free to contact for any queries or bugs at: <br />
-pntelis -at- cppm -point- in2p3 -point- fr
+ntelis.pierros -at- gmail -point- com
