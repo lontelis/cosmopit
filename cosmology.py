@@ -83,7 +83,7 @@ def get_dist(z,type='proper',omegaRad=0.0,params=[0.3,0.7,-1,0],wz=None,z2radial
     if isinstance(z, np.ndarray): zmax = z.max()
     else:                         zmax = z
 
-    zvalues=linspace(0.,zmax*1.5,1e5)
+    zvalues=linspace(0.,zmax*1.5,int(1e5))
 
     dist,wz,omegaxz,Ez,curv=properdistance(zvalues,omegam=omegam,omegax=omegax,w0=w0,w1=w1,wz=wz,omegaRad=omegaRad)
 
