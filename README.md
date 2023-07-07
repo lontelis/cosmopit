@@ -21,7 +21,7 @@ Unommon tasks, that you can perform with this toolkit, are:
 2) Calculation of estimators of 2point correlation function, number counts, fractal dimension,
    using the cute software
 
-The cosmology used assumes a homogeneous and isotropic universe within the $\Lambda$CDM model.
+The cosmology used assumes a homogeneous and isotropic universe within the ΛCDM model.
 
 
 
