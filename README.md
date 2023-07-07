@@ -61,6 +61,7 @@ import each file as: <br />
 ``` 
 from cosmopit import cosmology 
 from cosmopit import numMath
+from cosmopit import galtools
 ```
 <br />
 and then use each library as following. As an example from the cosmology.py library you can calculate the Comoving Volume distance as: <br />
