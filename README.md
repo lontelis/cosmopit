@@ -73,7 +73,7 @@ distComVol = cosmology.D_V(z=0.5)
 Other Examples
 
 ```
-https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb
+[BAO jupyter notebook example](https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb)
 ```
 
 # Citation
