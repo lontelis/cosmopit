@@ -70,6 +70,12 @@ and then use each library as following. As an example from the cosmology.py libr
 distComVol = cosmology.D_V(z=0.5) 
 ```
 
+Other Examples
+
+```
+https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb
+```
+
 # Citation
 If you use this code please cite at least the following paper: <br />
 P.Ntelis et al 2018 https://arxiv.org/abs/1810.09362 <br />
