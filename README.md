@@ -72,9 +72,11 @@ distComVol = cosmology.D_V(z=0.5)
 
 Other Examples
 
-```
-[BAO jupyter notebook example](https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb)
-```
+[Baryon Acoustic Oscillation (BAO) detection jupyter notebook example](https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb)
+
+[Supernovae (SN) fitting curve jupyter notebook example ](https://github.com/lontelis/ANALYSE-SN-magnitude-redshift-curve/blob/master/analyse_SN.ipynb)
+
+[MCMC python example](https://github.com/lontelis/MCMC-posterior-example)
 
 # Citation
 If you use this code please cite at least the following paper: <br />
