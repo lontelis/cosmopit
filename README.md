@@ -1,6 +1,30 @@
 # cosmopit
 cosmological python initial toolkit
 
+It is a toolkit containing routines to perform common and uncommon tasks in cosmology.
+
+Common tasks, that you can perform with this toolkit, are:
+
+1) Simple Statistical tests
+
+2) cosmological coordinate transformations
+
+3) Fitting functions and functionals, with bayesian methods
+
+4) routines to read data from .fits and .txt files
+
+Unommon tasks, that you can perform with this toolkit, are:
+
+1) Calculation of theoretical predictions of 2point correlation function, number counts, fractal dimension
+   using the CLASS software.
+
+2) Calculation of estimators of 2point correlation function, number counts, fractal dimension,
+   using the cute software
+
+The cosmology used assumes a homogeneous and isotropic universe within the $\Lambda$CDM model.
+
+
+
 # INSTALLATION: 
 In order to use these libraries one need to download these files in their directory: <br />
 <br />
