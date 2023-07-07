@@ -72,7 +72,7 @@ distComVol = cosmology.D_V(z=0.5)
 
 Other Examples
 
-(Tutorial of coordinate transformation applied in cosmology)[https://github.com/lontelis/Tutorial-of-coordinate-transformation-applied-in-cosmology]
+[Tutorial of coordinate transformation applied in cosmology](https://github.com/lontelis/Tutorial-of-coordinate-transformation-applied-in-cosmology)
 
 [Baryon Acoustic Oscillation (BAO) detection jupyter notebook example](https://github.com/lontelis/Extract-Cosmology-with-the-BAO-peak-position/blob/master/analyse_DR12_BAO.ipynb)
 
