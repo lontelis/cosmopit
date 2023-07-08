@@ -1,4 +1,17 @@
 # cosmopit
+
+### cosmopit
+
+Cosmopit (Cosmological python initial toolkit) is a package of cosmology built on basic numerical libraries of python such as Numpy/SciPy/Matplolib. Capabilities include common and not-so-common capabilities. 
+
+Common capabilities include: various cosmological distances, and volumes calculations, transformation of cosmological coordinate systems, simple statistic quantities and also calculations of covariance matrices, fitting routines and bayesian inferences using corner plots, routines to read and write date in .fits and .txt files, example of calculating Monte Carlo Markov Chains for fittings and corner plot presentation tutorial, and a tutorial dedicated for transformation of cosmological coordinates.
+
+Not-so common capabilities include: calculation of power spectra and correlation functions via the class software, calculation of number counts, fractal dimension quantities, homogeneity scale calculation routines, routines calculating statistics of simualated, reading and writing routines for cute, astropy, pymangle, 
+example of Baryon Acoustic Oscilation (BAO) detection and extraction feature from data, example of fitting the SuperNovae (SN) curve to extra simple magnitude parameters.
+
+https://github.com/lontelis/cosmopit
+
+
 cosmological python initial toolkit
 
 It is a toolkit containing routines to perform common and uncommon tasks in cosmology.
