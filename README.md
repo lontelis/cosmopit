@@ -14,7 +14,7 @@ Common tasks, that you can perform with this toolkit, are:
 
 4) routines to read data from .fits and .txt files
 
-Unommon tasks, that you can perform with this toolkit, are:
+Not-so-common tasks, that you can perform with this toolkit, are:
 
 1) Calculation of theoretical predictions of 2point correlation function, number counts, fractal dimension
    using the CLASS software.
