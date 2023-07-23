@@ -81,6 +81,10 @@ Other Examples
 
 [MCMC python example](https://github.com/lontelis/MCMC-posterior-example)
 
+[Functors of Actions example: Actions of Effective Field Theories](https://github.com/lontelis/AofEFT)
+
+[Factor of contaminants Bias D-growth of structure vs redshift](https://github.com/lontelis/FBDz)
+
 # Citation
 If you use this code please cite at least the following paper: <br />
 P.Ntelis et al 2018 https://arxiv.org/abs/1810.09362 <br />
