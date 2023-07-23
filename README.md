@@ -83,7 +83,7 @@ Other Examples
 
 [Functors of Actions example: Actions of Effective Field Theories](https://github.com/lontelis/AofEFT)
 
-[Factor of contaminants Bias D-growth of structure vs redshift](https://github.com/lontelis/FBDz)
+[Factor of contaminants Bias D-growth-of-structure vs redshift functional example](https://github.com/lontelis/FBDz)
 
 # Citation
 If you use this code please cite at least the following paper: <br />
